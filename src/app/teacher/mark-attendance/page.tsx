@@ -1,3 +1,5 @@
+"use client"; // Ensure this is the very first line
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,9 +13,6 @@ import { db } from "@/lib/firebase";
 import { useAuth } from '@/hooks/useAuth';
 import { collection, getDocs, query, where, addDoc, Timestamp, getDoc, doc } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
-
-// Client component needed for state management
-"use client";
 import * as React from "react";
 import type { Class, Student, AttendanceRecord } from "@/lib/types";
 
