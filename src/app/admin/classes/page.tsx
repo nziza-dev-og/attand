@@ -161,12 +161,12 @@ export default function ManageClassesPage() {
            <div className="border rounded-md">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow>{/* Removed potential whitespace here */}
                   <TableHead>Name</TableHead>
                   <TableHead>Subject</TableHead>
                   <TableHead>Grade</TableHead>
                   <TableHead>Schedule</TableHead>
-                  <TableHead className="text-right">Actions</TableHead> {/* Placeholder */}
+                  <TableHead className="text-right">Actions</TableHead>{/* Placeholder */}
                 </TableRow>
               </TableHeader>
               <TableBody>
