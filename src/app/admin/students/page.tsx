@@ -81,7 +81,7 @@ export default function ManageStudentsPage() {
 
   useEffect(() => {
     fetchStudents();
-  }, []); // Fetch on component mount
+  }, [toast]); // Fetch on component mount
 
   // Handle form submission to add a new student
   const onSubmit: SubmitHandler<StudentFormData> = async (data) => {
@@ -175,7 +175,7 @@ export default function ManageStudentsPage() {
           <div className="border rounded-md">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow>{/* Removed potential whitespace here */}
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Student Info</TableHead>
