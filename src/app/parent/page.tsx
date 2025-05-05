@@ -1,3 +1,4 @@
+// src/app/parent/page.tsx
 "use client"; // Use client component for hooks and state
 
 import { useState, useEffect } from 'react';
@@ -102,6 +103,8 @@ export default function ParentDashboard() {
                              // email: studentData.email, // Maybe not needed on dashboard
                              // classIds: studentData.classIds || [],
                              parentIds: studentData.parentIds || [],
+                             role: 'Student', // Explicitly set role based on check
+                             createdAt: studentData.createdAt, // From UserProfile part
                              avatarUrl: studentData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(studentData.name || 'U')}&background=random`, // Fallback avatar
                              attendancePercentage: attendancePercentage,
                          } as ChildWithAttendance;
@@ -126,7 +129,9 @@ export default function ParentDashboard() {
         fetchParentAndChildrenData();
     }, [user, authLoading]);
 
-     if (isLoading) {
+     const isLoading = authLoading || loadingData; // Define isLoading here
+
+     if (isLoading) { // Use isLoading after declaration
         return (
           <div className="flex items-center justify-center min-h-[300px]">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -147,8 +152,6 @@ export default function ParentDashboard() {
           </Card>
        );
     }
-
-     const isLoading = authLoading || loadingData;
 
 
     return (
