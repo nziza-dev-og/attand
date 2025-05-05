@@ -3,14 +3,14 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, where, doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserCheck, UserX, Link as LinkIcon, Unlink } from "lucide-react"; // LinkIcon imported as alias
+import { Loader2, UserCheck, UserX, Link as LinkIcon, Unlink, BookUser } from "lucide-react"; // LinkIcon imported as alias
 import type { Teacher, Parent, Student, Class } from "@/lib/types";
 
 // Fetchable item types
@@ -24,14 +24,19 @@ export default function AssignmentsPage() {
   const [loading, setLoading] = useState({ teachers: true, parents: true, students: true, classes: true });
   const [error, setError] = useState<string | null>(null);
 
-  // State for assignment forms - Initialize with 'none' or a placeholder value instead of ''
-  const [selectedTeacher, setSelectedTeacher] = useState<string>(''); // Keep empty for controlled component
-  const [selectedClassForTeacher, setSelectedClassForTeacher] = useState<string>(''); // Keep empty for controlled component
-  const [selectedParent, setSelectedParent] = useState<string>(''); // Keep empty for controlled component
-  const [selectedStudentForParent, setSelectedStudentForParent] = useState<string>(''); // Keep empty for controlled component
+  // State for assignment forms
+  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
+  const [selectedClassForTeacher, setSelectedClassForTeacher] = useState<string>('');
+  const [selectedParent, setSelectedParent] = useState<string>('');
+  const [selectedStudentForParent, setSelectedStudentForParent] = useState<string>('');
+  const [selectedStudentForClass, setSelectedStudentForClass] = useState<string>('');
+  const [selectedClassForStudent, setSelectedClassForStudent] = useState<string>('');
+
 
   const [isSubmittingTeacher, setIsSubmittingTeacher] = useState(false);
   const [isSubmittingParent, setIsSubmittingParent] = useState(false);
+  const [isSubmittingStudentToClass, setIsSubmittingStudentToClass] = useState(false);
+
 
   const { toast } = useToast();
 
@@ -69,7 +74,6 @@ export default function AssignmentsPage() {
 
   // Handle Teacher-Class Assignment
   const handleAssignTeacherToClass = async () => {
-    // Check against empty string, as state is initialized to empty string
     if (!selectedTeacher || !selectedClassForTeacher) {
       toast({ variant: "destructive", title: "Error", description: "Please select both a teacher and a class." });
       return;
@@ -77,18 +81,13 @@ export default function AssignmentsPage() {
     setIsSubmittingTeacher(true);
     try {
       const classRef = doc(db, "classes", selectedClassForTeacher);
-      // Simple assignment: Set the teacherId field on the class document.
-      // Assumes one teacher per class. If multiple, use arrayUnion.
       await updateDoc(classRef, { teacherId: selectedTeacher });
 
-      // Optional: Update teacher's assignedClassIds array
+      // Update teacher's assignedClassIds array
       const teacherRef = doc(db, "users", selectedTeacher);
       await updateDoc(teacherRef, { assignedClassIds: arrayUnion(selectedClassForTeacher) });
 
       toast({ title: "Success", description: "Teacher assigned to class successfully." });
-       // Reset selections after successful assignment? Maybe not, allow multiple assignments.
-      // setSelectedTeacher('');
-      // setSelectedClassForTeacher('');
     } catch (err) {
       console.error("Error assigning teacher:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to assign teacher to class." });
@@ -97,27 +96,54 @@ export default function AssignmentsPage() {
     }
   };
 
+   // Handle Teacher-Class Unassignment
+    const handleUnassignTeacherFromClass = async () => {
+      if (!selectedTeacher || !selectedClassForTeacher) {
+        toast({ variant: "destructive", title: "Error", description: "Please select both a teacher and a class to unassign." });
+        return;
+      }
+      // Optional: Check if the teacher is actually assigned before attempting removal
+      // const classDoc = await getDoc(doc(db, "classes", selectedClassForTeacher));
+      // if (classDoc.exists() && classDoc.data().teacherId !== selectedTeacher) {
+      //   toast({ variant: "warning", title: "Info", description: "This teacher is not assigned to this class." });
+      //   return;
+      // }
+
+      setIsSubmittingTeacher(true);
+      try {
+        const classRef = doc(db, "classes", selectedClassForTeacher);
+        // Set teacherId to null or remove the field
+        await updateDoc(classRef, { teacherId: null });
+
+        // Remove classId from teacher's assignedClassIds array
+        const teacherRef = doc(db, "users", selectedTeacher);
+        await updateDoc(teacherRef, { assignedClassIds: arrayRemove(selectedClassForTeacher) });
+
+        toast({ title: "Success", description: "Teacher unassigned from class successfully." });
+      } catch (err) {
+        console.error("Error unassigning teacher:", err);
+        toast({ variant: "destructive", title: "Error", description: "Failed to unassign teacher from class." });
+      } finally {
+        setIsSubmittingTeacher(false);
+      }
+    };
+
+
    // Handle Parent-Student Linking
   const handleLinkParentToStudent = async () => {
-    // Check against empty string
     if (!selectedParent || !selectedStudentForParent) {
       toast({ variant: "destructive", title: "Error", description: "Please select both a parent and a student." });
       return;
     }
     setIsSubmittingParent(true);
     try {
-       // Update Parent's childIds array
       const parentRef = doc(db, "users", selectedParent);
       await updateDoc(parentRef, { childIds: arrayUnion(selectedStudentForParent) });
 
-       // Update Student's parentIds array
       const studentRef = doc(db, "users", selectedStudentForParent);
       await updateDoc(studentRef, { parentIds: arrayUnion(selectedParent) });
 
       toast({ title: "Success", description: "Parent linked to student successfully." });
-        // Reset selections?
-      // setSelectedParent('');
-      // setSelectedStudentForParent('');
     } catch (err) {
       console.error("Error linking parent:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to link parent to student." });
@@ -126,12 +152,85 @@ export default function AssignmentsPage() {
     }
   };
 
-  // TODO: Implement Unlink/Unassign functions similar to above, using arrayRemove
+   // Handle Parent-Student Unlinking
+   const handleUnlinkParentFromStudent = async () => {
+    if (!selectedParent || !selectedStudentForParent) {
+      toast({ variant: "destructive", title: "Error", description: "Please select both a parent and a student to unlink." });
+      return;
+    }
+    setIsSubmittingParent(true);
+    try {
+      const parentRef = doc(db, "users", selectedParent);
+      await updateDoc(parentRef, { childIds: arrayRemove(selectedStudentForParent) });
+
+      const studentRef = doc(db, "users", selectedStudentForParent);
+      await updateDoc(studentRef, { parentIds: arrayRemove(selectedParent) });
+
+      toast({ title: "Success", description: "Parent unlinked from student successfully." });
+    } catch (err) {
+      console.error("Error unlinking parent:", err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to unlink parent from student." });
+    } finally {
+      setIsSubmittingParent(false);
+    }
+  };
+
+
+    // Handle Student-Class Assignment
+    const handleAssignStudentToClass = async () => {
+      if (!selectedStudentForClass || !selectedClassForStudent) {
+        toast({ variant: "destructive", title: "Error", description: "Please select both a student and a class." });
+        return;
+      }
+      setIsSubmittingStudentToClass(true);
+      try {
+        // Add studentId to class's studentIds array
+        const classRef = doc(db, "classes", selectedClassForStudent);
+        await updateDoc(classRef, { studentIds: arrayUnion(selectedStudentForClass) });
+
+        // Add classId to student's classIds array
+        const studentRef = doc(db, "users", selectedStudentForClass);
+        await updateDoc(studentRef, { classIds: arrayUnion(selectedClassForStudent) });
+
+        toast({ title: "Success", description: "Student assigned to class successfully." });
+      } catch (err) {
+        console.error("Error assigning student to class:", err);
+        toast({ variant: "destructive", title: "Error", description: "Failed to assign student to class." });
+      } finally {
+        setIsSubmittingStudentToClass(false);
+      }
+    };
+
+    // Handle Student-Class Unassignment
+    const handleUnassignStudentFromClass = async () => {
+      if (!selectedStudentForClass || !selectedClassForStudent) {
+        toast({ variant: "destructive", title: "Error", description: "Please select both a student and a class to unassign." });
+        return;
+      }
+      setIsSubmittingStudentToClass(true);
+      try {
+        // Remove studentId from class's studentIds array
+        const classRef = doc(db, "classes", selectedClassForStudent);
+        await updateDoc(classRef, { studentIds: arrayRemove(selectedStudentForClass) });
+
+        // Remove classId from student's classIds array
+        const studentRef = doc(db, "users", selectedStudentForClass);
+        await updateDoc(studentRef, { classIds: arrayRemove(selectedClassForStudent) });
+
+        toast({ title: "Success", description: "Student unassigned from class successfully." });
+      } catch (err) {
+        console.error("Error unassigning student from class:", err);
+        toast({ variant: "destructive", title: "Error", description: "Failed to unassign student from class." });
+      } finally {
+        setIsSubmittingStudentToClass(false);
+      }
+    };
+
 
   const isLoading = loading.teachers || loading.parents || loading.students || loading.classes;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
       {/* Teacher to Class Assignment Card */}
       <Card>
         <CardHeader>
@@ -142,15 +241,11 @@ export default function AssignmentsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="teacher-select">Teacher</Label>
-              {/* Pass value={selectedTeacher || ''} to handle initial undefined/null state if needed, but '' is fine */}
               <Select value={selectedTeacher} onValueChange={setSelectedTeacher} disabled={loading.teachers}>
                 <SelectTrigger id="teacher-select">
-                  {/* Placeholder updated */}
                   <SelectValue placeholder={loading.teachers ? "Loading..." : "Select Teacher"} />
                 </SelectTrigger>
                 <SelectContent>
-                   {/* Optional: Add a disabled placeholder item if needed */}
-                   {/* <SelectItem value="none" disabled>Select Teacher</SelectItem> */}
                   {teachers.map(teacher => (
                     <SelectItem key={teacher.id} value={teacher.id}>{teacher.name}</SelectItem>
                   ))}
@@ -164,7 +259,6 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.classes ? "Loading..." : "Select Class"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* <SelectItem value="none" disabled>Select Class</SelectItem> */}
                   {classes.map(cls => (
                     <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                   ))}
@@ -173,12 +267,14 @@ export default function AssignmentsPage() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="justify-end">
-            {/* TODO: Add Unassign Button */}
-            {/* <Button variant="outline" disabled={isSubmittingTeacher}>Unassign</Button> */}
+        <CardFooter className="justify-end gap-2">
+            <Button variant="outline" onClick={handleUnassignTeacherFromClass} disabled={isSubmittingTeacher || isLoading}>
+              {isSubmittingTeacher && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <UserX className="mr-2 h-4 w-4" /> Unassign
+            </Button>
           <Button onClick={handleAssignTeacherToClass} disabled={isSubmittingTeacher || isLoading}>
             {isSubmittingTeacher && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <UserCheck className="mr-2 h-4 w-4" /> Assign Teacher
+            <UserCheck className="mr-2 h-4 w-4" /> Assign
           </Button>
         </CardFooter>
       </Card>
@@ -198,7 +294,6 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.parents ? "Loading..." : "Select Parent"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* <SelectItem value="none" disabled>Select Parent</SelectItem> */}
                   {parents.map(parent => (
                     <SelectItem key={parent.id} value={parent.id}>{parent.name}</SelectItem>
                   ))}
@@ -212,7 +307,6 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.students ? "Loading..." : "Select Student"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* <SelectItem value="none" disabled>Select Student</SelectItem> */}
                   {students.map(student => (
                     <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
                   ))}
@@ -221,18 +315,69 @@ export default function AssignmentsPage() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="justify-end">
-            {/* TODO: Add Unlink Button */}
-            {/* <Button variant="outline" disabled={isSubmittingParent}><Unlink className="mr-2 h-4 w-4"/> Unlink</Button> */}
+        <CardFooter className="justify-end gap-2">
+            <Button variant="outline" onClick={handleUnlinkParentFromStudent} disabled={isSubmittingParent || isLoading}>
+                {isSubmittingParent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Unlink className="mr-2 h-4 w-4"/> Unlink
+            </Button>
           <Button onClick={handleLinkParentToStudent} disabled={isSubmittingParent || isLoading}>
             {isSubmittingParent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-             <LinkIcon className="mr-2 h-4 w-4" /> Link Parent
+             <LinkIcon className="mr-2 h-4 w-4" /> Link
           </Button>
         </CardFooter>
       </Card>
 
+      {/* Student to Class Assignment Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Assign Student to Class</CardTitle>
+          <CardDescription>Add a student to a class roster.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="student-select-class">Student</Label>
+              <Select value={selectedStudentForClass} onValueChange={setSelectedStudentForClass} disabled={loading.students}>
+                <SelectTrigger id="student-select-class">
+                  <SelectValue placeholder={loading.students ? "Loading..." : "Select Student"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {students.map(student => (
+                    <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="class-select-student">Class</Label>
+              <Select value={selectedClassForStudent} onValueChange={setSelectedClassForStudent} disabled={loading.classes}>
+                <SelectTrigger id="class-select-student">
+                  <SelectValue placeholder={loading.classes ? "Loading..." : "Select Class"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {classes.map(cls => (
+                    <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="justify-end gap-2">
+           <Button variant="outline" onClick={handleUnassignStudentFromClass} disabled={isSubmittingStudentToClass || isLoading}>
+             {isSubmittingStudentToClass && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             <UserX className="mr-2 h-4 w-4" /> Unassign
+           </Button>
+          <Button onClick={handleAssignStudentToClass} disabled={isSubmittingStudentToClass || isLoading}>
+            {isSubmittingStudentToClass && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <BookUser className="mr-2 h-4 w-4" /> Assign Student
+          </Button>
+        </CardFooter>
+      </Card>
+
+
       {error && (
-        <Card className="lg:col-span-2 border-destructive bg-destructive/10">
+        <Card className="lg:col-span-2 xl:col-span-3 border-destructive bg-destructive/10">
           <CardHeader>
             <CardTitle className="text-destructive">Error Loading Data</CardTitle>
           </CardHeader>
