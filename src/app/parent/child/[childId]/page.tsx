@@ -10,12 +10,12 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import type { Student, AttendanceRecord } from '@/lib/types';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, type Timestamp } from 'firebase/firestore'; // Added Timestamp type
+import type { Student, AttendanceRecord, AttendanceStatus } from '@/lib/types'; // Combined types
 import { Loader2 } from 'lucide-react';
 
-// Mock data removed - fetching from Firebase
 
+// Helper function to get badge variant based on status
 const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 'secondary' | 'outline' => {
   switch (status) {
     case 'present': return 'default'; // Will use primary bg if styled below
@@ -28,8 +28,6 @@ const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('') || '??';
 };
-
-type AttendanceStatus = 'present' | 'absent' | 'late'; // Ensure type is defined
 
 interface ChildInfo extends Student {
     // No additional fields needed from Student type directly for display here
@@ -76,7 +74,7 @@ export default function ChildAttendancePage() {
              role: 'Student', // From the check above
              parentIds: data.parentIds || [],
              classIds: data.classIds || [],
-             createdAt: data.createdAt, // From UserProfile part
+             createdAt: data.createdAt as Timestamp, // Cast Firestore Timestamp from UserProfile part
              // Use a fallback avatar if none is set
              avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'U')}&background=random`,
              // Include other Student fields if necessary
@@ -197,19 +195,19 @@ export default function ChildAttendancePage() {
                     <div className="border rounded-md">
                         <Table>
                             <TableHeader>
-                            <TableRow>
+                            <TableRow>{/* Removed whitespace */}
                                 <TableHead>Date</TableHead>
-                                <TableHead>Class</TableHead> {/* Assuming className is stored */}
+                                <TableHead>Class</TableHead>{/* Assuming className is stored */}
                                 <TableHead className="text-right">Status</TableHead>
                             </TableRow>
                             </TableHeader>
                             <TableBody>
                             {filteredRecords.length > 0 ? (
                                 filteredRecords.map((record) => (
-                                <TableRow key={record.id}>
+                                <TableRow key={record.id}>{/* Removed whitespace */}
                                     <TableCell>{record.date}</TableCell>
                                     {/* Display Class Name - Requires fetching class details or storing className in record */}
-                                     <TableCell>{record.classId.substring(0,8)}...</TableCell> {/* Placeholder - show Class ID for now */}
+                                     <TableCell>{record.classId.substring(0,8)}...</TableCell>{/* Placeholder - show Class ID for now */}
                                      {/* TODO: Fetch class name based on record.classId if needed, or ensure it's stored in the record */}
                                     <TableCell className="text-right">
                                     <Badge variant={getBadgeVariant(record.status)}
@@ -226,7 +224,7 @@ export default function ChildAttendancePage() {
                                 </TableRow>
                                 ))
                             ) : (
-                                <TableRow>
+                                <TableRow>{/* Removed whitespace */}
                                 <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
                                     {selectedDate ? 'No records found for this date.' : 'No attendance records found for this child.'}
                                     </TableCell>
@@ -241,3 +239,5 @@ export default function ChildAttendancePage() {
     </div>
   );
 }
+
+    
