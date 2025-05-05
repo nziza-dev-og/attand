@@ -17,7 +17,8 @@ import { CalendarIcon, Loader2, Search, FileDown } from "lucide-react";
 import { format, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import type { Class, Student, AttendanceRecord, UserProfile } from "@/lib/types"; // Import types
+import Papa from 'papaparse'; // Import papaparse
+import type { Class, Student, AttendanceRecord, UserProfile, AttendanceStatus } from "@/lib/types"; // Import types
 
 // Extended type for display including names
 interface AttendanceRecordDisplay extends AttendanceRecord {
@@ -37,7 +38,6 @@ const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 
       default: return 'outline';
     }
 };
-type AttendanceStatus = 'present' | 'absent' | 'late';
 
 
 export default function AttendanceReportsPage() {
@@ -79,7 +79,7 @@ export default function AttendanceReportsPage() {
       }
     };
     fetchDropdownData();
-  }, []);
+  }, [toast]);
 
   // Generate Report Function
   const handleGenerateReport = async () => {
@@ -113,13 +113,16 @@ export default function AttendanceReportsPage() {
       const attendanceSnap = await getDocs(attendanceQuery);
       const records = attendanceSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 
-      // Enrich records with names (consider optimizing this for large datasets)
-      const enrichedData: AttendanceRecordDisplay[] = await Promise.all(records.map(async record => {
-         // Use cached names if available, otherwise fetch (simple approach)
-         const studentName = students.find(s => s.id === record.studentId)?.name || 'Unknown Student';
-         const className = classes.find(c => c.id === record.classId)?.name || 'Unknown Class';
+      // Fetch all class and student names once for enrichment (optimization)
+      const studentMap = new Map(students.map(s => [s.id, s.name]));
+      const classMap = new Map(classes.map(c => [c.id, c.name]));
+
+      // Enrich records with names
+      const enrichedData: AttendanceRecordDisplay[] = records.map(record => {
+         const studentName = studentMap.get(record.studentId) || 'Unknown Student';
+         const className = classMap.get(record.classId) || 'Unknown Class';
          return { ...record, studentName, className };
-      }));
+      });
 
 
       setReportData(enrichedData);
@@ -138,10 +141,39 @@ export default function AttendanceReportsPage() {
     }
   };
 
-   // Placeholder for export functionality
+   // Export functionality
   const handleExport = () => {
-      toast({ title: "Info", description: "Export functionality not implemented yet." });
-      // Logic to convert reportData to CSV/PDF would go here
+      if (!reportData || reportData.length === 0) {
+          toast({ variant: "destructive", title: "No Data", description: "Generate a report first before exporting." });
+          return;
+      }
+
+      try {
+         // Map data to desired CSV format
+        const csvData = reportData.map(record => ({
+            Date: record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date, // Handle both timestamp and date string
+            'Student Name': record.studentName,
+            'Class Name': record.className,
+            Status: record.status,
+             Notes: record.notes || '', // Include notes if available
+          }));
+
+          const csv = Papa.unparse(csvData);
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          const dateSuffix = format(new Date(), 'yyyyMMdd_HHmmss');
+          link.setAttribute('download', `attendance_report_${dateSuffix}.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          toast({ title: "Success", description: "Report exported successfully." });
+      } catch (error) {
+          console.error("Error exporting report:", error);
+          toast({ variant: "destructive", title: "Export Failed", description: "Could not export the report." });
+      }
   };
 
 
@@ -149,7 +181,7 @@ export default function AttendanceReportsPage() {
     <Card>
       <CardHeader>
         <CardTitle>Attendance Reports</CardTitle>
-        <CardDescription>Filter and view attendance records. Export options coming soon.</CardDescription>
+        <CardDescription>Filter and view attendance records. Use the Export button to download as CSV.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Filter Section */}
@@ -252,7 +284,7 @@ export default function AttendanceReportsPage() {
                 <div className="flex justify-between items-center">
                      <h3 className="text-lg font-medium">Report Results ({reportData.length} Records)</h3>
                      <Button variant="outline" size="sm" onClick={handleExport} disabled={reportData.length === 0}>
-                         <FileDown className="mr-2 h-4 w-4" /> Export
+                         <FileDown className="mr-2 h-4 w-4" /> Export CSV
                      </Button>
                 </div>
                <div className="border rounded-md">
