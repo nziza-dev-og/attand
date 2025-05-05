@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, Timestamp } from 'firebase/firestore'; // Import Timestamp
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
+import type { Role } from '@/lib/types'; // Import Role type
 
 const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance"; // Use environment variable or default
 
@@ -20,7 +21,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'Admin' | 'Teacher' | 'Parent' | ''>('');
+  // Use '' for initial state but handle 'none' from Select
+  const [role, setRole] = useState<Role | ''>('');
+  const [name, setName] = useState(''); // Add state for name
   const [secretCode, setSecretCode] = useState(''); // State for secret code
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('login'); // To reset fields on tab change
@@ -32,6 +35,7 @@ export default function LoginPage() {
     setPassword('');
     setConfirmPassword('');
     setRole('');
+    setName(''); // Reset name field
     setSecretCode('');
     setError(null);
   };
@@ -63,11 +67,18 @@ export default function LoginPage() {
       toast({ variant: "destructive", title: "Sign Up Failed", description: "Passwords do not match" });
       return;
     }
-    if (!role) {
+     // Check if role is selected (and not the placeholder 'none')
+    if (!role || role === 'none') {
         setError("Please select a role");
         toast({ variant: "destructive", title: "Sign Up Failed", description: "Please select a role" });
         return;
     }
+     if (!name.trim()) { // Validate name is not empty
+         setError("Please enter your name");
+         toast({ variant: "destructive", title: "Sign Up Failed", description: "Please enter your name" });
+         return;
+     }
+
 
     // Check for secret code if Admin role is selected
     if (role === 'Admin') {
@@ -82,12 +93,17 @@ export default function LoginPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Store user role in Firestore
+      // Store user role and name in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
-        role: role,
+        role: role, // This should be 'Admin', 'Teacher', or 'Parent'
         uid: user.uid,
-        createdAt: new Date(),
+        name: name.trim(), // Save trimmed name
+        createdAt: Timestamp.now(), // Use Firestore Timestamp
+         // Initialize role-specific fields if applicable
+         ...(role === 'Teacher' && { assignedClassIds: [] }),
+         ...(role === 'Parent' && { childIds: [] }),
+         ...(role === 'Student' && { classIds: [], parentIds: [] }), // Though students aren't signed up here
       });
 
       toast({ title: "Sign Up Successful", description: "You can now log in." });
@@ -165,6 +181,18 @@ export default function LoginPage() {
             </CardHeader>
             <form onSubmit={handleSignUp}>
               <CardContent className="space-y-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="signup-name">Name</Label>
+                    <Input
+                       id="signup-name"
+                       type="text"
+                       placeholder="Your Full Name"
+                       value={name}
+                       onChange={(e) => setName(e.target.value)}
+                       required
+                       autoComplete="name"
+                    />
+                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
@@ -179,11 +207,15 @@ export default function LoginPage() {
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                   <Select value={role} onValueChange={(value) => setRole(value as 'Admin' | 'Teacher' | 'Parent' | '')}>
+                   {/* Pass role or 'none' if role is empty */}
+                   <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
                       <SelectTrigger id="role">
+                        {/* Placeholder updated */}
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                       <SelectContent>
+                         {/* Add a disabled item with value 'none' for the placeholder */}
+                         <SelectItem value="none" disabled>Select your role</SelectItem>
                         <SelectItem value="Admin">Admin</SelectItem>
                         <SelectItem value="Teacher">Teacher</SelectItem>
                         <SelectItem value="Parent">Parent</SelectItem>

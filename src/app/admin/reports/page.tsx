@@ -45,9 +45,9 @@ export default function AttendanceReportsPage() {
   const [students, setStudents] = useState<SelectItemType[]>([]);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
 
-  // Filter state
-  const [selectedClass, setSelectedClass] = useState<string>('');
-  const [selectedStudent, setSelectedStudent] = useState<string>('');
+  // Filter state - Use 'all' as the default value instead of ''
+  const [selectedClass, setSelectedClass] = useState<string>('all');
+  const [selectedStudent, setSelectedStudent] = useState<string>('all');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
@@ -91,11 +91,11 @@ export default function AttendanceReportsPage() {
     try {
       let attendanceQuery = query(collection(db, "attendanceRecords"), orderBy("timestamp", "desc")); // Base query
 
-      // Apply filters
-      if (selectedClass) {
+      // Apply filters - check against 'all' instead of truthiness
+      if (selectedClass && selectedClass !== 'all') {
         attendanceQuery = query(attendanceQuery, where("classId", "==", selectedClass));
       }
-      if (selectedStudent) {
+      if (selectedStudent && selectedStudent !== 'all') {
         attendanceQuery = query(attendanceQuery, where("studentId", "==", selectedStudent));
       }
       if (startDate) {
@@ -159,10 +159,11 @@ export default function AttendanceReportsPage() {
             <Label htmlFor="class-filter">Class</Label>
             <Select value={selectedClass} onValueChange={setSelectedClass} disabled={loadingDropdowns}>
               <SelectTrigger id="class-filter">
-                <SelectValue placeholder="All Classes" />
+                <SelectValue placeholder="Select a Class" />
               </SelectTrigger>
               <SelectContent>
-                 <SelectItem value="">All Classes</SelectItem>
+                 {/* Use 'all' as value for the 'All Classes' option */}
+                 <SelectItem value="all">All Classes</SelectItem>
                 {classes.map(cls => (
                   <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                 ))}
@@ -175,10 +176,11 @@ export default function AttendanceReportsPage() {
              <Label htmlFor="student-filter">Student</Label>
              <Select value={selectedStudent} onValueChange={setSelectedStudent} disabled={loadingDropdowns}>
                 <SelectTrigger id="student-filter">
-                 <SelectValue placeholder="All Students" />
+                 <SelectValue placeholder="Select a Student" />
                 </SelectTrigger>
                 <SelectContent>
-                 <SelectItem value="">All Students</SelectItem>
+                 {/* Use 'all' as value for the 'All Students' option */}
+                 <SelectItem value="all">All Students</SelectItem>
                  {students.map(stu => (
                    <SelectItem key={stu.id} value={stu.id}>{stu.name}</SelectItem>
                  ))}
@@ -267,7 +269,8 @@ export default function AttendanceReportsPage() {
                     {reportData.length > 0 ? (
                       reportData.map((record) => (
                         <TableRow key={record.id}>
-                          <TableCell>{record.date}</TableCell> {/* Or format(record.timestamp.toDate(), 'yyyy-MM-dd') */}
+                          {/* Use Firestore timestamp if available and format, otherwise use date string */}
+                          <TableCell>{record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date}</TableCell>
                           <TableCell>{record.studentName}</TableCell>
                           <TableCell>{record.className}</TableCell>
                           <TableCell className="text-right">

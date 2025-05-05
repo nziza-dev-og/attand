@@ -24,11 +24,11 @@ export default function AssignmentsPage() {
   const [loading, setLoading] = useState({ teachers: true, parents: true, students: true, classes: true });
   const [error, setError] = useState<string | null>(null);
 
-  // State for assignment forms
-  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
-  const [selectedClassForTeacher, setSelectedClassForTeacher] = useState<string>('');
-  const [selectedParent, setSelectedParent] = useState<string>('');
-  const [selectedStudentForParent, setSelectedStudentForParent] = useState<string>('');
+  // State for assignment forms - Initialize with 'none' or a placeholder value instead of ''
+  const [selectedTeacher, setSelectedTeacher] = useState<string>(''); // Keep empty for controlled component
+  const [selectedClassForTeacher, setSelectedClassForTeacher] = useState<string>(''); // Keep empty for controlled component
+  const [selectedParent, setSelectedParent] = useState<string>(''); // Keep empty for controlled component
+  const [selectedStudentForParent, setSelectedStudentForParent] = useState<string>(''); // Keep empty for controlled component
 
   const [isSubmittingTeacher, setIsSubmittingTeacher] = useState(false);
   const [isSubmittingParent, setIsSubmittingParent] = useState(false);
@@ -69,6 +69,7 @@ export default function AssignmentsPage() {
 
   // Handle Teacher-Class Assignment
   const handleAssignTeacherToClass = async () => {
+    // Check against empty string, as state is initialized to empty string
     if (!selectedTeacher || !selectedClassForTeacher) {
       toast({ variant: "destructive", title: "Error", description: "Please select both a teacher and a class." });
       return;
@@ -98,6 +99,7 @@ export default function AssignmentsPage() {
 
    // Handle Parent-Student Linking
   const handleLinkParentToStudent = async () => {
+    // Check against empty string
     if (!selectedParent || !selectedStudentForParent) {
       toast({ variant: "destructive", title: "Error", description: "Please select both a parent and a student." });
       return;
@@ -140,11 +142,15 @@ export default function AssignmentsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="teacher-select">Teacher</Label>
+              {/* Pass value={selectedTeacher || ''} to handle initial undefined/null state if needed, but '' is fine */}
               <Select value={selectedTeacher} onValueChange={setSelectedTeacher} disabled={loading.teachers}>
                 <SelectTrigger id="teacher-select">
+                  {/* Placeholder updated */}
                   <SelectValue placeholder={loading.teachers ? "Loading..." : "Select Teacher"} />
                 </SelectTrigger>
                 <SelectContent>
+                   {/* Optional: Add a disabled placeholder item if needed */}
+                   {/* <SelectItem value="none" disabled>Select Teacher</SelectItem> */}
                   {teachers.map(teacher => (
                     <SelectItem key={teacher.id} value={teacher.id}>{teacher.name}</SelectItem>
                   ))}
@@ -158,6 +164,7 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.classes ? "Loading..." : "Select Class"} />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* <SelectItem value="none" disabled>Select Class</SelectItem> */}
                   {classes.map(cls => (
                     <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                   ))}
@@ -191,6 +198,7 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.parents ? "Loading..." : "Select Parent"} />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* <SelectItem value="none" disabled>Select Parent</SelectItem> */}
                   {parents.map(parent => (
                     <SelectItem key={parent.id} value={parent.id}>{parent.name}</SelectItem>
                   ))}
@@ -204,6 +212,7 @@ export default function AssignmentsPage() {
                   <SelectValue placeholder={loading.students ? "Loading..." : "Select Student"} />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* <SelectItem value="none" disabled>Select Student</SelectItem> */}
                   {students.map(student => (
                     <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
                   ))}
