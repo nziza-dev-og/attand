@@ -1,3 +1,4 @@
+// src/app/login/page.tsx
 "use client";
 
 import { useState } from 'react';
@@ -13,14 +14,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 
+const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance"; // Use environment variable or default
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<'Admin' | 'Teacher' | 'Parent' | ''>('');
+  const [secretCode, setSecretCode] = useState(''); // State for secret code
   const [error, setError] = useState<string | null>(null);
+  const [currentTab, setCurrentTab] = useState('login'); // To reset fields on tab change
   const router = useRouter();
   const { toast } = useToast();
+
+  const resetFormFields = () => {
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setRole('');
+    setSecretCode('');
+    setError(null);
+  };
+
+  const handleTabChange = (value: string) => {
+    setCurrentTab(value);
+    resetFormFields(); // Clear fields when switching tabs
+  };
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +69,15 @@ export default function LoginPage() {
         return;
     }
 
+    // Check for secret code if Admin role is selected
+    if (role === 'Admin') {
+      if (secretCode !== ADMIN_SECRET_CODE) {
+        setError("Invalid secret code for Admin registration.");
+        toast({ variant: "destructive", title: "Sign Up Failed", description: "Invalid secret code for Admin registration." });
+        return;
+      }
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -62,23 +91,29 @@ export default function LoginPage() {
       });
 
       toast({ title: "Sign Up Successful", description: "You can now log in." });
-      // Optionally redirect or clear form, here we just show success
-       setEmail('');
-       setPassword('');
-       setConfirmPassword('');
-       setRole('');
-       // Consider switching tabs or redirecting
-       // router.push('/'); // Or stay on login page
+      resetFormFields();
+      setCurrentTab('login'); // Switch back to login tab after successful signup
+
 
     } catch (err: any) {
-      setError(err.message);
-       toast({ variant: "destructive", title: "Sign Up Failed", description: err.message });
+      // Handle specific Firebase errors if needed
+      if (err.code === 'auth/email-already-in-use') {
+        setError("This email address is already in use.");
+        toast({ variant: "destructive", title: "Sign Up Failed", description: "This email address is already in use." });
+      } else if (err.code === 'auth/weak-password') {
+         setError("Password should be at least 6 characters.");
+         toast({ variant: "destructive", title: "Sign Up Failed", description: "Password should be at least 6 characters." });
+      }
+      else {
+        setError(err.message);
+        toast({ variant: "destructive", title: "Sign Up Failed", description: err.message });
+      }
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-secondary">
-      <Tabs defaultValue="login" className="w-[400px]">
+      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -100,6 +135,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="email"
                   />
                 </div>
                 <div className="space-y-2">
@@ -110,6 +146,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete="current-password"
                   />
                 </div>
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
@@ -137,11 +174,12 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                     autoComplete="email"
                   />
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                   <Select value={role} onValueChange={(value) => setRole(value as 'Admin' | 'Teacher' | 'Parent')}>
+                   <Select value={role} onValueChange={(value) => setRole(value as 'Admin' | 'Teacher' | 'Parent' | '')}>
                       <SelectTrigger id="role">
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
@@ -152,6 +190,21 @@ export default function LoginPage() {
                       </SelectContent>
                     </Select>
                 </div>
+                 {/* Conditionally render secret code input for Admin */}
+                {role === 'Admin' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="secret-code">Admin Secret Code</Label>
+                    <Input
+                      id="secret-code"
+                      type="password" // Use password type to hide the code
+                      placeholder="Enter secret code"
+                      value={secretCode}
+                      onChange={(e) => setSecretCode(e.target.value)}
+                      required
+                      autoComplete="off" // Prevent browser auto-filling
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
                   <Input
@@ -160,6 +213,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete="new-password"
                   />
                 </div>
                 <div className="space-y-2">
@@ -170,6 +224,7 @@ export default function LoginPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                     autoComplete="new-password"
                   />
                 </div>
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
