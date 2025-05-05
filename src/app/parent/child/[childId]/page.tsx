@@ -9,68 +9,147 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import type { Student, AttendanceRecord } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
-// Mock data - Replace with actual data fetching based on childId
-const mockChildrenData = {
-    child1: { name: 'Alice Smith', avatarUrl: 'https://picsum.photos/100/100?random=1' },
-    child2: { name: 'Charlie Brown', avatarUrl: 'https://picsum.photos/100/100?random=2' },
-};
+// Mock data removed - fetching from Firebase
 
-const mockAttendanceData = {
-    child1: [
-        { id: 'att1', date: '2024-05-20', className: 'Mathematics - Grade 10A', status: 'present' },
-        { id: 'att2', date: '2024-05-20', className: 'Physics - Grade 10A', status: 'present' },
-        { id: 'att3', date: '2024-05-19', className: 'Mathematics - Grade 10A', status: 'late' },
-         { id: 'att4', date: '2024-05-18', className: 'History - Grade 10A', status: 'absent' },
-    ],
-    child2: [
-        { id: 'att5', date: '2024-05-20', className: 'English - Grade 9C', status: 'present' },
-        { id: 'att6', date: '2024-05-19', className: 'Science - Grade 9C', status: 'present' },
-         { id: 'att7', date: '2024-05-19', className: 'Art - Grade 9C', status: 'absent' },
-    ],
-};
-
-
-const getBadgeVariant = (status: string): 'default' | 'destructive' | 'secondary' | 'outline' => {
+const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 'secondary' | 'outline' => {
   switch (status) {
-    case 'present': return 'default';
+    case 'present': return 'default'; // Will use primary bg if styled below
     case 'absent': return 'destructive';
-    case 'late': return 'secondary';
+    case 'late': return 'secondary'; // Will use yellow bg if styled below
     default: return 'outline';
   }
 };
 
 const getInitials = (name: string = '') => {
-  return name.split(' ').map(n => n[0]).join('');
+  return name.split(' ').map(n => n[0]).join('') || '??';
 };
+
+type AttendanceStatus = 'present' | 'absent' | 'late'; // Ensure type is defined
+
+interface ChildInfo extends Student {
+    // No additional fields needed from Student type directly for display here
+    // avatarUrl is optional in Student type
+}
+
+interface AttendanceRecordWithId extends AttendanceRecord {
+    id: string; // Ensure ID is present after fetching
+    // date is string 'YYYY-MM-DD' in AttendanceRecord type
+}
+
 
 export default function ChildAttendancePage() {
   const params = useParams();
   const childId = params.childId as string;
 
-  const [childInfo, setChildInfo] = useState<{name: string; avatarUrl: string} | null>(null);
-  const [attendanceRecords, setAttendanceRecords] = useState<Array<{id: string; date: string; className: string; status: string}>>([]);
-   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined); // For calendar filtering
+  const [childInfo, setChildInfo] = useState<ChildInfo | null>(null);
+  const [allAttendanceRecords, setAllAttendanceRecords] = useState<AttendanceRecordWithId[]>([]); // Store all fetched records
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined); // For calendar filtering
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetching data based on childId
-    if (childId) {
-      const info = mockChildrenData[childId as keyof typeof mockChildrenData];
-      const records = mockAttendanceData[childId as keyof typeof mockAttendanceData] || [];
-      setChildInfo(info);
-       // Sort records by date descending initially
-       setAttendanceRecords(records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    }
+    const fetchData = async () => {
+      if (!childId) {
+        setError("Child ID is missing.");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch Child Info
+        const studentDocRef = doc(db, 'users', childId); // Assuming students are in 'users' collection
+        const studentDocSnap = await getDoc(studentDocRef);
+
+        if (studentDocSnap.exists() && studentDocSnap.data().role === 'Student') {
+          const data = studentDocSnap.data();
+           setChildInfo({
+             id: studentDocSnap.id,
+             name: data.name || 'Unknown Child',
+             email: data.email, // Include fields as needed from Student type
+             role: 'Student', // From the check above
+             parentIds: data.parentIds || [],
+             classIds: data.classIds || [],
+             createdAt: data.createdAt, // From UserProfile part
+             // Use a fallback avatar if none is set
+             avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'U')}&background=random`,
+             // Include other Student fields if necessary
+           } as ChildInfo); // Ensure type compatibility
+
+        } else {
+           if (studentDocSnap.exists()) {
+               setError("User found but is not registered as a Student.");
+           } else {
+               setError("Student profile not found.");
+           }
+           setChildInfo(null);
+           setLoading(false);
+           return; // Stop if child info not found
+        }
+
+        // Fetch Attendance Records
+         // Assuming 'attendanceRecords' is a top-level collection
+        const attendanceQuery = query(
+          collection(db, 'attendanceRecords'),
+          where('studentId', '==', childId),
+          orderBy('date', 'desc') // Order by date descending
+        );
+        const attendanceSnap = await getDocs(attendanceQuery);
+        const records = attendanceSnap.docs.map(doc => ({
+             id: doc.id,
+             ...doc.data()
+        } as AttendanceRecordWithId)); // Ensure ID and type
+
+        setAllAttendanceRecords(records);
+
+      } catch (err: any) {
+        console.error("Error fetching data:", err);
+        setError(`Failed to load data: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [childId]);
 
    // Filter records based on selectedDate
    const filteredRecords = selectedDate
-     ? attendanceRecords.filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
-     : attendanceRecords;
+     ? allAttendanceRecords.filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
+     : allAttendanceRecords; // Show all if no date selected
 
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <span className="ml-3 text-lg">Loading attendance data...</span>
+        </div>
+    );
+  }
+
+   if (error) {
+     return (
+       <Card className="lg:col-span-3 border-destructive bg-destructive/10">
+         <CardHeader>
+           <CardTitle className="text-destructive">Error</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <p className="text-destructive">{error}</p>
+         </CardContent>
+       </Card>
+     );
+   }
 
   if (!childInfo) {
-    return <p>Loading child information...</p>; // Or a proper loading skeleton
+     // This case might be covered by error state, but good as a fallback
+    return <p>Child information could not be loaded.</p>;
   }
 
   return (
@@ -111,8 +190,8 @@ export default function ChildAttendancePage() {
         <div className="lg:col-span-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Attendance Records {selectedDate ? `for ${format(selectedDate, 'PPP')}` : '(All)'}</CardTitle>
-                    <CardDescription>List of attendance statuses recorded.</CardDescription>
+                    <CardTitle>Attendance Records {selectedDate ? `for ${format(selectedDate, 'PPP')}` : '(All Time)'}</CardTitle>
+                    <CardDescription>List of attendance statuses recorded for {childInfo.name}.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="border rounded-md">
@@ -120,7 +199,7 @@ export default function ChildAttendancePage() {
                             <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
-                                <TableHead>Class</TableHead>
+                                <TableHead>Class</TableHead> {/* Assuming className is stored */}
                                 <TableHead className="text-right">Status</TableHead>
                             </TableRow>
                             </TableHeader>
@@ -129,15 +208,19 @@ export default function ChildAttendancePage() {
                                 filteredRecords.map((record) => (
                                 <TableRow key={record.id}>
                                     <TableCell>{record.date}</TableCell>
-                                    <TableCell>{record.className}</TableCell>
+                                    {/* Display Class Name - Requires fetching class details or storing className in record */}
+                                     <TableCell>{record.classId.substring(0,8)}...</TableCell> {/* Placeholder - show Class ID for now */}
+                                     {/* TODO: Fetch class name based on record.classId if needed, or ensure it's stored in the record */}
                                     <TableCell className="text-right">
                                     <Badge variant={getBadgeVariant(record.status)}
                                       className={cn(
-                                        record.status === 'present' ? 'bg-green-600 text-white' : '',
-                                        record.status === 'late' ? 'bg-yellow-500 text-white' : ''
+                                        'capitalize', // Ensure consistent capitalization display
+                                        record.status === 'present' ? 'bg-green-600 text-white hover:bg-green-700' : '',
+                                        record.status === 'late' ? 'bg-yellow-500 text-white hover:bg-yellow-600' : '',
+                                        record.status === 'absent' ? '' : '' // destructive variant handles styling
                                       )}
                                     >
-                                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                        {record.status}
                                     </Badge>
                                     </TableCell>
                                 </TableRow>
