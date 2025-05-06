@@ -109,7 +109,7 @@ export default function ManageParentsPage() {
     setSelectedParentForLinking(parent);
     // Filter students: show only those NOT already linked to *this* parent
     const currentlyLinkedIds = new Set(parent.childIds || []);
-    const available = allStudents.filter(student => !currentlyLinkedIds.has(student.id));
+    // const available = allStudents.filter(student => !currentlyLinkedIds.has(student.id)); // This was for available only
      // Initialize selection based on already linked, maybe? For now, start fresh.
      // Or, show ALL students and check those already linked? -> Let's stick to showing only unlinked ones for linking
     setSelectedStudentIds(new Set()); // Start with empty selection for adding new links
@@ -161,6 +161,8 @@ export default function ManageParentsPage() {
        toast({ title: "Success", description: "Selected students linked to parent successfully." });
        setIsLinkDialogOpen(false); // Close dialog
        fetchParents(); // Refresh the parent list to show updated counts
+       setSelectedParentForLinking(prev => prev ? { ...prev, childIds: [...(prev.childIds || []), ...studentIdsToLink] } : null); // Optimistically update UI
+       setSelectedStudentIds(new Set()); // Clear selection
 
      } catch (err: any) {
        console.error("Error linking students:", err);
@@ -171,10 +173,6 @@ export default function ManageParentsPage() {
    };
 
     // Handle unlinking a student from a parent
-    // This might need a different UI, e.g., a button next to each linked child in a details view,
-    // or a multi-select in the dialog to choose which *existing* links to remove.
-    // For simplicity, let's assume we add an "Unlink" button in the dialog for selected students.
-    // This function would be called by a separate "Unlink Selected" button.
     const handleUnlinkStudents = async () => {
       if (!selectedParentForLinking) return;
       if (selectedStudentIds.size === 0) {
@@ -192,7 +190,7 @@ export default function ManageParentsPage() {
        }
 
 
-      setIsSubmittingLink(true); // Reuse submitting state? Or create a new one? Reusing for now.
+      setIsSubmittingLink(true); 
       try {
         const parentRef = doc(db, "users", selectedParentForLinking.id);
 
@@ -214,6 +212,9 @@ export default function ManageParentsPage() {
         toast({ title: "Success", description: "Selected students unlinked from parent successfully." });
         setIsLinkDialogOpen(false); // Close dialog
         fetchParents(); // Refresh the parent list
+        setSelectedParentForLinking(prev => prev ? { ...prev, childIds: (prev.childIds || []).filter(id => !studentIdsToUnlink.includes(id)) } : null); // Optimistically update UI
+        setSelectedStudentIds(new Set()); // Clear selection
+
 
       } catch (err: any) {
         console.error("Error unlinking students:", err);
@@ -340,6 +341,7 @@ export default function ManageParentsPage() {
                        onClick={handleUnlinkStudents}
                        disabled={isSubmittingLink || loadingStudentsForDialog || selectedStudentIds.size === 0 || linkedStudents.length === 0 || !Array.from(selectedStudentIds).some(id => linkedStudents.find(s => s.id === id))} // Disable if no linked selected
                       >
+                       {isSubmittingLink && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                        <UserX className="h-4 w-4" /> Unlink Selected
                      </Button>
                  </div>

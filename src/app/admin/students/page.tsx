@@ -198,14 +198,14 @@ export default function ManageStudentsPage() {
                                         <SelectValue placeholder={loadingClasses ? "Loading..." : "Select Class (Optional)"} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">None</SelectItem>
+                                        <SelectItem value="none_class_option">None</SelectItem>
                                         {classes.map(cls => (
                                             <SelectItem key={cls.id} value={cls.id}>
                                                 {cls.name}
                                             </SelectItem>
                                         ))}
                                         {!loadingClasses && classes.length === 0 && (
-                                            <SelectItem value="" disabled>No classes available</SelectItem>
+                                            <SelectItem value="no_classes_available" disabled>No classes available</SelectItem>
                                         )}
                                     </SelectContent>
                                 </Select>

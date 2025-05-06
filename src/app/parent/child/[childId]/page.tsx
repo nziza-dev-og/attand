@@ -195,7 +195,7 @@ export default function ChildAttendancePage() {
                     <div className="border rounded-md">
                         <Table>
                             <TableHeader>
-                            <TableRow>{/* Removed whitespace */}
+                            <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Class</TableHead>{/* Assuming className is stored */}
                                 <TableHead className="text-right">Status</TableHead>
@@ -204,7 +204,7 @@ export default function ChildAttendancePage() {
                             <TableBody>
                             {filteredRecords.length > 0 ? (
                                 filteredRecords.map((record) => (
-                                <TableRow key={record.id}>{/* Removed whitespace */}
+                                <TableRow key={record.id}>
                                     <TableCell>{record.date}</TableCell>
                                     {/* Display Class Name - Requires fetching class details or storing className in record */}
                                      <TableCell>{record.classId.substring(0,8)}...</TableCell>{/* Placeholder - show Class ID for now */}
@@ -224,7 +224,7 @@ export default function ChildAttendancePage() {
                                 </TableRow>
                                 ))
                             ) : (
-                                <TableRow>{/* Removed whitespace */}
+                                <TableRow>
                                 <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
                                     {selectedDate ? 'No records found for this date.' : 'No attendance records found for this child.'}
                                     </TableCell>
@@ -239,5 +239,3 @@ export default function ChildAttendancePage() {
     </div>
   );
 }
-
-    

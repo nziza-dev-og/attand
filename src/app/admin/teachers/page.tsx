@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, BookOpenCheck } from "lucide-react"; // Using BookOpenCheck for assignments
 import type { Teacher, UserProfile } from "@/lib/types"; // Import Teacher type
+import { useRouter } from "next/navigation";
+
 
 // Display type combining UserProfile and Teacher specifics
 interface TeacherDisplay extends Omit<UserProfile, 'role'>, Omit<Teacher, 'id' | 'email' | 'name'>{
@@ -25,6 +27,7 @@ export default function ManageTeachersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   // Fetch teachers from Firestore (users with role 'Teacher')
   const fetchTeachers = async () => {
@@ -61,10 +64,8 @@ export default function ManageTeachersPage() {
 
   // Placeholder function for handling class assignments
   const handleAssignClasses = (teacherId: string) => {
-    console.log("Initiate assignment for teacher:", teacherId);
-    // TODO: Implement assignment logic (e.g., open a dialog to select classes)
-    toast({ title: "Info", description: "Class assignment functionality not yet implemented." });
-     // Potentially navigate to a dedicated assignment page: router.push(`/admin/assignments?teacherId=${teacherId}`);
+    // Navigate to the assignments page, pre-selecting the teacher
+    router.push(`/admin/assignments?teacherId=${teacherId}`);
   };
 
   return (
@@ -106,7 +107,7 @@ export default function ManageTeachersPage() {
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm" onClick={() => handleAssignClasses(teacher.id)} className="gap-1">
                            <BookOpenCheck className="h-4 w-4" />
-                           Assign Classes
+                           Manage Assignments
                         </Button>
                          {/* Add other actions like Edit/View Details if needed */}
                       </TableCell>

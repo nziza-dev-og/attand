@@ -179,14 +179,14 @@ export default function ManageClassesPage() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {/* Add an explicit "None" option if teacher is optional */}
-                                        <SelectItem value="">None</SelectItem>
+                                        <SelectItem value="none_teacher_option">None</SelectItem>
                                         {teachers.map(teacher => (
                                             <SelectItem key={teacher.id} value={teacher.id}>
                                                 {teacher.name}
                                             </SelectItem>
                                         ))}
                                         {!loadingTeachers && teachers.length === 0 && (
-                                            <SelectItem value="" disabled>No teachers available</SelectItem>
+                                            <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
                                         )}
                                     </SelectContent>
                                 </Select>
