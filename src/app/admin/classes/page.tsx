@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, where, Timestamp, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,19 +11,19 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select
-import { Controller, useForm, type SubmitHandler } from "react-hook-form"; // Import Controller
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle } from "lucide-react";
-import type { Class, Teacher } from "@/lib/types"; // Import types
+import { Loader2, PlusCircle, Edit } from "lucide-react";
+import type { Class } from "@/lib/types";
 
 // Define Zod schema for class form validation
 const classSchema = z.object({
   name: z.string().min(3, { message: "Class name must be at least 3 characters." }),
   gradeLevel: z.string().optional(),
-  teacherId: z.string().optional(), // Teacher ID is optional for now
+  teacherId: z.string().optional(),
 });
 
 type ClassFormData = z.infer<typeof classSchema>;
@@ -40,23 +40,24 @@ interface TeacherSelectItem {
 
 export default function ManageClassesPage() {
   const [classes, setClasses] = useState<ClassDisplay[]>([]);
-  const [teachers, setTeachers] = useState<TeacherSelectItem[]>([]); // State for teachers
+  const [teachers, setTeachers] = useState<TeacherSelectItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingTeachers, setLoadingTeachers] = useState(true); // Loading state for teachers
+  const [loadingTeachers, setLoadingTeachers] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [currentEditingClass, setCurrentEditingClass] = useState<ClassDisplay | null>(null);
   const { toast } = useToast();
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<ClassFormData>({
     resolver: zodResolver(classSchema),
-     defaultValues: {
+    defaultValues: {
         name: '',
         gradeLevel: '',
-        teacherId: undefined, // Set default for optional select
+        teacherId: undefined,
     }
   });
 
-  // Fetch classes from Firestore
   const fetchClasses = async () => {
     setLoading(true);
     setError(null);
@@ -64,7 +65,7 @@ export default function ManageClassesPage() {
       const querySnapshot = await getDocs(collection(db, "classes"));
       const classList = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...(doc.data() as Omit<Class, 'id'>), // Cast remaining data
+        ...(doc.data() as Omit<Class, 'id'>),
       })) as ClassDisplay[];
       setClasses(classList);
     } catch (err: any) {
@@ -76,7 +77,6 @@ export default function ManageClassesPage() {
     }
   };
 
-   // Fetch teachers for the dropdown
    const fetchTeachers = async () => {
        setLoadingTeachers(true);
        try {
@@ -90,7 +90,6 @@ export default function ManageClassesPage() {
        } catch (err) {
            console.error("Error fetching teachers:", err);
            toast({ variant: "destructive", title: "Error", description: "Failed to load teachers for dropdown." });
-           // Don't block the dialog from opening if teachers fail to load, maybe show a message
        } finally {
            setLoadingTeachers(false);
        }
@@ -99,168 +98,259 @@ export default function ManageClassesPage() {
 
   useEffect(() => {
     fetchClasses();
-    fetchTeachers(); // Fetch teachers on component mount
-  }, [toast]);
+    fetchTeachers();
+  }, []); // toast removed from dependency array as it's stable
 
-  // Handle form submission to add a new class
-  const onSubmit: SubmitHandler<ClassFormData> = async (data) => {
+  const onAddSubmit: SubmitHandler<ClassFormData> = async (data) => {
     try {
-      const docRef = await addDoc(collection(db, "classes"), {
+      await addDoc(collection(db, "classes"), {
         name: data.name,
         gradeLevel: data.gradeLevel || null,
-        teacherId: data.teacherId || null, // Use selected teacher ID or null
+        teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
         createdAt: Timestamp.now(),
-        studentIds: [], // Initialize studentIds as empty array
-        // Remove subject and schedule
+        studentIds: [],
       });
-      console.log("Class added with ID: ", docRef.id);
       toast({ title: "Success", description: "Class added successfully." });
-      reset(); // Clear the form
-      setIsAddDialogOpen(false); // Close the dialog
-      fetchClasses(); // Refresh the class list
+      reset({ name: '', gradeLevel: '', teacherId: undefined });
+      setIsAddDialogOpen(false);
+      fetchClasses();
     } catch (err: any) {
       console.error("Error adding class:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to add class." });
     }
   };
 
+  const handleOpenEditDialog = (classToEdit: ClassDisplay) => {
+    setCurrentEditingClass(classToEdit);
+    reset({
+        name: classToEdit.name,
+        gradeLevel: classToEdit.gradeLevel || '',
+        teacherId: classToEdit.teacherId || undefined,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const onEditSubmit: SubmitHandler<ClassFormData> = async (data) => {
+    if (!currentEditingClass) return;
+    try {
+      const classRef = doc(db, "classes", currentEditingClass.id);
+      await updateDoc(classRef, {
+        name: data.name,
+        gradeLevel: data.gradeLevel || null,
+        teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
+        // Note: studentIds and createdAt are not updated here
+      });
+      toast({ title: "Success", description: "Class updated successfully." });
+      reset({ name: '', gradeLevel: '', teacherId: undefined });
+      setIsEditDialogOpen(false);
+      setCurrentEditingClass(null);
+      fetchClasses();
+    } catch (err: any) {
+      console.error("Error updating class:", err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update class." });
+    }
+  };
+
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>Manage Classes</CardTitle>
-          <CardDescription>Add, view, or edit classes.</CardDescription>
-        </div>
-         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-             setIsAddDialogOpen(open);
-             if (!open) reset(); // Reset form when closing
-             else if (teachers.length === 0 && !loadingTeachers) fetchTeachers(); // Refetch teachers if needed when opening
-             }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1">
-                <PlusCircle className="h-4 w-4" />
-                Add Class
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Class</DialogTitle>
-                <DialogDescription>Fill in the details for the new class.</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">Name</Label>
-                    <div className="col-span-3">
-                        <Input id="name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Mathematics 10A" />
-                        {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="gradeLevel" className="text-right">Grade</Label>
-                    <div className="col-span-3">
-                        <Input id="gradeLevel" {...register("gradeLevel")} placeholder="e.g., 10"/>
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">Teacher</Label>
-                    <div className="col-span-3">
-                         {/* Use Controller for react-hook-form with ShadCN Select */}
-                         <Controller
-                            control={control}
-                            name="teacherId"
-                            render={({ field }) => (
-                                <Select
-                                    onValueChange={field.onChange}
-                                    value={field.value || ''} // Handle undefined value
-                                    disabled={loadingTeachers}
-                                >
-                                    <SelectTrigger id="teacherId">
-                                        <SelectValue placeholder={loadingTeachers ? "Loading..." : "Select Teacher (Optional)"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {/* Add an explicit "None" option if teacher is optional */}
-                                        <SelectItem value="none_teacher_option">None</SelectItem>
-                                        {teachers.map(teacher => (
-                                            <SelectItem key={teacher.id} value={teacher.id}>
-                                                {teacher.name}
-                                            </SelectItem>
-                                        ))}
-                                        {!loadingTeachers && teachers.length === 0 && (
-                                            <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                             )}
-                         />
-                         {/* Optional: Add error display for teacherId if needed */}
-                         {/* {errors.teacherId && <p className="text-xs text-destructive mt-1">{errors.teacherId.message}</p>} */}
-                    </div>
-                 </div>
-
-                 {/* Removed Subject and Schedule inputs */}
-
-                 <DialogFooter>
-                     <DialogClose asChild>
-                       <Button type="button" variant="outline">Cancel</Button>
-                     </DialogClose>
-                    <Button type="submit" disabled={isSubmitting || loadingTeachers}>
-                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Add Class
-                    </Button>
-                 </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-      </CardHeader>
-      <CardContent>
-         {loading ? (
-           <div className="flex justify-center items-center py-10">
-             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-             <span className="ml-2">Loading classes...</span>
-           </div>
-         ) : error ? (
-            <p className="text-center text-destructive">{error}</p>
-         ) : (
-           <div className="border rounded-md">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  {/* <TableHead>Subject</TableHead> */}
-                  <TableHead>Grade</TableHead>
-                  {/* <TableHead>Schedule</TableHead> */}
-                   <TableHead>Teacher</TableHead> {/* Added Teacher column */}
-                  <TableHead className="text-right">Actions</TableHead>{/* Placeholder */}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {classes.length > 0 ? (
-                  classes.map((cls) => (
-                    <TableRow key={cls.id}>
-                      <TableCell className="font-medium">{cls.name}</TableCell>
-                      {/* <TableCell>{cls.subject || 'N/A'}</TableCell> */}
-                      <TableCell>{cls.gradeLevel || 'N/A'}</TableCell>
-                       {/* Look up teacher name - might need adjustment based on how data is fetched/joined */}
-                       <TableCell>{teachers.find(t => t.id === cls.teacherId)?.name || (cls.teacherId ? 'Unknown Teacher' : 'N/A')}</TableCell>
-                      {/* <TableCell>{cls.schedule || 'N/A'}</TableCell> */}
-                      <TableCell className="text-right">
-                        {/* Add Edit/Delete buttons here */}
-                        <Button variant="ghost" size="sm" disabled>Edit</Button> {/* Placeholder */}
+    <>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Manage Classes</CardTitle>
+            <CardDescription>Add, view, or edit classes.</CardDescription>
+          </div>
+          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+              setIsAddDialogOpen(open);
+              if (!open) reset({ name: '', gradeLevel: '', teacherId: undefined });
+              else if (teachers.length === 0 && !loadingTeachers) fetchTeachers();
+              }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1">
+                  <PlusCircle className="h-4 w-4" />
+                  Add Class
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Class</DialogTitle>
+                  <DialogDescription>Fill in the details for the new class.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="add-name" className="text-right">Name</Label>
+                      <div className="col-span-3">
+                          <Input id="add-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Mathematics 10A" />
+                          {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+                      </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="add-gradeLevel" className="text-right">Grade</Label>
+                      <div className="col-span-3">
+                          <Input id="add-gradeLevel" {...register("gradeLevel")} placeholder="e.g., 10"/>
+                      </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="add-teacherId" className="text-right">Teacher</Label>
+                      <div className="col-span-3">
+                          <Controller
+                              control={control}
+                              name="teacherId"
+                              render={({ field }) => (
+                                  <Select
+                                      onValueChange={field.onChange}
+                                      value={field.value || ''}
+                                      disabled={loadingTeachers}
+                                  >
+                                      <SelectTrigger id="add-teacherId">
+                                          <SelectValue placeholder={loadingTeachers ? "Loading..." : "Select Teacher (Optional)"} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          <SelectItem value="none_teacher_option">None</SelectItem>
+                                          {teachers.map(teacher => (
+                                              <SelectItem key={teacher.id} value={teacher.id}>
+                                                  {teacher.name}
+                                              </SelectItem>
+                                          ))}
+                                          {!loadingTeachers && teachers.length === 0 && (
+                                              <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
+                                          )}
+                                      </SelectContent>
+                                  </Select>
+                              )}
+                          />
+                      </div>
+                  </div>
+                  <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="button" variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button type="submit" disabled={isSubmitting || loadingTeachers}>
+                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Add Class
+                      </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center items-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <span className="ml-2">Loading classes...</span>
+            </div>
+          ) : error ? (
+              <p className="text-center text-destructive">{error}</p>
+          ) : (
+            <div className="border rounded-md">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Grade</TableHead>
+                    <TableHead>Teacher</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {classes.length > 0 ? (
+                    classes.map((cls) => (
+                      <TableRow key={cls.id}>
+                        <TableCell className="font-medium">{cls.name}</TableCell>
+                        <TableCell>{cls.gradeLevel || 'N/A'}</TableCell>
+                        <TableCell>{teachers.find(t => t.id === cls.teacherId)?.name || (cls.teacherId ? 'Unknown Teacher' : 'N/A')}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="outline" size="sm" onClick={() => handleOpenEditDialog(cls)} className="gap-1">
+                            <Edit className="h-3 w-3" /> Edit
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        No classes found. Add one using the button above.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center"> {/* Adjusted colSpan */}
-                      No classes found. Add one using the button above.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+              </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Class Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) {
+            reset({ name: '', gradeLevel: '', teacherId: undefined });
+            setCurrentEditingClass(null);
+          }
+          }}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Class</DialogTitle>
+            <DialogDescription>Update the details for {currentEditingClass?.name}.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(onEditSubmit)} className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-name" className="text-right">Name</Label>
+                <div className="col-span-3">
+                    <Input id="edit-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
+                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+                </div>
             </div>
-         )}
-      </CardContent>
-    </Card>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-gradeLevel" className="text-right">Grade</Label>
+                <div className="col-span-3">
+                    <Input id="edit-gradeLevel" {...register("gradeLevel")} />
+                </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-teacherId" className="text-right">Teacher</Label>
+                <div className="col-span-3">
+                    <Controller
+                        control={control}
+                        name="teacherId"
+                        render={({ field }) => (
+                            <Select
+                                onValueChange={field.onChange}
+                                value={field.value || ''}
+                                disabled={loadingTeachers}
+                            >
+                                <SelectTrigger id="edit-teacherId">
+                                    <SelectValue placeholder={loadingTeachers ? "Loading..." : "Select Teacher (Optional)"} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none_teacher_option">None</SelectItem>
+                                    {teachers.map(teacher => (
+                                        <SelectItem key={teacher.id} value={teacher.id}>
+                                            {teacher.name}
+                                        </SelectItem>
+                                    ))}
+                                    {!loadingTeachers && teachers.length === 0 && (
+                                        <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit" disabled={isSubmitting || loadingTeachers}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Changes
+                </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
