@@ -110,13 +110,20 @@ export default function ChildBehaviorReportsPage() {
   };
 
   const handleAddResponse = async (reportId: string) => {
-    if (!user || !user.displayName) {
-      toast({ variant: "destructive", title: "Error", description: "You must be logged in and have a display name to respond." });
+    if (!user) {
+      toast({ variant: "destructive", title: "Authentication Error", description: "You must be logged in to respond." });
       return;
     }
+
+    const parentNameForResponse = user.displayName || user.email;
+    if (!parentNameForResponse) {
+        toast({ variant: "destructive", title: "Profile Incomplete", description: "Could not identify your account. Please ensure your profile is complete or contact support." });
+        return;
+    }
+
     const comment = currentResponse[reportId]?.trim();
     if (!comment) {
-      toast({ variant: "destructive", title: "Error", description: "Response cannot be empty." });
+      toast({ variant: "destructive", title: "Empty Response", description: "Response cannot be empty." });
       return;
     }
 
@@ -124,7 +131,7 @@ export default function ChildBehaviorReportsPage() {
     try {
       const newResponse: ParentResponse = {
         parentId: user.uid,
-        parentName: user.displayName,
+        parentName: parentNameForResponse,
         comment: comment,
         respondedAt: FirestoreTimestamp.now(),
       };
@@ -146,7 +153,7 @@ export default function ChildBehaviorReportsPage() {
       toast({ title: "Response Added", description: "Your response has been submitted." });
     } catch (err) {
       console.error("Error adding response:", err);
-      toast({ variant: "destructive", title: "Error", description: "Failed to submit your response." });
+      toast({ variant: "destructive", title: "Submission Failed", description: "Failed to submit your response. Please try again." });
     } finally {
       setSubmittingResponse(prev => ({ ...prev, [reportId]: false }));
     }
