@@ -23,5 +23,6 @@
   "childDetails": "Détails de {{childName}}",
   "viewAllAttendance": "Voir Toutes les Présences",
   "attendanceSummary": "Résumé des Présences",
-  "notifications": "Notifications"
+  "notifications": "Notifications",
+  "mobileMenuTitle": "Menu"
 }

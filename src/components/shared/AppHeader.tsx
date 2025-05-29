@@ -7,7 +7,7 @@ import { signOut } from "firebase/auth";
 import { LogOut, GraduationCap, PanelLeft, Languages, Check } from "lucide-react"; // Added Languages and Check
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle
 import Link from "next/link";
 import type { ReactNode } from 'react';
 import { useLanguage, type Language } from "@/contexts/LanguageContext"; // Import useLanguage
@@ -61,6 +61,9 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 flex flex-col">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Menu'}</SheetTitle>
+                </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
                    <GraduationCap className="h-6 w-6 text-primary" />
                    <span className="text-lg font-semibold text-primary">{translate('appName')}</span>

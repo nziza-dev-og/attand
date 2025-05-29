@@ -23,5 +23,6 @@
   "childDetails": "{{childName}}'s Details",
   "viewAllAttendance": "View All Attendance",
   "attendanceSummary": "Attendance Summary",
-  "notifications": "Notifications"
+  "notifications": "Notifications",
+  "mobileMenuTitle": "Menu"
 }
