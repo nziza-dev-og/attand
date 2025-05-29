@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Activity, Users, School, ClipboardList, UserCircle, Image as ImageIcon, Save } from "lucide-react"; // Added UserCircle, ImageIcon, Save
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
