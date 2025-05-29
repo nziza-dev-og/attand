@@ -1,0 +1,27 @@
+
+{
+  "appName": "AttendEase",
+  "logout": "Déconnexion",
+  "adminDashboardTitle": "Tableau de Bord Admin",
+  "teacherDashboardTitle": "Tableau de Bord Enseignant",
+  "parentDashboardTitle": "Tableau de Bord Parent",
+  "selectLanguage": "Choisir la langue",
+  "english": "Anglais",
+  "french": "Français",
+  "kinyarwanda": "Kinyarwanda",
+  "welcomeMessage": "Bienvenue, {{name}} !",
+  "manageClasses": "Gérer les Classes",
+  "manageStudents": "Gérer les Étudiants",
+  "manageTeachers": "Gérer les Enseignants",
+  "manageParents": "Gérer les Parents",
+  "assignments": "Affectations",
+  "attendanceReports": "Rapports de Présence",
+  "behaviorReports": "Rapports de Comportement",
+  "dashboard": "Tableau de Bord",
+  "markAttendance": "Marquer Présence",
+  "attendanceHistory": "Historique de Présence",
+  "childDetails": "Détails de {{childName}}",
+  "viewAllAttendance": "Voir Toutes les Présences",
+  "attendanceSummary": "Résumé des Présences",
+  "notifications": "Notifications"
+}

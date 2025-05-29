@@ -1,0 +1,27 @@
+
+{
+  "appName": "AttendEase",
+  "logout": "Logout",
+  "adminDashboardTitle": "Admin Dashboard",
+  "teacherDashboardTitle": "Teacher Dashboard",
+  "parentDashboardTitle": "Parent Dashboard",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "french": "French",
+  "kinyarwanda": "Kinyarwanda",
+  "welcomeMessage": "Welcome, {{name}}!",
+  "manageClasses": "Manage Classes",
+  "manageStudents": "Manage Students",
+  "manageTeachers": "Manage Teachers",
+  "manageParents": "Manage Parents",
+  "assignments": "Assignments",
+  "attendanceReports": "Attendance Reports",
+  "behaviorReports": "Behavior Reports",
+  "dashboard": "Dashboard",
+  "markAttendance": "Mark Attendance",
+  "attendanceHistory": "Attendance History",
+  "childDetails": "{{childName}}'s Details",
+  "viewAllAttendance": "View All Attendance",
+  "attendanceSummary": "Attendance Summary",
+  "notifications": "Notifications"
+}

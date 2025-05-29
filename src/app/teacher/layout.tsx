@@ -1,18 +1,22 @@
 
+"use client"; // Required because AppHeader and TeacherSidebar use client hooks
+
 import type { ReactNode } from 'react';
 import ProtectedRoute from '@/components/shared/ProtectedRoute';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { TeacherSidebar } from './_components/TeacherSidebar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 export default function TeacherLayout({ children }: { children: ReactNode }) {
+  const { translate } = useLanguage();
   return (
     <ProtectedRoute allowedRoles={['Teacher']}>
        <div className="flex min-h-screen w-full flex-col bg-muted/40">
-         <TeacherSidebar /> {/* Desktop sidebar */}
-          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14"> {/* sm:pl-14 for desktop sidebar */}
+         <TeacherSidebar />
+          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
             <AppHeader 
-              title="Teacher Dashboard" 
+              title={translate('teacherDashboardTitle')}
               navLinksComponent={<TeacherSidebar isMobileSheet />}
               homePath="/teacher"
             />

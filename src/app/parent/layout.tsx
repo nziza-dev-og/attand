@@ -1,17 +1,21 @@
 
+"use client"; // Required because AppHeader and ParentSidebar use client hooks
+
 import type { ReactNode } from 'react';
 import ProtectedRoute from '@/components/shared/ProtectedRoute';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ParentSidebar } from './_components/ParentSidebar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ParentLayout({ children }: { children: ReactNode }) {
+  const { translate } = useLanguage();
   return (
     <ProtectedRoute allowedRoles={['Parent']}>
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
-         <ParentSidebar /> {/* Desktop sidebar */}
-          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14"> {/* sm:pl-14 for desktop sidebar */}
+         <ParentSidebar />
+          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
             <AppHeader 
-              title="Parent Dashboard" 
+              title={translate('parentDashboardTitle')}
               navLinksComponent={<ParentSidebar isMobileSheet />}
               homePath="/parent"
             />

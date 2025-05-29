@@ -15,30 +15,32 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TeacherSidebarProps {
   isMobileSheet?: boolean;
 }
 
 export function TeacherSidebar({ isMobileSheet = false }: TeacherSidebarProps) {
+  const { translate } = useLanguage();
   const commonLinkClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
   const mobileLinkClass = "text-lg font-medium text-foreground hover:text-primary";
+
+  const navItems = [
+    { href: "/teacher", icon: Home, labelKey: "dashboard", srOnlyKey: "dashboard" },
+    { href: "/teacher/mark-attendance", icon: ClipboardCheck, labelKey: "markAttendance", srOnlyKey: "markAttendance" },
+    { href: "/teacher/history", icon: History, labelKey: "attendanceHistory", srOnlyKey: "attendanceHistory" },
+    { href: "/teacher/behavior-reports", icon: Megaphone, labelKey: "behaviorReports", srOnlyKey: "behaviorReports" },
+  ];
 
   if (isMobileSheet) {
     return (
       <nav className="grid gap-2 p-4">
-        <Link href="/teacher" className={cn(commonLinkClass, mobileLinkClass)}>
-          <Home className="h-5 w-5" /> Dashboard
-        </Link>
-        <Link href="/teacher/mark-attendance" className={cn(commonLinkClass, mobileLinkClass)}>
-          <ClipboardCheck className="h-5 w-5" /> Mark Attendance
-        </Link>
-        <Link href="/teacher/history" className={cn(commonLinkClass, mobileLinkClass)}>
-          <History className="h-5 w-5" /> Attendance History
-        </Link>
-        <Link href="/teacher/behavior-reports" className={cn(commonLinkClass, mobileLinkClass)}>
-          <Megaphone className="h-5 w-5" /> Behavior Reports
-        </Link>
+        {navItems.map(item => (
+          <Link key={item.href} href={item.href} className={cn(commonLinkClass, mobileLinkClass)}>
+            <item.icon className="h-5 w-5" /> {translate(item.labelKey)}
+          </Link>
+        ))}
       </nav>
     );
   }
@@ -47,54 +49,20 @@ export function TeacherSidebar({ isMobileSheet = false }: TeacherSidebarProps) {
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
          <TooltipProvider>
          <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-            <Tooltip>
+            {navItems.map(item => (
+            <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Link
-                  href="/teacher"
+                  href={item.href}
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
-                  <Home className="h-5 w-5" />
-                  <span className="sr-only">Dashboard</span>
+                  <item.icon className="h-5 w-5" />
+                  <span className="sr-only">{translate(item.srOnlyKey)}</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
+              <TooltipContent side="right">{translate(item.labelKey)}</TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/teacher/mark-attendance"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <ClipboardCheck className="h-5 w-5" />
-                  <span className="sr-only">Mark Attendance</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Mark Attendance</TooltipContent>
-            </Tooltip>
-             <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/teacher/history"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <History className="h-5 w-5" />
-                  <span className="sr-only">Attendance History</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Attendance History</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/teacher/behavior-reports"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <Megaphone className="h-5 w-5" />
-                  <span className="sr-only">Behavior Reports</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Behavior Reports</TooltipContent>
-            </Tooltip>
+          ))}
           </nav>
           </TooltipProvider>
        </aside>

@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
+import { useLanguage } from "@/contexts/LanguageContext";
 
 
 interface SidebarChild {
@@ -37,6 +38,7 @@ interface ParentSidebarProps {
 
 export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
     const { user, loading: authLoading } = useAuth();
+    const { translate } = useLanguage();
     const [children, setChildren] = useState<SidebarChild[]>([]);
     const [loadingChildren, setLoadingChildren] = useState(true);
 
@@ -91,7 +93,7 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
     return (
       <nav className="grid gap-2 p-4">
         <Link href="/parent" className={cn(commonLinkClass, mobileLinkClass)}>
-          <Home className="h-5 w-5" /> Dashboard
+          <Home className="h-5 w-5" /> {translate("dashboard")}
         </Link>
         {loadingChildren && (
           <div className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground")}>
@@ -101,10 +103,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
         {!loadingChildren && children.map(child => (
           <React.Fragment key={child.id}>
             <Link href={`/parent/child/${child.id}`} className={cn(commonLinkClass, mobileLinkClass)}>
-              <User className="h-5 w-5" /> {child.name}'s Details
+              <User className="h-5 w-5" /> {translate("childDetails", {childName: child.name})}
             </Link>
-            <Link href={`/parent/child/${child.id}/behavior-reports`} className={cn(commonLinkClass, mobileLinkClass, "ml-4")}> {/* Indent slightly */}
-              <Megaphone className="h-5 w-5" /> Behavior Reports
+            <Link href={`/parent/child/${child.id}/behavior-reports`} className={cn(commonLinkClass, mobileLinkClass, "ml-4")}>
+              <Megaphone className="h-5 w-5" /> {translate("behaviorReports")}
             </Link>
           </React.Fragment>
         ))}
@@ -116,15 +118,15 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
         {!loadingChildren && children.length > 0 && (
           <>
             <Link href="/parent/attendance" className={cn(commonLinkClass, mobileLinkClass)}>
-              <CalendarDays className="h-5 w-5" /> View All Attendance
+              <CalendarDays className="h-5 w-5" /> {translate("viewAllAttendance")}
             </Link>
             <Link href="/parent/summary" className={cn(commonLinkClass, mobileLinkClass)}>
-              <BarChart3 className="h-5 w-5" /> Attendance Summary
+              <BarChart3 className="h-5 w-5" /> {translate("attendanceSummary")}
             </Link>
           </>
         )}
         <Link href="/parent/notifications" className={cn(commonLinkClass, mobileLinkClass)}>
-          <BellRing className="h-5 w-5" /> Notifications
+          <BellRing className="h-5 w-5" /> {translate("notifications")}
         </Link>
       </nav>
     );
@@ -141,10 +143,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <Home className="h-5 w-5" />
-                  <span className="sr-only">Dashboard</span>
+                  <span className="sr-only">{translate("dashboard")}</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
+              <TooltipContent side="right">{translate("dashboard")}</TooltipContent>
             </Tooltip>
 
              {loadingChildren && (
@@ -162,10 +164,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                              >
                              <User className="h-5 w-5" />
-                             <span className="sr-only">{child.name}'s Details</span>
+                             <span className="sr-only">{translate("childDetails", {childName: child.name})}</span>
                          </Link>
                      </TooltipTrigger>
-                     <TooltipContent side="right">{child.name}'s Details (Attendance)</TooltipContent>
+                     <TooltipContent side="right">{translate("childDetails", {childName: child.name})} ({translate("attendance")})</TooltipContent>
                  </Tooltip>
                  <Tooltip>
                      <TooltipTrigger asChild>
@@ -174,10 +176,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                              >
                              <Megaphone className="h-5 w-5" />
-                             <span className="sr-only">{child.name}'s Behavior Reports</span>
+                             <span className="sr-only">{translate("behaviorReports")} ({child.name})</span>
                          </Link>
                      </TooltipTrigger>
-                     <TooltipContent side="right">{child.name}'s Behavior Reports</TooltipContent>
+                     <TooltipContent side="right">{translate("behaviorReports")} ({child.name})</TooltipContent>
                  </Tooltip>
                  </React.Fragment>
              ))}
@@ -201,10 +203,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                         >
                           <CalendarDays className="h-5 w-5" />
-                          <span className="sr-only">View All Attendance</span>
+                          <span className="sr-only">{translate("viewAllAttendance")}</span>
                         </Link>
                       </TooltipTrigger>
-                      <TooltipContent side="right">View All Attendance</TooltipContent>
+                      <TooltipContent side="right">{translate("viewAllAttendance")}</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -213,10 +215,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                         >
                           <BarChart3 className="h-5 w-5" />
-                          <span className="sr-only">Attendance Summary</span>
+                          <span className="sr-only">{translate("attendanceSummary")}</span>
                         </Link>
                       </TooltipTrigger>
-                      <TooltipContent side="right">Attendance Summary</TooltipContent>
+                      <TooltipContent side="right">{translate("attendanceSummary")}</TooltipContent>
                     </Tooltip>
                  </>
               )}
@@ -228,10 +230,10 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <BellRing className="h-5 w-5" />
-                  <span className="sr-only">Notifications</span>
+                  <span className="sr-only">{translate("notifications")}</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Notifications</TooltipContent>
+              <TooltipContent side="right">{translate("notifications")}</TooltipContent>
             </Tooltip>
           </nav>
           </TooltipProvider>

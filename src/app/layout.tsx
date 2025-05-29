@@ -1,19 +1,19 @@
+
 import type { Metadata } from 'next';
-// Replaced GeistSans with Inter as GeistSans is not directly available via next/font/google
 import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
-import { AuthProvider } from '@/hooks/useAuth.tsx';
+import { AuthProvider } from '@/hooks/useAuth'; // Corrected import path
+import { LanguageProvider } from '@/contexts/LanguageContext'; // Import LanguageProvider
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 
-// Configure Inter font
 const fontSans = FontSans({
-  subsets: ['latin'],
-  variable: '--font-sans', // Changed variable name to reflect Inter
+  subsets: ['latin'], // Kinyarwanda uses Latin script, 'latin' subset is generally fine.
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'AttendEase',
+  title: 'AttendEase', // This could also be translated if needed at build time or dynamically
   description: 'Streamlined attendance tracking for schools.',
 };
 
@@ -27,12 +27,14 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable // Use the updated variable name
+          fontSans.variable
         )}
       >
         <AuthProvider>
-          {children}
-          <Toaster />
+          <LanguageProvider> {/* Wrap with LanguageProvider */}
+            {children}
+            <Toaster />
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

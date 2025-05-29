@@ -1,0 +1,27 @@
+
+{
+  "appName": "AttendEase",
+  "logout": "Gusohoka",
+  "adminDashboardTitle": "Imbonerahamwe y'Ubuyobozi",
+  "teacherDashboardTitle": "Imbonerahamwe y'Mwarimu",
+  "parentDashboardTitle": "Imbonerahamwe y'Umubyeyi",
+  "selectLanguage": "Hitamo Ururimi",
+  "english": "Icyongereza",
+  "french": "Igifaransa",
+  "kinyarwanda": "Ikinyarwanda",
+  "welcomeMessage": "Murakaza neza, {{name}}!",
+  "manageClasses": "Gucunga Amashuri",
+  "manageStudents": "Gucunga Abanyeshuri",
+  "manageTeachers": "Gucunga Abarimu",
+  "manageParents": "Gucunga Ababyeyi",
+  "assignments": "Imikoro",
+  "attendanceReports": "Raporu z'Itabira",
+  "behaviorReports": "Raporu z'Imyitwarire",
+  "dashboard": "Imbonerahamwe",
+  "markAttendance": "Kwemeza Itabira",
+  "attendanceHistory": "Amateka y'Itabira",
+  "childDetails": "Amakuru ya {{childName}}",
+  "viewAllAttendance": "Reba Itabira Ryose",
+  "attendanceSummary": "Incāmunshuro y'Itabira",
+  "notifications": "Amenyesha"
+}
