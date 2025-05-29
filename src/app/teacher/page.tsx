@@ -11,6 +11,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Teacher } from '@/lib/types'; 
 import { useLanguage } from '@/contexts/LanguageContext'; 
+import { cn } from "@/lib/utils"; // Added import for cn
 
 export default function TeacherDashboard() {
   const { user, loading: authLoading, role, isSchoolCodeVerified } = useAuth(); 
