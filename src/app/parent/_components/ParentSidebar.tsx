@@ -12,6 +12,7 @@ import {
   BellRing,
   Loader2,
   Megaphone,
+  UserCircle, // New Icon for Profile
 } from "lucide-react"
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -90,134 +91,65 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
   const commonLinkClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
   const mobileLinkClass = "text-lg font-medium text-foreground hover:text-primary";
 
-  const renderChildLinks = () => {
+  const baseNavItems = [
+     { href: "/parent", icon: Home, labelKey: "dashboard", srOnlyKey: "dashboard" },
+  ];
+
+  const childSpecificNavItems = () => {
     if (loadingChildren) {
-      return (
-        <div className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground", isMobileSheet ? "" : "justify-center")}>
-          <Loader2 className="h-5 w-5 animate-spin" /> {isMobileSheet ? translate('sidebarLoadingChildren') || "Loading children..." : ""}
-        </div>
-      );
+      return [{ type: 'loader', icon: Loader2, labelKey: 'sidebarLoadingChildren' }];
     }
-
     if (children.length === 0) {
-      return (
-        <div className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground cursor-not-allowed", isMobileSheet ? "" : "justify-center")}>
-          <User className="h-5 w-5 opacity-50" /> {isMobileSheet ? translate('sidebarNoChildrenLinked') || "No children linked" : ""}
-        </div>
-      );
+      return [{ type: 'placeholder', icon: User, labelKey: 'sidebarNoChildrenLinked' }];
     }
-
     if (children.length === 1) {
       const child = children[0];
-      return (
-        <>
-          <Link href={`/parent/child/${child.id}`} className={cn(commonLinkClass, mobileLinkClass, isMobileSheet ? "" : "justify-center")}>
-            <User className="h-5 w-5" /> {isMobileSheet ? translate("childDetails", {childName: child.name}) : ""}
-            {!isMobileSheet && <span className="sr-only">{translate("childDetails", {childName: child.name})}</span>}
-          </Link>
-          <Link href={`/parent/child/${child.id}/behavior-reports`} className={cn(commonLinkClass, mobileLinkClass, isMobileSheet ? "ml-4" : "justify-center")}>
-            <Megaphone className="h-5 w-5" /> {isMobileSheet ? translate("behaviorReports") : ""}
-            {!isMobileSheet && <span className="sr-only">{translate("behaviorReports")} ({child.name})</span>}
-          </Link>
-        </>
-      );
+      return [
+        { type: 'link', href: `/parent/child/${child.id}`, icon: User, labelKey: "childDetails", labelParams: {childName: child.name}, srOnlyKey: "childDetails", srOnlyParams: {childName: child.name} },
+        { type: 'link', href: `/parent/child/${child.id}/behavior-reports`, icon: Megaphone, labelKey: "behaviorReports", srOnlyKey: "behaviorReports", srOnlyParams: {childName: child.name}, isSubItem: isMobileSheet }
+      ];
     }
-
-    // More than 1 child
-    return (
-      <Link href="/parent/select-child" className={cn(commonLinkClass, mobileLinkClass, isMobileSheet ? "" : "justify-center")}>
-        <Users className="h-5 w-5" /> {isMobileSheet ? translate("selectChild") : ""}
-        {!isMobileSheet && <span className="sr-only">{translate("selectChild")}</span>}
-      </Link>
-    );
+    return [{ type: 'link', href: "/parent/select-child", icon: Users, labelKey: "selectChild", srOnlyKey: "selectChild" }];
   };
 
-  const renderChildTooltips = () => {
-    if (loadingChildren) {
-        return (
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground md:h-8 md:w-8">
-                <Loader2 className="h-5 w-5 animate-spin" />
-            </div>
-        );
-    }
-    if (children.length === 0) {
-        return (
-             <Tooltip>
-                <TooltipTrigger asChild>
-                   <div className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground md:h-8 md:w-8 cursor-not-allowed">
-                       <User className="h-5 w-5 opacity-50" />
-                   </div>
-                </TooltipTrigger>
-                <TooltipContent side="right">{translate('sidebarNoChildrenLinked')}</TooltipContent>
-             </Tooltip>
-        );
-    }
-    if (children.length === 1) {
-        const child = children[0];
-        return (
-            <>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Link
-                        href={`/parent/child/${child.id}`} 
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                        >
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">{translate("childDetails", {childName: child.name})}</span>
-                    </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">{translate("childDetails", {childName: child.name})} ({translate("attendance")})</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Link
-                        href={`/parent/child/${child.id}/behavior-reports`}
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                        >
-                        <Megaphone className="h-5 w-5" />
-                        <span className="sr-only">{translate("behaviorReports")} ({child.name})</span>
-                    </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">{translate("behaviorReports")} ({child.name})</TooltipContent>
-            </Tooltip>
-            </>
-        );
-    }
-    // More than 1 child
-    return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <Link
-                    href="/parent/select-child"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                    >
-                    <Users className="h-5 w-5" />
-                    <span className="sr-only">{translate("selectChild")}</span>
-                </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">{translate("selectChild")}</TooltipContent>
-        </Tooltip>
-    );
-  }
+  const globalNavItems = [
+    { href: "/parent/attendance", icon: CalendarDays, labelKey: "viewAllAttendance", srOnlyKey: "viewAllAttendance" },
+    { href: "/parent/summary", icon: BarChart3, labelKey: "attendanceSummary", srOnlyKey: "attendanceSummary" },
+    { href: "/parent/notifications", icon: BellRing, labelKey: "notifications", srOnlyKey: "notifications" },
+    { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"}, // New Profile Link
+  ];
 
 
   if (isMobileSheet) {
+    const mobileItems = [
+      ...baseNavItems,
+      ...childSpecificNavItems().map(item => {
+        if (item.type === 'link') return { ...item, label: translate(item.labelKey, item.labelParams) };
+        if (item.type === 'loader') return { ...item, label: translate(item.labelKey) || "Loading..." };
+        if (item.type === 'placeholder') return { ...item, label: translate(item.labelKey) || "No children" };
+        return item;
+      }),
+      ...globalNavItems
+    ];
     return (
       <nav className="grid gap-2 p-4">
-        <Link href="/parent" className={cn(commonLinkClass, mobileLinkClass)}>
-          <Home className="h-5 w-5" /> {translate("dashboard")}
-        </Link>
-        {renderChildLinks()}
-        {/* Global links always shown if children exist or not */}
-        <Link href="/parent/attendance" className={cn(commonLinkClass, mobileLinkClass)}>
-            <CalendarDays className="h-5 w-5" /> {translate("viewAllAttendance")}
-        </Link>
-        <Link href="/parent/summary" className={cn(commonLinkClass, mobileLinkClass)}>
-            <BarChart3 className="h-5 w-5" /> {translate("attendanceSummary")}
-        </Link>
-        <Link href="/parent/notifications" className={cn(commonLinkClass, mobileLinkClass)}>
-          <BellRing className="h-5 w-5" /> {translate("notifications")}
-        </Link>
+        {mobileItems.map((item: any, index: number) => {
+          if (item.type === 'link') {
+            return (
+              <Link key={item.href || index} href={item.href} className={cn(commonLinkClass, mobileLinkClass, item.isSubItem ? "ml-4" : "")}>
+                <item.icon className={cn("h-5 w-5", item.type === 'loader' ? 'animate-spin' : '')} /> {item.label || translate(item.labelKey, item.labelParams)}
+              </Link>
+            );
+          }
+          if (item.type === 'loader' || item.type === 'placeholder') {
+             return (
+                <div key={index} className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground", item.type === 'placeholder' ? 'cursor-not-allowed' : '')}>
+                    <item.icon className={cn("h-5 w-5", item.type === 'loader' ? 'animate-spin' : 'opacity-50')} /> {item.label}
+                </div>
+             );
+          }
+          return null;
+        })}
       </nav>
     );
   }
@@ -226,61 +158,76 @@ export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
          <TooltipProvider>
          <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/parent"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <Home className="h-5 w-5" />
-                  <span className="sr-only">{translate("dashboard")}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">{translate("dashboard")}</TooltipContent>
-            </Tooltip>
+            {baseNavItems.map(item => (
+                <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                    <Link
+                    href={item.href}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    >
+                    <item.icon className="h-5 w-5" />
+                    <span className="sr-only">{translate(item.srOnlyKey)}</span>
+                    </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{translate(item.labelKey)}</TooltipContent>
+                </Tooltip>
+            ))}
 
-            {renderChildTooltips()}
+            {childSpecificNavItems().map((item: any, index: number) => {
+                 if (item.type === 'link') {
+                     return (
+                        <Tooltip key={item.href || index}>
+                        <TooltipTrigger asChild>
+                            <Link
+                            href={item.href}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                            >
+                            <item.icon className="h-5 w-5" />
+                            <span className="sr-only">{translate(item.srOnlyKey, item.srOnlyParams)}</span>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">{translate(item.labelKey, item.labelParams)}</TooltipContent>
+                        </Tooltip>
+                     );
+                 }
+                 if (item.type === 'loader') {
+                    return (
+                        <div key={index} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground md:h-8 md:w-8">
+                            <item.icon className="h-5 w-5 animate-spin" />
+                        </div>
+                    );
+                 }
+                  if (item.type === 'placeholder') {
+                     return (
+                         <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                               <div className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground md:h-8 md:w-8 cursor-not-allowed">
+                                   <item.icon className="h-5 w-5 opacity-50" />
+                               </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">{translate(item.labelKey)}</TooltipContent>
+                         </Tooltip>
+                     );
+                 }
+                 return null;
+            })}
             
-            {/* Global links always shown */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/parent/attendance"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <CalendarDays className="h-5 w-5" />
-                  <span className="sr-only">{translate("viewAllAttendance")}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">{translate("viewAllAttendance")}</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/parent/summary"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <BarChart3 className="h-5 w-5" />
-                  <span className="sr-only">{translate("attendanceSummary")}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">{translate("attendanceSummary")}</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/parent/notifications"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <BellRing className="h-5 w-5" />
-                  <span className="sr-only">{translate("notifications")}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">{translate("notifications")}</TooltipContent>
-            </Tooltip>
+            {globalNavItems.map(item => (
+                <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                    <Link
+                    href={item.href}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    >
+                    <item.icon className="h-5 w-5" />
+                    <span className="sr-only">{translate(item.srOnlyKey)}</span>
+                    </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{translate(item.labelKey)}</TooltipContent>
+                </Tooltip>
+            ))}
           </nav>
           </TooltipProvider>
        </aside>
    )
 }
-

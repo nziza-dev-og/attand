@@ -98,5 +98,21 @@
   "noChildrenToSelect": "계정에 연결된 자녀가 없습니다.",
   "mustBeLoggedInError": "이 페이지를 보려면 로그인해야 합니다.",
   "errorLoadingChildren": "자녀 세부 정보 로드 실패.",
-  "loadingChildrenDetails": "자녀 세부 정보 로드 중..."
+  "loadingChildrenDetails": "자녀 세부 정보 로드 중...",
+  "myProfileTitle": "내 프로필",
+  "myProfileDesc": "개인 정보를 보고 업데이트합니다.",
+  "saveChanges": "변경 사항 저장",
+  "nameLabel": "이름",
+  "emailLabel": "이메일",
+  "avatarUrlLabel": "아바타 URL",
+  "avatarUrlHint": "유효한 이미지 URL을 입력하세요 (예: .png, .jpg로 끝남). 제거하려면 비워 두세요.",
+  "profileUpdateSuccessTitle": "프로필 업데이트됨",
+  "profileUpdateSuccessDesc": "프로필이 성공적으로 업데이트되었습니다.",
+  "profileUpdateFailed": "프로필 업데이트에 실패했습니다. 다시 시도해주세요.",
+  "profileDataMissing": "프로필 데이터가 불완전합니다. 업데이트해주세요.",
+  "profileLoadFailed": "프로필 데이터 로드에 실패했습니다.",
+  "loadingProfile": "프로필 로드 중...",
+  "enterYourName": "성함을 입력하세요",
+  "invalidUrlTitle": "잘못된 URL",
+  "invalidUrlDesc": "유효한 이미지 URL을 입력하세요."
 }

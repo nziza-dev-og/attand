@@ -98,5 +98,21 @@
   "noChildrenToSelect": "Babu yaran da aka haɗa da asusunka da za a zaɓa.",
   "mustBeLoggedInError": "Dole ne ka shiga don duba wannan shafin.",
   "errorLoadingChildren": "An kasa loda cikakkun bayanai na yara.",
-  "loadingChildrenDetails": "Ana loda cikakkun bayanai na yara..."
+  "loadingChildrenDetails": "Ana loda cikakkun bayanai na yara...",
+  "myProfileTitle": "Bayanaina",
+  "myProfileDesc": "Duba kuma sabunta bayananka.",
+  "saveChanges": "Adana Canje-canje",
+  "nameLabel": "Suna",
+  "emailLabel": "Imel",
+  "avatarUrlLabel": "URL na Hoto",
+  "avatarUrlHint": "Shigar da ingantacciyar URL na hoto (misali, mai ƙarewa da .png, .jpg). Bar fanko don cirewa.",
+  "profileUpdateSuccessTitle": "An Sabunta Bayanai",
+  "profileUpdateSuccessDesc": "An sabunta bayananka cikin nasara.",
+  "profileUpdateFailed": "An kasa sabunta bayanai. Da fatan za a sake gwadawa.",
+  "profileDataMissing": "Bayananka bai cika ba. Da fatan za a sabunta shi.",
+  "profileLoadFailed": "An kasa loda bayanai.",
+  "loadingProfile": "Ana loda bayanai...",
+  "enterYourName": "Shigar da cikakken sunanka",
+  "invalidUrlTitle": "URL Mara Inganci",
+  "invalidUrlDesc": "Da fatan za a shigar da ingantacciyar URL na hoto."
 }

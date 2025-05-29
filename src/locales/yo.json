@@ -98,5 +98,21 @@
   "noChildrenToSelect": "Kò sí ọmọ kankan tí ó sopọ̀ mọ́ àpamọ́ rẹ láti yàn.",
   "mustBeLoggedInError": "O gbọ́dọ̀ wọlé láti wo ojú-ewé yìí.",
   "errorLoadingChildren": "Kò lè gba àwọn àlàyé ọmọ.",
-  "loadingChildrenDetails": "Ń gba àwọn àlàyé ọmọ..."
+  "loadingChildrenDetails": "Ń gba àwọn àlàyé ọmọ...",
+  "myProfileTitle": "Àpamọ́ Mi",
+  "myProfileDesc": "Wo àti ṣe àtúnṣe àwọn ìwífún ara ẹni rẹ.",
+  "saveChanges": "Fi Àwọn Àtúnṣe Pamọ́",
+  "nameLabel": "Orúkọ",
+  "emailLabel": "Ímeèlì",
+  "avatarUrlLabel": "URL Àwòrán",
+  "avatarUrlHint": "Tẹ URL àwòrán tó tọ̀nà (f.a., tó parí pẹ̀lú .png, .jpg). Fi sílẹ̀ ní òfo láti yọ kúrò.",
+  "profileUpdateSuccessTitle": "Àpamọ́ Ti Di Tuntun",
+  "profileUpdateSuccessDesc": "Àpamọ́ rẹ ti di tuntun pẹ̀lú àṣeyọrí.",
+  "profileUpdateFailed": "Kò lè ṣe àtúnṣe àpamọ́. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.",
+  "profileDataMissing": "Dátà àpamọ́ rẹ kò pé. Jọ̀wọ́ ṣe àtúnṣe.",
+  "profileLoadFailed": "Kò lè gba dátà àpamọ́.",
+  "loadingProfile": "Ń gba àpamọ́...",
+  "enterYourName": "Tẹ orúkọ kíkún rẹ",
+  "invalidUrlTitle": "URL Tí Kò Tọ̀nà",
+  "invalidUrlDesc": "Jọ̀wọ́ tẹ URL àwòrán tó tọ̀nà."
 }

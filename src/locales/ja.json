@@ -98,5 +98,21 @@
   "noChildrenToSelect": "アカウントに選択できる子供がリンクされていません。",
   "mustBeLoggedInError": "このページを表示するにはログインする必要があります。",
   "errorLoadingChildren": "子供の詳細情報の読み込みに失敗しました。",
-  "loadingChildrenDetails": "子供の詳細情報を読み込み中..."
+  "loadingChildrenDetails": "子供の詳細情報を読み込み中...",
+  "myProfileTitle": "マイプロフィール",
+  "myProfileDesc": "個人情報を表示・更新します。",
+  "saveChanges": "変更を保存",
+  "nameLabel": "名前",
+  "emailLabel": "メールアドレス",
+  "avatarUrlLabel": "アバターURL",
+  "avatarUrlHint": "有効な画像URLを入力してください（例：.png、.jpgで終わる）。削除する場合は空欄にしてください。",
+  "profileUpdateSuccessTitle": "プロフィール更新完了",
+  "profileUpdateSuccessDesc": "プロフィールが正常に更新されました。",
+  "profileUpdateFailed": "プロフィールの更新に失敗しました。もう一度お試しください。",
+  "profileDataMissing": "プロフィールデータが不完全です。更新してください。",
+  "profileLoadFailed": "プロフィールデータの読み込みに失敗しました。",
+  "loadingProfile": "プロフィールを読み込み中...",
+  "enterYourName": "フルネームを入力してください",
+  "invalidUrlTitle": "無効なURL",
+  "invalidUrlDesc": "有効な画像URLを入力してください。"
 }

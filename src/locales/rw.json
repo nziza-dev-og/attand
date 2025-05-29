@@ -98,5 +98,21 @@
   "noChildrenToSelect": "Nta bana bahujwe na konti yawe ngo ubahitemo.",
   "mustBeLoggedInError": "Ugomba kuba winjiye kugira ngo urebe iyi page.",
   "errorLoadingChildren": "Kutabasha gutwara amakuru y'abana.",
-  "loadingChildrenDetails": "Gutwara amakuru y'abana..."
+  "loadingChildrenDetails": "Gutwara amakuru y'abana...",
+  "myProfileTitle": "Porofayili Yanjye",
+  "myProfileDesc": "Reba kandi uvugurure amakuru yawe bwite.",
+  "saveChanges": "Bika Impinduka",
+  "nameLabel": "Izina",
+  "emailLabel": "Email",
+  "avatarUrlLabel": "URL y'Ifoto",
+  "avatarUrlHint": "Shyiramo URL y'ifoto yemewe (urugero: irangirana na .png, .jpg). Siga ubusa kugira ngo uyikureho.",
+  "profileUpdateSuccessTitle": "Porofayili Yavuguruwe",
+  "profileUpdateSuccessDesc": "Porofayili yawe yavuguruwe neza.",
+  "profileUpdateFailed": "Kuvugurura porofayili byanze. Gerageza nanone.",
+  "profileDataMissing": "Amakuru ya porofayili yawe ntiyuzuye. Vugurura.",
+  "profileLoadFailed": "Gutwara amakuru ya porofayili byanze.",
+  "loadingProfile": "Gutwara porofayili...",
+  "enterYourName": "Andika amazina yawe yose",
+  "invalidUrlTitle": "URL Itemewe",
+  "invalidUrlDesc": "Shyiramo URL y'ifoto yemewe."
 }

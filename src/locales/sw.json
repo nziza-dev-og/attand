@@ -98,5 +98,21 @@
   "noChildrenToSelect": "Hakuna watoto walioUnganishwa na akaunti yako wa kuchagua.",
   "mustBeLoggedInError": "Lazima uwe umeingia ili kuona ukurasa huu.",
   "errorLoadingChildren": "Imeshindwa kupakia maelezo ya watoto.",
-  "loadingChildrenDetails": "Inapakia maelezo ya watoto..."
+  "loadingChildrenDetails": "Inapakia maelezo ya watoto...",
+  "myProfileTitle": "Wasifu Wangu",
+  "myProfileDesc": "Tazama na sasisha taarifa zako za kibinafsi.",
+  "saveChanges": "Hifadhi Mabadiliko",
+  "nameLabel": "Jina",
+  "emailLabel": "Barua Pepe",
+  "avatarUrlLabel": "URL ya Picha ya Wasifu",
+  "avatarUrlHint": "Weka URL halali ya picha (k.m., inayoishia na .png, .jpg). Acha tupu ili kuondoa.",
+  "profileUpdateSuccessTitle": "Wasifu Umesasishwa",
+  "profileUpdateSuccessDesc": "Wasifu wako umesasishwa kwa mafanikio.",
+  "profileUpdateFailed": "Imeshindwa kusasisha wasifu. Tafadhali jaribu tena.",
+  "profileDataMissing": "Data ya wasifu wako haijakamilika. Tafadhali isasishe.",
+  "profileLoadFailed": "Imeshindwa kupakia data ya wasifu.",
+  "loadingProfile": "Inapakia wasifu...",
+  "enterYourName": "Weka jina lako kamili",
+  "invalidUrlTitle": "URL Batili",
+  "invalidUrlDesc": "Tafadhali weka URL halali ya picha."
 }

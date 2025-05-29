@@ -11,7 +11,8 @@ import {
   BookUser,
   UserCog,
   Megaphone,
-  MessageSquareReply, // New Icon for Parent Responses
+  MessageSquareReply, 
+  UserCircle, // New Icon for Profile
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -41,7 +42,8 @@ export function AdminSidebar({ isMobileSheet = false }: AdminSidebarProps) {
     { href: "/admin/assignments", icon: UserPlus, labelKey: "assignments", srOnlyKey: "assignments" },
     { href: "/admin/reports", icon: ClipboardList, labelKey: "attendanceReports", srOnlyKey: "attendanceReports" },
     { href: "/admin/behavior-reports", icon: Megaphone, labelKey: "behaviorReports", srOnlyKey: "behaviorReports" },
-    { href: "/admin/parent-responses", icon: MessageSquareReply, labelKey: "viewParentResponses", srOnlyKey: "viewParentResponses" }, // New Item
+    { href: "/admin/parent-responses", icon: MessageSquareReply, labelKey: "viewParentResponses", srOnlyKey: "viewParentResponses" },
+    { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"}, // New Profile Link
   ];
 
   if (isMobileSheet) {

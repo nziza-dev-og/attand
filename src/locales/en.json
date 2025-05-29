@@ -98,5 +98,21 @@
   "noChildrenToSelect": "No children linked to your account to select from.",
   "mustBeLoggedInError": "You must be logged in to view this page.",
   "errorLoadingChildren": "Failed to load children details.",
-  "loadingChildrenDetails": "Loading children details..."
+  "loadingChildrenDetails": "Loading children details...",
+  "myProfileTitle": "My Profile",
+  "myProfileDesc": "View and update your personal information.",
+  "saveChanges": "Save Changes",
+  "nameLabel": "Name",
+  "emailLabel": "Email",
+  "avatarUrlLabel": "Avatar URL",
+  "avatarUrlHint": "Enter a valid image URL (e.g., ending in .png, .jpg). Leave blank to remove.",
+  "profileUpdateSuccessTitle": "Profile Updated",
+  "profileUpdateSuccessDesc": "Your profile has been updated successfully.",
+  "profileUpdateFailed": "Failed to update profile. Please try again.",
+  "profileDataMissing": "Your profile data is incomplete. Please update it.",
+  "profileLoadFailed": "Failed to load profile data.",
+  "loadingProfile": "Loading profile...",
+  "enterYourName": "Enter your full name",
+  "invalidUrlTitle": "Invalid URL",
+  "invalidUrlDesc": "Please enter a valid image URL."
 }

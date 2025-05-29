@@ -98,5 +98,21 @@
   "noChildrenToSelect": "Aucun enfant lié à votre compte à sélectionner.",
   "mustBeLoggedInError": "Vous devez être connecté pour voir cette page.",
   "errorLoadingChildren": "Échec du chargement des détails des enfants.",
-  "loadingChildrenDetails": "Chargement des détails des enfants..."
+  "loadingChildrenDetails": "Chargement des détails des enfants...",
+  "myProfileTitle": "Mon Profil",
+  "myProfileDesc": "Affichez et mettez à jour vos informations personnelles.",
+  "saveChanges": "Enregistrer les modifications",
+  "nameLabel": "Nom",
+  "emailLabel": "E-mail",
+  "avatarUrlLabel": "URL de l'avatar",
+  "avatarUrlHint": "Entrez une URL d'image valide (par exemple, se terminant par .png, .jpg). Laissez vide pour supprimer.",
+  "profileUpdateSuccessTitle": "Profil Mis à Jour",
+  "profileUpdateSuccessDesc": "Votre profil a été mis à jour avec succès.",
+  "profileUpdateFailed": "Échec de la mise à jour du profil. Veuillez réessayer.",
+  "profileDataMissing": "Les données de votre profil sont incomplètes. Veuillez les mettre à jour.",
+  "profileLoadFailed": "Échec du chargement des données du profil.",
+  "loadingProfile": "Chargement du profil...",
+  "enterYourName": "Entrez votre nom complet",
+  "invalidUrlTitle": "URL Invalide",
+  "invalidUrlDesc": "Veuillez entrer une URL d'image valide."
 }

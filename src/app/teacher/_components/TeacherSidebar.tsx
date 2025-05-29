@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   History,
   Megaphone,
+  UserCircle, // New Icon for Profile
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -31,6 +32,7 @@ export function TeacherSidebar({ isMobileSheet = false }: TeacherSidebarProps) {
     { href: "/teacher/mark-attendance", icon: ClipboardCheck, labelKey: "markAttendance", srOnlyKey: "markAttendance" },
     { href: "/teacher/history", icon: History, labelKey: "attendanceHistory", srOnlyKey: "attendanceHistory" },
     { href: "/teacher/behavior-reports", icon: Megaphone, labelKey: "behaviorReports", srOnlyKey: "behaviorReports" },
+    { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"}, // New Profile Link
   ];
 
   if (isMobileSheet) {
