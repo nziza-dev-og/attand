@@ -170,5 +170,18 @@
   "signUpButton": "Yi Rajista",
   "teacherMissingSchoolCodeError": "Asusunka ba a haɗa shi da lambar makaranta ba. Da fatan za a tuntuɓi mai gudanarwarka.",
   "teacherInvalidSchoolCodeError": "Ba a gane lambar makarantar da aka haɗa da asusunka ba. Da fatan za a tuntuɓi mai gudanarwarka.",
-  "teacherNoClassesAssigned": "A halin yanzu ba a sanya maka wani aji ba. Da fatan za a tuntuɓi mai gudanarwarka."
+  "teacherNoClassesAssigned": "A halin yanzu ba a sanya maka wani aji ba. Da fatan za a tuntuɓi mai gudanarwarka.",
+  "verifySchoolCodeTitle": "Tabbatar da Lambar Makaranta",
+  "verifySchoolCodeDesc": "Da fatan za a shigar da Lambar Gano Makaranta da mai gudanarwarka ya bayar don samun damar dashboard na makarantarka.",
+  "schoolCodeRequiredError": "Ana buƙatar lambar makaranta.",
+  "validationErrorTitle": "Kuskuren Tabbatarwa",
+  "verificationFailedTitle": "Tabbatarwa Ta Kasa",
+  "schoolCodeVerifiedTitle": "An Tabbatar da Lambar Makaranta",
+  "redirectingToDashboardDesc": "Ana tura ka zuwa dashboard ɗinka...",
+  "verificationProcessError": "Kuskure ya faru yayin tabbatarwa. Da fatan za a sake gwadawa.",
+  "verifyAndProceedButton": "Tabbatar kuma Ci gaba",
+  "loadingPleaseWait": "Ana lodawa, da fatan za a jira...",
+  "schoolVerificationNeededTitle": "Ana Bukatar Tabbatar da Lambar Makaranta",
+  "schoolVerificationNeededDesc": "Da fatan za a tabbatar da lambar makarantarka don samun damar dashboard.",
+  "goToVerificationPage": "Je zuwa Shafin Tabbatarwa"
 }

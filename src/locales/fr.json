@@ -170,5 +170,18 @@
   "signUpButton": "S'inscrire",
   "teacherMissingSchoolCodeError": "Votre compte n'est pas associé à un code d'école. Veuillez contacter votre administrateur.",
   "teacherInvalidSchoolCodeError": "Le code d'école associé à votre compte n'est pas reconnu. Veuillez contacter votre administrateur.",
-  "teacherNoClassesAssigned": "Vous n'êtes actuellement affecté à aucune classe. Veuillez contacter votre administrateur."
+  "teacherNoClassesAssigned": "Vous n'êtes actuellement affecté à aucune classe. Veuillez contacter votre administrateur.",
+  "verifySchoolCodeTitle": "Vérifier le Code de l'École",
+  "verifySchoolCodeDesc": "Veuillez entrer le Code d'Identification de l'École fourni par votre administrateur pour accéder au tableau de bord de votre école.",
+  "schoolCodeRequiredError": "Le code de l'école est requis.",
+  "validationErrorTitle": "Erreur de Validation",
+  "verificationFailedTitle": "Échec de la Vérification",
+  "schoolCodeVerifiedTitle": "Code de l'École Vérifié",
+  "redirectingToDashboardDesc": "Redirection vers votre tableau de bord...",
+  "verificationProcessError": "Une erreur s'est produite lors de la vérification. Veuillez réessayer.",
+  "verifyAndProceedButton": "Vérifier et Continuer",
+  "loadingPleaseWait": "Chargement, veuillez patienter...",
+  "schoolVerificationNeededTitle": "Vérification du Code de l'École Requise",
+  "schoolVerificationNeededDesc": "Veuillez vérifier votre code d'école pour accéder au tableau de bord.",
+  "goToVerificationPage": "Aller à la Page de Vérification"
 }

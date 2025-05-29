@@ -11,11 +11,11 @@ export interface UserProfile {
   role: Role;
   name?: string; // Optional: User's display name
   createdAt: Timestamp;
-  avatarUrl?: string; // Added avatarUrl here for general user profiles
+  avatarUrl?: string;
   schoolIdentifierCode?: string; // For Admins to set their school's code
   enteredSchoolCode?: string; // For Teachers to enter when signing up
-  // Consider adding assignedClassIds here if it's common for more than just teachers, or manage through role-specific interfaces
-  assignedClassIds?: string[]; // Moved from Teacher to UserProfile if Admin might also have it, or keep on Teacher if specific
+  isSchoolCodeVerified?: boolean; // New: Tracks if teacher's school code is validated
+  assignedClassIds?: string[];
 }
 
 export interface Class {
@@ -37,12 +37,9 @@ export interface Student {
   avatarUrl?: string; // Optional profile picture URL
 }
 
-// Teacher interface now extends UserProfile for better type safety and less redundancy
 export interface Teacher extends UserProfile {
-    role: 'Teacher'; // Override role to be specific
-    // assignedClassIds?: string[]; // Already in UserProfile if needed there, or keep here if strictly teacher-only
-    // enteredSchoolCode is inherited from UserProfile
-    // Other fields like id, name, email, avatarUrl, createdAt are inherited from UserProfile
+    role: 'Teacher';
+    // `enteredSchoolCode` and `isSchoolCodeVerified` are inherited from UserProfile
 }
 
 export interface ParentNotificationPreferences {
@@ -51,12 +48,10 @@ export interface ParentNotificationPreferences {
   newBehaviorReport?: boolean;
 }
 
-// Parent interface now extends UserProfile
 export interface Parent extends UserProfile {
-    role: 'Parent'; // Override role
-    childIds?: string[]; // UIDs of linked children (students)
+    role: 'Parent';
+    childIds?: string[];
     notificationPreferences?: ParentNotificationPreferences;
-    // Other fields like id, name, email, avatarUrl, createdAt are inherited
 }
 
 

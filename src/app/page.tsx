@@ -1,12 +1,13 @@
+
 "use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth.tsx'; // Updated import path
+import { useAuth } from '@/hooks/useAuth.tsx';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, isSchoolCodeVerified } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -14,30 +15,29 @@ export default function Home() {
       if (!user) {
         router.push('/login');
       } else {
-        // Redirect based on role
-        switch (role) {
-          case 'Admin':
-            router.push('/admin');
-            break;
-          case 'Teacher':
-            router.push('/teacher');
-            break;
-          case 'Parent':
-            router.push('/parent');
-            break;
-          default:
-            // Handle cases where role is null or unexpected
-            console.warn("User logged in but role is unknown or invalid:", role);
-             // Maybe redirect to a profile setup page or show an error
-             // For now, redirecting to login as a fallback
-            router.push('/login');
-            break;
+        if (role === 'Teacher' && isSchoolCodeVerified === false) {
+          router.push('/teacher/verify-school');
+        } else {
+          switch (role) {
+            case 'Admin':
+              router.push('/admin');
+              break;
+            case 'Teacher':
+              router.push('/teacher');
+              break;
+            case 'Parent':
+              router.push('/parent');
+              break;
+            default:
+              console.warn("User logged in but role is unknown, invalid, or verification pending:", role);
+              router.push('/login'); // Fallback to login if role is strange or not yet determined
+              break;
+          }
         }
       }
     }
-  }, [user, role, loading, router]);
+  }, [user, role, loading, router, isSchoolCodeVerified]);
 
-  // Display loading indicator while checking auth state
   if (loading) {
     return (
        <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
@@ -48,7 +48,6 @@ export default function Home() {
      );
   }
 
-  // This content is briefly shown before redirection happens
   return (
     <div className="flex items-center justify-center min-h-screen">
       <p>Loading...</p>

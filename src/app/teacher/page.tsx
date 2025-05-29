@@ -7,66 +7,41 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ClipboardCheck, History, Bell, Loader2 } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth'; 
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'; // Added collection, query, where, getDocs
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Teacher, UserProfile } from '@/lib/types'; 
+import type { Teacher } from '@/lib/types'; 
 import { useLanguage } from '@/contexts/LanguageContext'; 
 
 export default function TeacherDashboard() {
-  const { user, loading: authLoading } = useAuth(); 
+  const { user, loading: authLoading, role, isSchoolCodeVerified } = useAuth(); 
   const { translate } = useLanguage(); 
   const [teacherData, setTeacherData] = useState<Teacher | null>(null);
   const [loadingData, setLoadingData] = useState(true);
-  const [checkingSchoolCode, setCheckingSchoolCode] = useState(true);
+  // Removed checkingSchoolCode state as validation happens before this page
   const [error, setError] = useState<string | null>(null);
-  const [needsAttendanceToday, setNeedsAttendanceToday] = useState(true); // Example flag
+  const [needsAttendanceToday, setNeedsAttendanceToday] = useState(true);
 
   useEffect(() => {
-    const fetchTeacherDataAndValidateSchoolCode = async () => {
+    const fetchTeacherData = async () => {
       if (authLoading || !user) {
-         if (!authLoading && !user) {
-            setLoadingData(false); 
-            setCheckingSchoolCode(false);
-         }
+         if (!authLoading && !user) setLoadingData(false); 
         return;
       }
+      // If teacher reaches here, isSchoolCodeVerified should be true due to redirect logic in page.tsx
+      // If it's somehow false, it's an unexpected state, but dashboard might still try to render limited info
+      // or show an error specific to this unexpected state.
 
       setLoadingData(true);
-      setCheckingSchoolCode(true);
       setError(null);
       try {
         const teacherDocRef = doc(db, 'users', user.uid);
         const teacherDocSnap = await getDoc(teacherDocRef);
 
         if (teacherDocSnap.exists()) {
-          const data = teacherDocSnap.data() as UserProfile; // Get base UserProfile
+          const data = teacherDocSnap.data(); 
           if (data.role === 'Teacher') {
-            const teacherProfile = data as Teacher; // Cast to specific Teacher type
-            setTeacherData(teacherProfile);
+            setTeacherData(data as Teacher);
             setNeedsAttendanceToday(true); // Placeholder
-
-            const enteredCode = teacherProfile.enteredSchoolCode;
-            if (!enteredCode) {
-              setError(translate('teacherMissingSchoolCodeError') || "Your account is not associated with a school code. Please contact your administrator.");
-              setCheckingSchoolCode(false);
-              setLoadingData(false);
-              return;
-            }
-
-            const adminsQuery = query(
-              collection(db, "users"),
-              where("role", "==", "Admin"),
-              where("schoolIdentifierCode", "==", enteredCode)
-            );
-            const adminSnap = await getDocs(adminsQuery);
-
-            if (adminSnap.empty) {
-              setError(translate('teacherInvalidSchoolCodeError') || "The school code associated with your account is not recognized. Please contact your administrator.");
-            } else {
-              // School code is valid
-              setError(null); // Clear any previous error
-            }
-            
           } else {
             setError(translate('userNotTeacherError') || "User found but is not registered as a Teacher.");
             setTeacherData(null);
@@ -76,21 +51,37 @@ export default function TeacherDashboard() {
           setTeacherData(null);
         }
       } catch (err) {
-        console.error("Error fetching teacher data or validating school code:", err);
-        setError(translate('loadTeacherError') || "Failed to load teacher information or validate school association.");
+        console.error("Error fetching teacher data:", err);
+        setError(translate('loadTeacherError') || "Failed to load teacher information.");
         setTeacherData(null);
       } finally {
         setLoadingData(false);
-        setCheckingSchoolCode(false);
       }
     };
 
-    fetchTeacherDataAndValidateSchoolCode();
-  }, [user, authLoading, translate]); 
+    fetchTeacherData();
+  }, [user, authLoading, translate, role, isSchoolCodeVerified]); // isSchoolCodeVerified added for completeness if logic changes
 
-  const isLoading = authLoading || loadingData || checkingSchoolCode;
+  const isLoading = authLoading || loadingData;
   const assignedClassesCount = teacherData?.assignedClassIds?.length ?? 0;
   const teacherName = teacherData?.name || (user?.displayName || user?.email || translate('teacherFallbackName') || 'Teacher');
+
+  // This check should ideally not be hit if redirect logic in page.tsx is working correctly
+  if (!authLoading && role === 'Teacher' && isSchoolCodeVerified === false) {
+    return (
+      <Card className="md:col-span-2 lg:col-span-3 border-destructive bg-destructive/10">
+        <CardHeader>
+           <CardTitle className="text-destructive">{translate('schoolVerificationNeededTitle') || "School Verification Required"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+           <p className="text-destructive">{translate('schoolVerificationNeededDesc') || "Please verify your school code to access the dashboard."}</p>
+            <Button asChild className="mt-4">
+                <Link href="/teacher/verify-school">{translate('goToVerificationPage') || "Go to Verification Page"}</Link>
+            </Button>
+        </CardContent>
+     </Card>
+    );
+  }
 
 
   if (isLoading) {
@@ -102,7 +93,7 @@ export default function TeacherDashboard() {
     );
   }
 
-   if (error) { // This will now catch school code errors as well
+   if (error) {
       return (
          <Card className="md:col-span-2 lg:col-span-3 border-destructive bg-destructive/10">
             <CardHeader>
@@ -116,7 +107,7 @@ export default function TeacherDashboard() {
       );
    }
 
-   if (!teacherData) { // Should be caught by error state if profile not found or not a teacher
+   if (!teacherData) {
      return (
          <Card className="md:col-span-2 lg:col-span-3">
              <CardHeader>

@@ -170,5 +170,18 @@
   "signUpButton": "साइन अप करें",
   "teacherMissingSchoolCodeError": "आपका खाता किसी स्कूल कोड से संबद्ध नहीं है। कृपया अपने व्यवस्थापक से संपर्क करें।",
   "teacherInvalidSchoolCodeError": "आपके खाते से संबद्ध स्कूल कोड पहचाना नहीं गया है। कृपया अपने व्यवस्थापक से संपर्क करें।",
-  "teacherNoClassesAssigned": "आप वर्तमान में किसी भी कक्षा को नहीं सौंपे गए हैं। कृपया अपने व्यवस्थापक से संपर्क करें।"
+  "teacherNoClassesAssigned": "आप वर्तमान में किसी भी कक्षा को नहीं सौंपे गए हैं। कृपया अपने व्यवस्थापक से संपर्क करें।",
+  "verifySchoolCodeTitle": "स्कूल कोड सत्यापित करें",
+  "verifySchoolCodeDesc": "कृपया अपने स्कूल के डैशबोर्ड तक पहुंचने के लिए अपने व्यवस्थापक द्वारा प्रदान किया गया स्कूल पहचान कोड दर्ज करें।",
+  "schoolCodeRequiredError": "स्कूल कोड आवश्यक है।",
+  "validationErrorTitle": "सत्यापन त्रुटि",
+  "verificationFailedTitle": "सत्यापन विफल",
+  "schoolCodeVerifiedTitle": "स्कूल कोड सत्यापित",
+  "redirectingToDashboardDesc": "आपको आपके डैशबोर्ड पर रीडायरेक्ट किया जा रहा है...",
+  "verificationProcessError": "सत्यापन के दौरान एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+  "verifyAndProceedButton": "सत्यापित करें और आगे बढ़ें",
+  "loadingPleaseWait": "लोड हो रहा है, कृपया प्रतीक्षा करें...",
+  "schoolVerificationNeededTitle": "स्कूल कोड सत्यापन आवश्यक",
+  "schoolVerificationNeededDesc": "कृपया डैशबोर्ड तक पहुंचने के लिए अपना स्कूल कोड सत्यापित करें।",
+  "goToVerificationPage": "सत्यापन पृष्ठ पर जाएं"
 }

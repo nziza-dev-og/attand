@@ -170,5 +170,18 @@
   "signUpButton": "Sign Up",
   "teacherMissingSchoolCodeError": "Your account is not associated with a school code. Please contact your administrator.",
   "teacherInvalidSchoolCodeError": "The school code associated with your account is not recognized. Please contact your administrator.",
-  "teacherNoClassesAssigned": "You are not currently assigned to any classes. Please contact your administrator."
+  "teacherNoClassesAssigned": "You are not currently assigned to any classes. Please contact your administrator.",
+  "verifySchoolCodeTitle": "Verify School Code",
+  "verifySchoolCodeDesc": "Please enter the School Identifier Code provided by your administrator to access your school's dashboard.",
+  "schoolCodeRequiredError": "School code is required.",
+  "validationErrorTitle": "Validation Error",
+  "verificationFailedTitle": "Verification Failed",
+  "schoolCodeVerifiedTitle": "School Code Verified",
+  "redirectingToDashboardDesc": "Redirecting to your dashboard...",
+  "verificationProcessError": "An error occurred during verification. Please try again.",
+  "verifyAndProceedButton": "Verify and Proceed",
+  "loadingPleaseWait": "Loading, please wait...",
+  "schoolVerificationNeededTitle": "School Verification Required",
+  "schoolVerificationNeededDesc": "Please verify your school code to access the dashboard.",
+  "goToVerificationPage": "Go to Verification Page"
 }

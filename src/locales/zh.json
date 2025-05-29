@@ -170,5 +170,18 @@
   "signUpButton": "注册",
   "teacherMissingSchoolCodeError": "您的帐户未与学校代码关联。请联系您的管理员。",
   "teacherInvalidSchoolCodeError": "与您的帐户关联的学校代码无法识别。请联系您的管理员。",
-  "teacherNoClassesAssigned": "您当前未分配到任何班级。请联系您的管理员。"
+  "teacherNoClassesAssigned": "您当前未分配到任何班级。请联系您的管理员。",
+  "verifySchoolCodeTitle": "验证学校代码",
+  "verifySchoolCodeDesc": "请输入您的管理员提供的学校识别码以访问学校的仪表板。",
+  "schoolCodeRequiredError": "学校代码为必填项。",
+  "validationErrorTitle": "验证错误",
+  "verificationFailedTitle": "验证失败",
+  "schoolCodeVerifiedTitle": "学校代码已验证",
+  "redirectingToDashboardDesc": "正在重定向到您的仪表板...",
+  "verificationProcessError": "验证过程中发生错误。请重试。",
+  "verifyAndProceedButton": "验证并继续",
+  "loadingPleaseWait": "正在加载，请稍候...",
+  "schoolVerificationNeededTitle": "需要学校代码验证",
+  "schoolVerificationNeededDesc": "请验证您的学校代码以访问仪表板。",
+  "goToVerificationPage": "转到验证页面"
 }

@@ -170,5 +170,18 @@
   "signUpButton": "Forúkọsílẹ̀",
   "teacherMissingSchoolCodeError": "Àpamọ́ rẹ kò sopọ̀ mọ́ kóòdù ilé-ìwé kan. Jọ̀wọ́ kan sí alábòójútó rẹ.",
   "teacherInvalidSchoolCodeError": "Kóòdù ilé-ìwé tí ó sopọ̀ mọ́ àpamọ́ rẹ kò ṣeé gbà. Jọ̀wọ́ kan sí alábòójútó rẹ.",
-  "teacherNoClassesAssigned": "A kò tíì yàn ọ́ sí kilasi kankan lásìkò yìí. Jọ̀wọ́ kan sí alábòójútó rẹ."
+  "teacherNoClassesAssigned": "A kò tíì yàn ọ́ sí kilasi kankan lásìkò yìí. Jọ̀wọ́ kan sí alábòójútó rẹ.",
+  "verifySchoolCodeTitle": "Ṣayẹ̀wò Kóòdù Ilé-ìwé",
+  "verifySchoolCodeDesc": "Jọ̀wọ́ tẹ Kóòdù Ìdánimọ̀ Ilé-ìwé tí alábòójútó rẹ fún ọ láti wọlé sí dashboard ilé-ìwé rẹ.",
+  "schoolCodeRequiredError": "Kóòdù ilé-ìwé jẹ́ dandan.",
+  "validationErrorTitle": "Aṣìṣe Ìṣayẹ̀wò",
+  "verificationFailedTitle": "Ìṣayẹ̀wò Kò Jáse",
+  "schoolCodeVerifiedTitle": "Kóòdù Ilé-ìwé Ti Di Mímọ̀",
+  "redirectingToDashboardDesc": "Ń darí rẹ sí dashboard rẹ...",
+  "verificationProcessError": "Aṣìṣe kan ṣẹlẹ̀ lásìkò ìṣayẹ̀wò. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.",
+  "verifyAndProceedButton": "Ṣayẹ̀wò Kóòdù Kí o Tẹ̀síwájú",
+  "loadingPleaseWait": "Ń gba data, jọ̀wọ́ dúró...",
+  "schoolVerificationNeededTitle": "Ìṣayẹ̀wò Kóòdù Ilé-ìwé Jẹ́ Dandan",
+  "schoolVerificationNeededDesc": "Jọ̀wọ́ ṣayẹ̀wò kóòdù ilé-ìwé rẹ láti wọlé sí dashboard.",
+  "goToVerificationPage": "Lọ sí Ojúewé Ìṣayẹ̀wò"
 }

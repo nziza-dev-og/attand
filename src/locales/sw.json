@@ -170,5 +170,18 @@
   "signUpButton": "Jisajili",
   "teacherMissingSchoolCodeError": "Akaunti yako haihusishwi na nambari ya shule. Tafadhali wasiliana na msimamizi wako.",
   "teacherInvalidSchoolCodeError": "Nambari ya shule inayohusishwa na akaunti yako haitambuliki. Tafadhali wasiliana na msimamizi wako.",
-  "teacherNoClassesAssigned": "Kwa sasa hujaagizwa kwa madarasa yoyote. Tafadhali wasiliana na msimamizi wako."
+  "teacherNoClassesAssigned": "Kwa sasa hujaagizwa kwa madarasa yoyote. Tafadhali wasiliana na msimamizi wako.",
+  "verifySchoolCodeTitle": "Thibitisha Nambari ya Shule",
+  "verifySchoolCodeDesc": "Tafadhali weka Nambari ya Utambulisho wa Shule iliyotolewa na msimamizi wako ili kufikia dashibodi ya shule yako.",
+  "schoolCodeRequiredError": "Nambari ya shule inahitajika.",
+  "validationErrorTitle": "Hitilafu ya Uthibitishaji",
+  "verificationFailedTitle": "Uthibitishaji Umeshindikana",
+  "schoolCodeVerifiedTitle": "Nambari ya Shule Imethibitishwa",
+  "redirectingToDashboardDesc": "Inaelekeza kwenye dashibodi yako...",
+  "verificationProcessError": "Hitilafu ilitokea wakati wa uthibitishaji. Tafadhali jaribu tena.",
+  "verifyAndProceedButton": "Thibitisha na Uendelee",
+  "loadingPleaseWait": "Inapakia, tafadhali subiri...",
+  "schoolVerificationNeededTitle": "Uthibitishaji wa Nambari ya Shule Unahitajika",
+  "schoolVerificationNeededDesc": "Tafadhali thibitisha nambari ya shule yako ili kufikia dashibodi.",
+  "goToVerificationPage": "Nenda kwenye Ukurasa wa Uthibitishaji"
 }

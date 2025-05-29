@@ -170,5 +170,18 @@
   "signUpButton": "সাইন আপ করুন",
   "teacherMissingSchoolCodeError": "আপনার অ্যাকাউন্ট কোনো স্কুল কোডের সাথে যুক্ত নয়। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।",
   "teacherInvalidSchoolCodeError": "আপনার অ্যাকাউন্টের সাথে যুক্ত স্কুল কোডটি স্বীকৃত নয়। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।",
-  "teacherNoClassesAssigned": "আপনি বর্তমানে কোনো ক্লাসের জন্য নির্ধারিত নন। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।"
+  "teacherNoClassesAssigned": "আপনি বর্তমানে কোনো ক্লাসের জন্য নির্ধারিত নন। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।",
+  "verifySchoolCodeTitle": "স্কুল কোড যাচাই করুন",
+  "verifySchoolCodeDesc": "আপনার স্কুলের ড্যাশবোর্ডে প্রবেশ করতে আপনার প্রশাসক কর্তৃক প্রদত্ত স্কুল শনাক্তকারী কোডটি প্রবেশ করান।",
+  "schoolCodeRequiredError": "স্কুল কোড আবশ্যক।",
+  "validationErrorTitle": "যাচাইকরণ ত্রুটি",
+  "verificationFailedTitle": "যাচাইকরণ ব্যর্থ হয়েছে",
+  "schoolCodeVerifiedTitle": "স্কুল কোড যাচাই করা হয়েছে",
+  "redirectingToDashboardDesc": "আপনার ড্যাশবোর্ডে পাঠানো হচ্ছে...",
+  "verificationProcessError": "যাচাইকরণের সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "verifyAndProceedButton": "যাচাই করুন এবং এগিয়ে যান",
+  "loadingPleaseWait": "লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...",
+  "schoolVerificationNeededTitle": "স্কুল কোড যাচাইকরণ প্রয়োজন",
+  "schoolVerificationNeededDesc": "ড্যাশবোর্ডে প্রবেশ করতে অনুগ্রহ করে আপনার স্কুল কোড যাচাই করুন।",
+  "goToVerificationPage": "যাচাইকরণ পৃষ্ঠায় যান"
 }

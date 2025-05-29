@@ -170,5 +170,18 @@
   "signUpButton": "Kwiyandikisha",
   "teacherMissingSchoolCodeError": "Konti yawe ntihujwe na kode y'ishuri. Hamagara umuyobozi wawe.",
   "teacherInvalidSchoolCodeError": "Kode y'ishuri ihuje na konti yawe ntiyemewe. Hamagara umuyobozi wawe.",
-  "teacherNoClassesAssigned": "Nta mashuri wishinzwe kuri ubu. Hamagara umuyobozi wawe."
+  "teacherNoClassesAssigned": "Nta mashuri wishinzwe kuri ubu. Hamagara umuyobozi wawe.",
+  "verifySchoolCodeTitle": "Genzura Kode y'Ishuri",
+  "verifySchoolCodeDesc": "Nyamuneka andika Kode yo Kumenyekanisha Ishuri yatanzwe n'umuyobozi wawe kugira ngo ubashe kugera ku mbonerahamwe y'ishuri ryawe.",
+  "schoolCodeRequiredError": "Kode y'ishuri irakenewe.",
+  "validationErrorTitle": "Ikosa ryo Kwemeza",
+  "verificationFailedTitle": "Kugenzura Byanze",
+  "schoolCodeVerifiedTitle": "Kode y'Ishuri Yemejwe",
+  "redirectingToDashboardDesc": "Woherejwe ku mbonerahamwe yawe...",
+  "verificationProcessError": "Habaye ikosa mu kugenzura. Nyamuneka gerageza nanone.",
+  "verifyAndProceedButton": "Genzura kandi Ukomeze",
+  "loadingPleaseWait": "Gutwara, nyamuneka tegereza...",
+  "schoolVerificationNeededTitle": "Kugenzura Kode y'Ishuri Birakenewe",
+  "schoolVerificationNeededDesc": "Nyamuneka genzura kode y'ishuri yawe kugira ngo ugere ku mbonerahamwe.",
+  "goToVerificationPage": "Jya ku Rupapuro rwo Kugenzura"
 }

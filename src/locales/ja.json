@@ -170,5 +170,18 @@
   "signUpButton": "サインアップ",
   "teacherMissingSchoolCodeError": "あなたのアカウントは学校コードに関連付けられていません。管理者に連絡してください。",
   "teacherInvalidSchoolCodeError": "アカウントに関連付けられている学校コードが認識されません。管理者に連絡してください。",
-  "teacherNoClassesAssigned": "現在、どのクラスにも割り当てられていません。管理者に連絡してください。"
+  "teacherNoClassesAssigned": "現在、どのクラスにも割り当てられていません。管理者に連絡してください。",
+  "verifySchoolCodeTitle": "学校コードの確認",
+  "verifySchoolCodeDesc": "学校のダッシュボードにアクセスするには、管理者から提供された学校識別コードを入力してください。",
+  "schoolCodeRequiredError": "学校コードは必須です。",
+  "validationErrorTitle": "検証エラー",
+  "verificationFailedTitle": "検証に失敗しました",
+  "schoolCodeVerifiedTitle": "学校コードが確認されました",
+  "redirectingToDashboardDesc": "ダッシュボードにリダイレクトしています...",
+  "verificationProcessError": "検証中にエラーが発生しました。もう一度お試しください。",
+  "verifyAndProceedButton": "確認して続行",
+  "loadingPleaseWait": "読み込み中、お待ちください...",
+  "schoolVerificationNeededTitle": "学校コードの確認が必要です",
+  "schoolVerificationNeededDesc": "ダッシュボードにアクセスするには、学校コードを確認してください。",
+  "goToVerificationPage": "確認ページへ移動"
 }

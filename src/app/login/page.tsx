@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [role, setRole] = useState<Role | ''>('');
   const [name, setName] = useState('');
   const [adminSecretCode, setAdminSecretCode] = useState('');
-  const [teacherSchoolCode, setTeacherSchoolCode] = useState(''); // New state for teacher's school code
+  const [teacherSchoolCode, setTeacherSchoolCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('login');
   const router = useRouter();
@@ -56,7 +56,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: translate("loginSuccessTitle") || "Login Successful", description: translate("loginSuccessDesc") || "Redirecting to dashboard..." });
-      router.push('/');
+      router.push('/'); // Root page will handle role-based redirects and verification checks
     } catch (err: any) {
       setError(err.message);
        toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
@@ -108,6 +108,7 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
+        isSchoolCodeVerified: role === 'Admin', // Admins are implicitly "verified" for their own school code
       };
 
       if (role === 'Teacher') {
@@ -119,7 +120,7 @@ export default function LoginPage() {
         userDocData.classIds = [];
         userDocData.parentIds = [];
       }
-
+      // For Admins, their schoolIdentifierCode is set on their dashboard.
 
       await setDoc(doc(db, 'users', user.uid), userDocData);
 
@@ -253,7 +254,7 @@ export default function LoginPage() {
                     <Label htmlFor="teacher-school-code">{translate("teacherSchoolCodeLabel")}</Label>
                     <Input
                       id="teacher-school-code"
-                      type="text" // Or password if it should be hidden
+                      type="text"
                       placeholder={translate("enterSchoolCodePlaceholderTeacher")}
                       value={teacherSchoolCode}
                       onChange={(e) => setTeacherSchoolCode(e.target.value)}
