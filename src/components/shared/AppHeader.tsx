@@ -4,13 +4,13 @@
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { LogOut, GraduationCap, PanelLeft, Languages, Check } from "lucide-react"; // Added Languages and Check
+import { LogOut, UserCheck, PanelLeft, Languages, Check } from "lucide-react"; // Changed GraduationCap to UserCheck
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle, SheetTrigger
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import type { ReactNode } from 'react';
-import { useLanguage, type Language } from "@/contexts/LanguageContext"; // Import useLanguage
+import { useLanguage, type Language } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +29,7 @@ interface AppHeaderProps {
 export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeaderProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { language, setLanguage, translate } = useLanguage(); // Use language context
+  const { language, setLanguage, translate } = useLanguage();
 
   const handleLogout = async () => {
     try {
@@ -66,7 +66,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon">
                   <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{translate('mobileMenuTitle') || 'Menu'}</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 flex flex-col">
@@ -74,7 +74,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
                   <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Menu'}</SheetTitle>
                 </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
-                   <GraduationCap className="h-6 w-6 text-primary" />
+                   <UserCheck className="h-6 w-6 text-primary" /> {/* Changed icon here */}
                    <span className="text-lg font-semibold text-primary">{translate('appName')}</span>
                 </Link>
                 <div className="flex-grow overflow-y-auto">
@@ -86,7 +86,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
         )}
 
         <Link href={homePath} className="hidden items-center gap-2 sm:flex">
-           <GraduationCap className="h-6 w-6 text-primary" />
+           <UserCheck className="h-6 w-6 text-primary" />  {/* Changed icon here */}
            <h1 className="text-xl font-semibold text-primary">{translate('appName')}</h1>
         </Link>
         <span className="text-xl font-light text-muted-foreground hidden sm:inline">| {title}</span>
