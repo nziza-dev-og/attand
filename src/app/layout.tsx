@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'AttendEase',
   description: 'Streamlined attendance tracking for schools.',
   icons: {
-    icon: '/favicon.ico', // Explicitly reference favicon.ico
+    icon: '/icon.png', // Updated to reference icon.png
   },
 };
 
