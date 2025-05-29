@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'; // Added updateProfile
 import { auth, db } from '@/lib/firebase';
-import { setDoc, doc, Timestamp } from 'firebase/firestore'; // Import Timestamp
+import { setDoc, doc, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,20 +13,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
-import type { Role } from '@/lib/types'; // Import Role type
+import type { Role } from '@/lib/types';
 
-const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance"; // Use environment variable or default
+const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // Use '' for initial state but handle 'none' from Select
   const [role, setRole] = useState<Role | ''>('');
-  const [name, setName] = useState(''); // Add state for name
-  const [secretCode, setSecretCode] = useState(''); // State for secret code
+  const [name, setName] = useState('');
+  const [secretCode, setSecretCode] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [currentTab, setCurrentTab] = useState('login'); // To reset fields on tab change
+  const [currentTab, setCurrentTab] = useState('login');
   const router = useRouter();
   const { toast } = useToast();
 
@@ -35,14 +34,14 @@ export default function LoginPage() {
     setPassword('');
     setConfirmPassword('');
     setRole('');
-    setName(''); // Reset name field
+    setName('');
     setSecretCode('');
     setError(null);
   };
 
   const handleTabChange = (value: string) => {
     setCurrentTab(value);
-    resetFormFields(); // Clear fields when switching tabs
+    resetFormFields();
   };
 
 
@@ -52,7 +51,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: "Login Successful", description: "Redirecting to dashboard..." });
-      router.push('/'); // Redirect to dashboard or role-specific page
+      router.push('/');
     } catch (err: any) {
       setError(err.message);
        toast({ variant: "destructive", title: "Login Failed", description: err.message });
@@ -67,20 +66,17 @@ export default function LoginPage() {
       toast({ variant: "destructive", title: "Sign Up Failed", description: "Passwords do not match" });
       return;
     }
-     // Check if role is selected (and not the placeholder 'none')
     if (!role || role === 'none') {
         setError("Please select a role");
         toast({ variant: "destructive", title: "Sign Up Failed", description: "Please select a role" });
         return;
     }
-     if (!name.trim()) { // Validate name is not empty
+     if (!name.trim()) {
          setError("Please enter your name");
          toast({ variant: "destructive", title: "Sign Up Failed", description: "Please enter your name" });
          return;
      }
 
-
-    // Check for secret code if Admin role is selected
     if (role === 'Admin') {
       if (secretCode !== ADMIN_SECRET_CODE) {
         setError("Invalid secret code for Admin registration.");
@@ -93,26 +89,26 @@ export default function LoginPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Set the displayName on the Firebase Auth user profile
+      await updateProfile(user, { displayName: name.trim() });
+
       // Store user role and name in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
-        role: role, // This should be 'Admin', 'Teacher', or 'Parent'
+        role: role,
         uid: user.uid,
-        name: name.trim(), // Save trimmed name
-        createdAt: Timestamp.now(), // Use Firestore Timestamp
-         // Initialize role-specific fields if applicable
+        name: name.trim(),
+        createdAt: Timestamp.now(),
          ...(role === 'Teacher' && { assignedClassIds: [] }),
          ...(role === 'Parent' && { childIds: [] }),
-         ...(role === 'Student' && { classIds: [], parentIds: [] }), // Though students aren't signed up here
+         ...(role === 'Student' && { classIds: [], parentIds: [] }),
       });
 
       toast({ title: "Sign Up Successful", description: "You can now log in." });
       resetFormFields();
-      setCurrentTab('login'); // Switch back to login tab after successful signup
-
+      setCurrentTab('login');
 
     } catch (err: any) {
-      // Handle specific Firebase errors if needed
       if (err.code === 'auth/email-already-in-use') {
         setError("This email address is already in use.");
         toast({ variant: "destructive", title: "Sign Up Failed", description: "This email address is already in use." });
@@ -207,14 +203,11 @@ export default function LoginPage() {
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                   {/* Pass role or 'none' if role is empty */}
                    <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
                       <SelectTrigger id="role">
-                        {/* Placeholder updated */}
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                       <SelectContent>
-                         {/* Add a disabled item with value 'none' for the placeholder */}
                          <SelectItem value="none" disabled>Select your role</SelectItem>
                         <SelectItem value="Admin">Admin</SelectItem>
                         <SelectItem value="Teacher">Teacher</SelectItem>
@@ -222,18 +215,17 @@ export default function LoginPage() {
                       </SelectContent>
                     </Select>
                 </div>
-                 {/* Conditionally render secret code input for Admin */}
                 {role === 'Admin' && (
                   <div className="space-y-2">
                     <Label htmlFor="secret-code">Admin Secret Code</Label>
                     <Input
                       id="secret-code"
-                      type="password" // Use password type to hide the code
+                      type="password"
                       placeholder="Enter secret code"
                       value={secretCode}
                       onChange={(e) => setSecretCode(e.target.value)}
                       required
-                      autoComplete="off" // Prevent browser auto-filling
+                      autoComplete="off"
                     />
                   </div>
                 )}
