@@ -8,13 +8,16 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 
 const fontSans = FontSans({
-  subsets: ['latin'], // Kinyarwanda uses Latin script, 'latin' subset is generally fine.
+  subsets: ['latin'],
   variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'AttendEase', // This could also be translated if needed at build time or dynamically
+  title: 'AttendEase',
   description: 'Streamlined attendance tracking for schools.',
+  icons: {
+    icon: '/favicon.ico', // Explicitly reference favicon.ico
+  },
 };
 
 export default function RootLayout({
