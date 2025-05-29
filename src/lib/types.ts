@@ -1,3 +1,4 @@
+
 // src/lib/types.ts
 
 import type { Timestamp } from "firebase/firestore";
@@ -10,6 +11,7 @@ export interface UserProfile {
   role: Role;
   name?: string; // Optional: User's display name
   createdAt: Timestamp;
+  avatarUrl?: string; // Added avatarUrl here for general user profiles
 }
 
 export interface Class {
@@ -36,6 +38,7 @@ export interface Teacher {
     name: string;
     email: string;
     assignedClassIds?: string[]; // IDs of classes the teacher is assigned to
+    avatarUrl?: string; // Added avatarUrl
 }
 
 export interface ParentNotificationPreferences {
@@ -50,6 +53,7 @@ export interface Parent {
     email: string;
     childIds?: string[]; // UIDs of linked children (students)
     notificationPreferences?: ParentNotificationPreferences;
+    avatarUrl?: string; // Added avatarUrl
 }
 
 
@@ -91,4 +95,3 @@ export interface BehaviorReport {
   seenByParentIds?: string[]; // Optional: if tracking individual parent views
   parentResponses?: ParentResponse[];
 }
-
