@@ -9,6 +9,7 @@ import {
   UserPlus,
   BookUser,
   UserCog,
+  Megaphone, // Added Megaphone icon
 } from "lucide-react"
 
 import {
@@ -106,6 +107,18 @@ export function AdminSidebar() {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Attendance Reports</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/admin/behavior-reports"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Megaphone className="h-5 w-5" />
+                  <span className="sr-only">Behavior Reports</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Behavior Reports</TooltipContent>
             </Tooltip>
           </nav>
           </TooltipProvider>

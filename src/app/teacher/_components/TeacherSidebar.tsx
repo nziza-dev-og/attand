@@ -5,6 +5,7 @@ import {
   Home,
   ClipboardCheck,
   History,
+  Megaphone, // Added Megaphone icon
 } from "lucide-react"
 
 import {
@@ -35,7 +36,7 @@ export function TeacherSidebar() {
               <TooltipTrigger asChild>
                 <Link
                   href="/teacher/mark-attendance"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8" // Highlight current page
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <ClipboardCheck className="h-5 w-5" />
                   <span className="sr-only">Mark Attendance</span>
@@ -54,6 +55,18 @@ export function TeacherSidebar() {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Attendance History</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/teacher/behavior-reports"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Megaphone className="h-5 w-5" />
+                  <span className="sr-only">Behavior Reports</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Behavior Reports</TooltipContent>
             </Tooltip>
           </nav>
           </TooltipProvider>

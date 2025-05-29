@@ -58,3 +58,21 @@ export interface AttendanceRecord {
   timestamp: Timestamp; // Firestore timestamp when marked
   notes?: string; // Optional notes from the teacher
 }
+
+export type BehaviorReportSeverity = 'Minor' | 'Moderate' | 'Severe';
+
+export interface BehaviorReport {
+  id: string; // Firestore document ID
+  studentId: string;
+  studentName: string; // Denormalized for easier display
+  reporterId: string; // UID of Admin or Teacher who reported
+  reporterName: string; // Denormalized
+  reporterRole: 'Admin' | 'Teacher';
+  reportDate: Timestamp; // Date of the incident
+  title: string;
+  description: string;
+  severity?: BehaviorReportSeverity;
+  createdAt: Timestamp; // When the report was created in the system
+  parentNotifiedAt?: Timestamp; // Optional: When parent was "notified"
+  seenByParentIds?: string[]; // Optional: if tracking individual parent views
+}

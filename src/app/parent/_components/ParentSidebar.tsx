@@ -7,7 +7,8 @@ import {
   CalendarDays,
   BarChart3,
   BellRing,
-   Loader2,
+  Loader2,
+  Megaphone, // Added Megaphone icon
 } from "lucide-react"
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,7 +47,7 @@ export function ParentSidebar() {
                 const parentDocSnap = await getDoc(parentDocRef);
 
                 if (parentDocSnap.exists() && parentDocSnap.data().role === 'Parent') {
-                    const parentData = parentDocSnap.data() as Parent; // Cast to Parent type
+                    const parentData = parentDocSnap.data() as Parent; 
                     const childIds = parentData.childIds || [];
 
                      if (childIds.length > 0) {
@@ -64,11 +65,11 @@ export function ParentSidebar() {
                         setChildren([]);
                     }
                 } else {
-                    setChildren([]); // Not a parent or doc doesn't exist
+                    setChildren([]); 
                 }
             } catch (error) {
                 console.error("Error fetching children for sidebar:", error);
-                setChildren([]); // Set empty on error
+                setChildren([]); 
             } finally {
                 setLoadingChildren(false);
             }
@@ -82,7 +83,6 @@ export function ParentSidebar() {
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
          <TooltipProvider>
          <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-             {/* Dashboard Link */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -96,30 +96,40 @@ export function ParentSidebar() {
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
 
-             {/* Loading state for children */}
              {loadingChildren && (
                   <div className="flex h-9 w-9 items-center justify-center md:h-8 md:w-8">
                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
              )}
 
-
-            {/* Links for each child */}
-             {!loadingChildren && children.map(child => (
-                 <Tooltip key={child.id}>
+            {!loadingChildren && children.map(child => (
+                <React.Fragment key={child.id}>
+                 <Tooltip>
                      <TooltipTrigger asChild>
                          <Link
-                             href={`/parent/child/${child.id}`} // Dynamic route per child
+                             href={`/parent/child/${child.id}`} 
                              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                              >
                              <User className="h-5 w-5" />
-                             <span className="sr-only">{child.name}'s Attendance</span>
+                             <span className="sr-only">{child.name}'s Details</span>
                          </Link>
                      </TooltipTrigger>
-                     <TooltipContent side="right">{child.name}'s Attendance</TooltipContent>
+                     <TooltipContent side="right">{child.name}'s Details (Attendance)</TooltipContent>
                  </Tooltip>
+                 <Tooltip>
+                     <TooltipTrigger asChild>
+                         <Link
+                             href={`/parent/child/${child.id}/behavior-reports`}
+                             className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                             >
+                             <Megaphone className="h-5 w-5" />
+                             <span className="sr-only">{child.name}'s Behavior Reports</span>
+                         </Link>
+                     </TooltipTrigger>
+                     <TooltipContent side="right">{child.name}'s Behavior Reports</TooltipContent>
+                 </Tooltip>
+                 </React.Fragment>
              ))}
-              {/* Message if no children */}
               {!loadingChildren && children.length === 0 && (
                  <Tooltip>
                     <TooltipTrigger asChild>
@@ -131,40 +141,35 @@ export function ParentSidebar() {
                  </Tooltip>
               )}
 
-
-             {/* General Attendance View Link - Only if children exist */}
               {!loadingChildren && children.length > 0 && (
-                 <Tooltip>
-                   <TooltipTrigger asChild>
-                     <Link
-                       href="/parent/attendance"
-                       className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                     >
-                       <CalendarDays className="h-5 w-5" />
-                       <span className="sr-only">View Attendance</span>
-                     </Link>
-                   </TooltipTrigger>
-                   <TooltipContent side="right">View Attendance</TooltipContent>
-                 </Tooltip>
+                 <>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href="/parent/attendance"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                        >
+                          <CalendarDays className="h-5 w-5" />
+                          <span className="sr-only">View All Attendance</span>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">View All Attendance</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href="/parent/summary"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                        >
+                          <BarChart3 className="h-5 w-5" />
+                          <span className="sr-only">Attendance Summary</span>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">Attendance Summary</TooltipContent>
+                    </Tooltip>
+                 </>
               )}
 
-            {/* Summary/Stats Link - Only if children exist */}
-             {!loadingChildren && children.length > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href="/parent/summary"
-                      className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                    >
-                      <BarChart3 className="h-5 w-5" />
-                      <span className="sr-only">Attendance Summary</span>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">Attendance Summary</TooltipContent>
-                </Tooltip>
-              )}
-
-             {/* Notifications Link (Optional) */}
               <Tooltip>
               <TooltipTrigger asChild>
                 <Link
