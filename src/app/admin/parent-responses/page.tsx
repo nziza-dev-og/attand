@@ -12,6 +12,7 @@ import { Loader2, MessageSquare, Info, UserCircle, CalendarDays, ClipboardList }
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { BehaviorReport, ParentResponse } from '@/lib/types';
+import { cn } from "@/lib/utils"; // Added import for cn
 
 const getSeverityBadgeVariant = (severity?: BehaviorReport['severity']): 'default' | 'destructive' | 'secondary' | 'outline' => {
   if (!severity) return 'outline';
@@ -55,10 +56,6 @@ export default function ParentResponsesPage() {
           parentResponses: doc.data().parentResponses || [] // Ensure parentResponses is an array
         } as BehaviorReport));
         
-        // Filter out reports that don't have any parent responses for this page
-        // const reportsWithResponses = fetchedReports.filter(report => report.parentResponses && report.parentResponses.length > 0);
-        // For now, let's show all reports and indicate if they have responses or not.
-
         setReports(fetchedReports);
       } catch (err: any) {
         console.error("Error fetching behavior reports:", err);
