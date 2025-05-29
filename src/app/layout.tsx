@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: 'AttendEase',
   description: 'Streamlined attendance tracking for schools.',
   icons: {
-    // Replace this with the actual URL of your favicon
-    icon: 'https://placehold.co/32x32.png/E0F7FA/008080?text=AE', // Example placeholder URL
+    // Reference the favicon.ico that should be placed in the public directory
+    icon: '/favicon.ico', 
     // apple: '/apple-icon.png', // Example for Apple touch icon
   },
 };
