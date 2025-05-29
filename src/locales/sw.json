@@ -85,7 +85,7 @@
   "teacherFallbackName": "Mwalimu",
   "userNotTeacherError": "Mtumiaji amepatikana lakini hajasajiliwa kama Mwalimu.",
   "teacherProfileError": "Wasifu wa mwalimu haukupatikana.",
-  "loadTeacherError": "Imeshindwa kupakia taarifa za mwalimu.",
+  "loadTeacherError": "Imeshindwa kupakia taarifa za mwalimu au kuthibitisha uhusiano na shule.",
   "contactSupportError": "Tafadhali wasiliana na usaidizi ikiwa tatizo litaendelea.",
   "noTeacherDataTitle": "Hakuna Data ya Mwalimu",
   "noTeacherDataDesc": "Haikuweza kupata taarifa za mwalimu.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "Nambari ya Utambulisho wa Shule",
   "enterSchoolCodePlaceholderTeacher": "Weka nambari kutoka kwa msimamizi wa shule yako",
   "confirmPasswordLabel": "Thibitisha Nenosiri",
-  "signUpButton": "Jisajili"
+  "signUpButton": "Jisajili",
+  "teacherMissingSchoolCodeError": "Akaunti yako haihusishwi na nambari ya shule. Tafadhali wasiliana na msimamizi wako.",
+  "teacherInvalidSchoolCodeError": "Nambari ya shule inayohusishwa na akaunti yako haitambuliki. Tafadhali wasiliana na msimamizi wako.",
+  "teacherNoClassesAssigned": "Kwa sasa hujaagizwa kwa madarasa yoyote. Tafadhali wasiliana na msimamizi wako."
 }
-

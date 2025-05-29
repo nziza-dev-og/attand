@@ -14,6 +14,8 @@ export interface UserProfile {
   avatarUrl?: string; // Added avatarUrl here for general user profiles
   schoolIdentifierCode?: string; // For Admins to set their school's code
   enteredSchoolCode?: string; // For Teachers to enter when signing up
+  // Consider adding assignedClassIds here if it's common for more than just teachers, or manage through role-specific interfaces
+  assignedClassIds?: string[]; // Moved from Teacher to UserProfile if Admin might also have it, or keep on Teacher if specific
 }
 
 export interface Class {
@@ -35,13 +37,12 @@ export interface Student {
   avatarUrl?: string; // Optional profile picture URL
 }
 
-export interface Teacher {
-    id: string; // Firestore document ID (user UID)
-    name: string;
-    email: string;
-    assignedClassIds?: string[]; // IDs of classes the teacher is assigned to
-    avatarUrl?: string; // Added avatarUrl
-    // enteredSchoolCode?: string; // This is now part of UserProfile
+// Teacher interface now extends UserProfile for better type safety and less redundancy
+export interface Teacher extends UserProfile {
+    role: 'Teacher'; // Override role to be specific
+    // assignedClassIds?: string[]; // Already in UserProfile if needed there, or keep here if strictly teacher-only
+    // enteredSchoolCode is inherited from UserProfile
+    // Other fields like id, name, email, avatarUrl, createdAt are inherited from UserProfile
 }
 
 export interface ParentNotificationPreferences {
@@ -50,13 +51,12 @@ export interface ParentNotificationPreferences {
   newBehaviorReport?: boolean;
 }
 
-export interface Parent {
-    id: string; // Firestore document ID (user UID)
-    name: string;
-    email: string;
+// Parent interface now extends UserProfile
+export interface Parent extends UserProfile {
+    role: 'Parent'; // Override role
     childIds?: string[]; // UIDs of linked children (students)
     notificationPreferences?: ParentNotificationPreferences;
-    avatarUrl?: string; // Added avatarUrl
+    // Other fields like id, name, email, avatarUrl, createdAt are inherited
 }
 
 
@@ -86,6 +86,7 @@ export interface BehaviorReport {
   id: string; // Firestore document ID
   studentId: string;
   studentName: string; // Denormalized for easier display
+  classId?: string; // Optional: class context for the report
   reporterId: string; // UID of Admin or Teacher who reported
   reporterName: string; // Denormalized
   reporterRole: 'Admin' | 'Teacher';

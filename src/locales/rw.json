@@ -85,7 +85,7 @@
   "teacherFallbackName": "Mwarimu",
   "userNotTeacherError": "Umukoresha yabonetse ariko ntiyanditswe nka Mwarimu.",
   "teacherProfileError": "Porofayili ya mwarimu ntiyabonetse.",
-  "loadTeacherError": "Kutabasha gutwara amakuru ya mwarimu.",
+  "loadTeacherError": "Kutabasha gutwara amakuru ya mwarimu cyangwa kwemeza ihuzwa ry'ishuri.",
   "contactSupportError": "Hamagara ubufasha niba ikibazo gikomeje.",
   "noTeacherDataTitle": "Nta makuru ya Mwarimu",
   "noTeacherDataDesc": "Kutabasha kubona amakuru ya mwarimu.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "Kode yo Kumenyekanisha Ishuri",
   "enterSchoolCodePlaceholderTeacher": "Andika kode wavanye ku muyobozi w'ishuri ryawe",
   "confirmPasswordLabel": "Emeza Ijambobanga",
-  "signUpButton": "Kwiyandikisha"
+  "signUpButton": "Kwiyandikisha",
+  "teacherMissingSchoolCodeError": "Konti yawe ntihujwe na kode y'ishuri. Hamagara umuyobozi wawe.",
+  "teacherInvalidSchoolCodeError": "Kode y'ishuri ihuje na konti yawe ntiyemewe. Hamagara umuyobozi wawe.",
+  "teacherNoClassesAssigned": "Nta mashuri wishinzwe kuri ubu. Hamagara umuyobozi wawe."
 }
-

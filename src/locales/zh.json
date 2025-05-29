@@ -85,7 +85,7 @@
   "teacherFallbackName": "教师",
   "userNotTeacherError": "找到用户但未注册为教师。",
   "teacherProfileError": "未找到教师资料。",
-  "loadTeacherError": "加载教师信息失败。",
+  "loadTeacherError": "加载教师信息或验证学校关联失败。",
   "contactSupportError": "如果问题仍然存在，请联系支持人员。",
   "noTeacherDataTitle": "无教师数据",
   "noTeacherDataDesc": "无法找到教师信息。",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "学校识别码",
   "enterSchoolCodePlaceholderTeacher": "输入您学校管理员提供的代码",
   "confirmPasswordLabel": "确认密码",
-  "signUpButton": "注册"
+  "signUpButton": "注册",
+  "teacherMissingSchoolCodeError": "您的帐户未与学校代码关联。请联系您的管理员。",
+  "teacherInvalidSchoolCodeError": "与您的帐户关联的学校代码无法识别。请联系您的管理员。",
+  "teacherNoClassesAssigned": "您当前未分配到任何班级。请联系您的管理员。"
 }
-

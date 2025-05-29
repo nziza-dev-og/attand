@@ -85,7 +85,7 @@
   "teacherFallbackName": "शिक्षक",
   "userNotTeacherError": "उपयोगकर्ता मिला लेकिन शिक्षक के रूप में पंजीकृत नहीं है।",
   "teacherProfileError": "शिक्षक प्रोफ़ाइल नहीं मिली।",
-  "loadTeacherError": "शिक्षक जानकारी लोड करने में विफल।",
+  "loadTeacherError": "शिक्षक जानकारी लोड करने या स्कूल एसोसिएशन को मान्य करने में विफल।",
   "contactSupportError": "यदि समस्या बनी रहती है तो कृपया समर्थन से संपर्क करें।",
   "noTeacherDataTitle": "कोई शिक्षक डेटा नहीं",
   "noTeacherDataDesc": "शिक्षक जानकारी नहीं मिल सकी।",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "स्कूल पहचान कोड",
   "enterSchoolCodePlaceholderTeacher": "अपने स्कूल व्यवस्थापक से कोड दर्ज करें",
   "confirmPasswordLabel": "पासवर्ड की पुष्टि करें",
-  "signUpButton": "साइन अप करें"
+  "signUpButton": "साइन अप करें",
+  "teacherMissingSchoolCodeError": "आपका खाता किसी स्कूल कोड से संबद्ध नहीं है। कृपया अपने व्यवस्थापक से संपर्क करें।",
+  "teacherInvalidSchoolCodeError": "आपके खाते से संबद्ध स्कूल कोड पहचाना नहीं गया है। कृपया अपने व्यवस्थापक से संपर्क करें।",
+  "teacherNoClassesAssigned": "आप वर्तमान में किसी भी कक्षा को नहीं सौंपे गए हैं। कृपया अपने व्यवस्थापक से संपर्क करें।"
 }
-

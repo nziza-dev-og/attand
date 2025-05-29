@@ -85,7 +85,7 @@
   "teacherFallbackName": "Enseignant",
   "userNotTeacherError": "Utilisateur trouvé mais non enregistré comme enseignant.",
   "teacherProfileError": "Profil enseignant introuvable.",
-  "loadTeacherError": "Échec du chargement des informations de l'enseignant.",
+  "loadTeacherError": "Échec du chargement des informations de l'enseignant ou de la validation de l'association à l'école.",
   "contactSupportError": "Veuillez contacter le support si le problème persiste.",
   "noTeacherDataTitle": "Aucune donnée d'enseignant",
   "noTeacherDataDesc": "Impossible de trouver les informations de l'enseignant.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "Code d'Identification de l'École",
   "enterSchoolCodePlaceholderTeacher": "Entrez le code de l'administrateur de votre école",
   "confirmPasswordLabel": "Confirmez le Mot de Passe",
-  "signUpButton": "S'inscrire"
+  "signUpButton": "S'inscrire",
+  "teacherMissingSchoolCodeError": "Votre compte n'est pas associé à un code d'école. Veuillez contacter votre administrateur.",
+  "teacherInvalidSchoolCodeError": "Le code d'école associé à votre compte n'est pas reconnu. Veuillez contacter votre administrateur.",
+  "teacherNoClassesAssigned": "Vous n'êtes actuellement affecté à aucune classe. Veuillez contacter votre administrateur."
 }
-

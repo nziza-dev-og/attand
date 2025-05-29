@@ -85,7 +85,7 @@
   "teacherFallbackName": "Malami",
   "userNotTeacherError": "An sami mai amfani amma ba a yi masa rajista a matsayin Malami ba.",
   "teacherProfileError": "Ba a sami bayanan malami ba.",
-  "loadTeacherError": "An kasa loda bayanan malami.",
+  "loadTeacherError": "An kasa loda bayanan malami ko tabbatar da alaƙar makaranta.",
   "contactSupportError": "Da fatan za a tuntuɓi tallafi idan matsalar ta ci gaba.",
   "noTeacherDataTitle": "Babu Bayanan Malami",
   "noTeacherDataDesc": "Ba a iya samun bayanan malami ba.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "Lambar Gano Makaranta",
   "enterSchoolCodePlaceholderTeacher": "Shigar da lamba daga mai gudanar da makarantar ka",
   "confirmPasswordLabel": "Tabbatar da Kalmar Shiga",
-  "signUpButton": "Yi Rajista"
+  "signUpButton": "Yi Rajista",
+  "teacherMissingSchoolCodeError": "Asusunka ba a haɗa shi da lambar makaranta ba. Da fatan za a tuntuɓi mai gudanarwarka.",
+  "teacherInvalidSchoolCodeError": "Ba a gane lambar makarantar da aka haɗa da asusunka ba. Da fatan za a tuntuɓi mai gudanarwarka.",
+  "teacherNoClassesAssigned": "A halin yanzu ba a sanya maka wani aji ba. Da fatan za a tuntuɓi mai gudanarwarka."
 }
-

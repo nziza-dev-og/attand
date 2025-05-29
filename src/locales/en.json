@@ -85,7 +85,7 @@
   "teacherFallbackName": "Teacher",
   "userNotTeacherError": "User found but is not registered as a Teacher.",
   "teacherProfileError": "Teacher profile not found.",
-  "loadTeacherError": "Failed to load teacher information.",
+  "loadTeacherError": "Failed to load teacher information or validate school association.",
   "contactSupportError": "Please contact support if the issue persists.",
   "noTeacherDataTitle": "No Teacher Data",
   "noTeacherDataDesc": "Could not find teacher information.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "School Identifier Code",
   "enterSchoolCodePlaceholderTeacher": "Enter code from your school admin",
   "confirmPasswordLabel": "Confirm Password",
-  "signUpButton": "Sign Up"
+  "signUpButton": "Sign Up",
+  "teacherMissingSchoolCodeError": "Your account is not associated with a school code. Please contact your administrator.",
+  "teacherInvalidSchoolCodeError": "The school code associated with your account is not recognized. Please contact your administrator.",
+  "teacherNoClassesAssigned": "You are not currently assigned to any classes. Please contact your administrator."
 }
-

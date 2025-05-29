@@ -85,7 +85,7 @@
   "teacherFallbackName": "Olùkọ́",
   "userNotTeacherError": "A rí olùṣe ṣùgbọ́n kò forúkọsílẹ̀ gẹ́gẹ́ bíi Olùkọ́.",
   "teacherProfileError": "A kò rí àpamọ́ olùkọ́.",
-  "loadTeacherError": "Kò lè gba ìwífún olùkọ́.",
+  "loadTeacherError": "Kò lè gba ìwífún olùkọ́ tàbí ṣayẹ̀wò ìsopọ̀ ilé-ìwé.",
   "contactSupportError": "Jọ̀wọ́ kan sí àtìlẹ́yìn tí ìṣòro bá ń báa lọ.",
   "noTeacherDataTitle": "Kò sí Dátà Olùkọ́",
   "noTeacherDataDesc": "Kò lè rí ìwífún olùkọ́.",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "Kóòdù Ìdánimọ̀ Ilé-ìwé",
   "enterSchoolCodePlaceholderTeacher": "Tẹ kóòdù láti ọwọ́ alábòójútó ilé-ìwé rẹ",
   "confirmPasswordLabel": "Túntún Ọ̀rọ̀ìpamọ́",
-  "signUpButton": "Forúkọsílẹ̀"
+  "signUpButton": "Forúkọsílẹ̀",
+  "teacherMissingSchoolCodeError": "Àpamọ́ rẹ kò sopọ̀ mọ́ kóòdù ilé-ìwé kan. Jọ̀wọ́ kan sí alábòójútó rẹ.",
+  "teacherInvalidSchoolCodeError": "Kóòdù ilé-ìwé tí ó sopọ̀ mọ́ àpamọ́ rẹ kò ṣeé gbà. Jọ̀wọ́ kan sí alábòójútó rẹ.",
+  "teacherNoClassesAssigned": "A kò tíì yàn ọ́ sí kilasi kankan lásìkò yìí. Jọ̀wọ́ kan sí alábòójútó rẹ."
 }
-

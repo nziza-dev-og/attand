@@ -85,7 +85,7 @@
   "teacherFallbackName": "教師",
   "userNotTeacherError": "ユーザーは見つかりましたが、教師として登録されていません。",
   "teacherProfileError": "教師のプロフィールが見つかりません。",
-  "loadTeacherError": "教師情報の読み込みに失敗しました。",
+  "loadTeacherError": "教師情報の読み込みまたは学校との関連付けの検証に失敗しました。",
   "contactSupportError": "問題が解決しない場合は、サポートにお問い合わせください。",
   "noTeacherDataTitle": "教師データなし",
   "noTeacherDataDesc": "教師情報が見つかりませんでした。",
@@ -167,6 +167,8 @@
   "teacherSchoolCodeLabel": "学校識別コード",
   "enterSchoolCodePlaceholderTeacher": "学校の管理者からのコードを入力してください",
   "confirmPasswordLabel": "パスワードを確認",
-  "signUpButton": "サインアップ"
+  "signUpButton": "サインアップ",
+  "teacherMissingSchoolCodeError": "あなたのアカウントは学校コードに関連付けられていません。管理者に連絡してください。",
+  "teacherInvalidSchoolCodeError": "アカウントに関連付けられている学校コードが認識されません。管理者に連絡してください。",
+  "teacherNoClassesAssigned": "現在、どのクラスにも割り当てられていません。管理者に連絡してください。"
 }
-
