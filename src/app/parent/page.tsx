@@ -3,19 +3,25 @@
 "use client"; // Use client component for hooks and state
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { User, CalendarDays, BarChart3, Loader2 } from "lucide-react";
+import { User, CalendarDays, BarChart3, Loader2, ImageIcon, Save, UserCircle } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, getDoc, collectionGroup, Timestamp } from 'firebase/firestore';
-import type { Student, AttendanceRecord, Parent } from '@/lib/types'; // Import types
-import { useLanguage } from '@/contexts/LanguageContext'; // Import useLanguage
+import { db, auth } from '@/lib/firebase';
+import { collection, query, where, getDocs, doc, getDoc, collectionGroup, Timestamp, updateDoc } from 'firebase/firestore';
+import { updateProfile } from "firebase/auth";
+import type { Student, AttendanceRecord, Parent } from '@/lib/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Function to get initials from name
 const getInitials = (name: string = '') => {
-  return name.split(' ').map(n => n[0]).join('') || '??';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 };
 
 // Function to calculate attendance percentage (simplified)
@@ -33,43 +39,48 @@ interface ChildWithAttendance extends Student {
 
 
 export default function ParentDashboard() {
-    const { user, loading: authLoading } = useAuth();
-    const { translate } = useLanguage(); // Initialize useLanguage
+    const { user: authUser, loading: authLoading } = useAuth();
+    const { translate } = useLanguage();
+    const { toast } = useToast();
     const [childrenData, setChildrenData] = useState<ChildWithAttendance[]>([]);
     const [parentName, setParentName] = useState<string>(translate('parent') || 'Parent');
+    const [parentAvatarUrl, setParentAvatarUrl] = useState<string>("");
+    const [newAvatarUrlInput, setNewAvatarUrlInput] = useState<string>("");
+    const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
+    const [loadingProfile, setLoadingProfile] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (user?.displayName) {
-            setParentName(user.displayName);
-        } else if (user?.email) {
-            setParentName(user.email);
-        }
-    }, [user]);
 
 
     useEffect(() => {
         const fetchParentAndChildrenData = async () => {
-            if (authLoading || !user) {
-                 if (!authLoading && !user) setLoadingData(false);
+            if (authLoading || !authUser) {
+                 if (!authLoading && !authUser) {
+                    setLoadingData(false);
+                    setLoadingProfile(false);
+                 }
                 return;
             }
-
             setLoadingData(true);
+            setLoadingProfile(true);
             setError(null);
             try {
-                const parentDocRef = doc(db, 'users', user.uid);
+                const parentDocRef = doc(db, 'users', authUser.uid);
                 const parentDocSnap = await getDoc(parentDocRef);
 
                 if (!parentDocSnap.exists() || parentDocSnap.data().role !== 'Parent') {
                     setError(translate('parentProfileError') || "Parent profile not found or user is not a parent.");
                     setLoadingData(false);
+                    setLoadingProfile(false);
                     return;
                 }
 
-                const parentData = parentDocSnap.data() as Omit<Parent, 'id'> & { createdAt: Timestamp }; 
-                setParentName(parentData.name || user.displayName || user.email || translate('parent') || 'Parent');
+                const parentData = parentDocSnap.data() as Parent; 
+                setParentName(parentData.name || authUser.displayName || authUser.email || translate('parent') || 'Parent');
+                setParentAvatarUrl(parentData.avatarUrl || authUser.photoURL || "");
+                setNewAvatarUrlInput(parentData.avatarUrl || authUser.photoURL || "");
+                setLoadingProfile(false);
+
                 const childIds = parentData.childIds || [];
 
                 if (childIds.length === 0) {
@@ -102,7 +113,7 @@ export default function ParentDashboard() {
                              name: studentData.name || translate('unknownChild') || 'Unknown Child',
                              parentIds: studentData.parentIds || [],
                              role: 'Student', 
-                             createdAt: studentData.createdAt, 
+                             createdAt: studentData.createdAt as Timestamp, 
                              avatarUrl: studentData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(studentData.name || 'U')}&background=random`, 
                              attendancePercentage: attendancePercentage,
                          } as ChildWithAttendance;
@@ -125,15 +136,54 @@ export default function ParentDashboard() {
         };
 
         fetchParentAndChildrenData();
-    }, [user, authLoading, translate]);
+    }, [authUser, authLoading, translate]);
 
-     const isLoading = authLoading || loadingData; 
+
+    const handleUpdateParentAvatar = async () => {
+        if (!authUser) {
+          toast({ variant: "destructive", title: "Error", description: "You must be logged in." });
+          return;
+        }
+        if (newAvatarUrlInput.trim() !== "" ) {
+          try {
+            new URL(newAvatarUrlInput.trim());
+          } catch (_) {
+            toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid image URL." });
+            return;
+          }
+        }
+    
+        setIsUpdatingAvatar(true);
+        try {
+          const newUrl = newAvatarUrlInput.trim() === "" ? null : newAvatarUrlInput.trim();
+          if (auth.currentUser) {
+            await updateProfile(auth.currentUser, { photoURL: newUrl });
+          }
+          const userDocRef = doc(db, 'users', authUser.uid);
+          await updateDoc(userDocRef, { avatarUrl: newUrl });
+    
+          setParentAvatarUrl(newUrl || "");
+          toast({ title: "Success", description: "Profile picture updated successfully." });
+        } catch (error) {
+          console.error("Error updating avatar:", error);
+          toast({ variant: "destructive", title: "Error", description: "Failed to update profile picture." });
+        } finally {
+          setIsUpdatingAvatar(false);
+        }
+      };
+
+     const isLoading = authLoading || loadingData || loadingProfile; 
 
      if (isLoading) { 
         return (
-          <div className="flex items-center justify-center min-h-[300px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-2">{translate('loadingDashboard') || "Loading dashboard..."}</span>
+          <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 p-4">
+            <Skeleton className="h-24 w-full rounded-lg" />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+             <Skeleton className="h-40 w-full rounded-lg" />
           </div>
         );
       }
@@ -207,6 +257,45 @@ export default function ParentDashboard() {
            </CardContent>
          </Card>
         )}
+
+      {/* Parent Profile Picture Update Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> Your Profile</CardTitle>
+          <CardDescription>Update your profile picture.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={parentAvatarUrl} alt={parentName} data-ai-hint="user avatar" />
+                    <AvatarFallback>{getInitials(parentName)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                    <p className="text-xl font-medium">{parentName}</p>
+                    <p className="text-sm text-muted-foreground">{authUser?.email}</p>
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="avatarUrlInputParent" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> New Avatar URL</Label>
+                <Input
+                    id="avatarUrlInputParent"
+                    type="url"
+                    value={newAvatarUrlInput}
+                    onChange={(e) => setNewAvatarUrlInput(e.target.value)}
+                    placeholder="https://example.com/your-avatar.png"
+                />
+                 <p className="text-xs text-muted-foreground">Enter a valid image URL (e.g., ending in .png, .jpg).</p>
+            </div>
+        </CardContent>
+        <CardFooter>
+            <Button onClick={handleUpdateParentAvatar} disabled={isUpdatingAvatar || authLoading}>
+                {isUpdatingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Save className="mr-2 h-4 w-4" /> Save Profile Picture
+            </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
+
+    
