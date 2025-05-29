@@ -197,6 +197,10 @@
   "columnEnteredCode": "Kode Yanditswe",
   "columnAttemptsLeft": "Amahirwe Asigaye",
   "errorLoadingLockedAccounts": "Kutabasha gutwara amakonti yahagaritswe.",
-  "loadingLockedAccounts": "Gutwara amakonti yahagaritswe..."
+  "loadingLockedAccounts": "Gutwara amakonti yahagaritswe...",
+  "columnActions": "Ibikorwa",
+  "unblockAccountButton": "Fungura",
+  "accountUnblockedTitle": "Konti Yafunguwe",
+  "accountUnblockedDesc": "Konti y'umwarimu ID {{teacherId}} yafunguwe.",
+  "errorUnblockingAccount": "Kunanirwa gufungura konti."
 }
-

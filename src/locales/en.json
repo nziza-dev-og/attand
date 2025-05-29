@@ -197,6 +197,10 @@
   "columnEnteredCode": "Entered Code",
   "columnAttemptsLeft": "Attempts Left",
   "errorLoadingLockedAccounts": "Failed to load locked accounts.",
-  "loadingLockedAccounts": "Loading locked accounts..."
+  "loadingLockedAccounts": "Loading locked accounts...",
+  "columnActions": "Actions",
+  "unblockAccountButton": "Unblock",
+  "accountUnblockedTitle": "Account Unblocked",
+  "accountUnblockedDesc": "The account for teacher ID {{teacherId}} has been unblocked.",
+  "errorUnblockingAccount": "Failed to unblock the account."
 }
-

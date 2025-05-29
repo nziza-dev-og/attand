@@ -197,6 +197,10 @@
   "columnEnteredCode": "दर्ज किया गया कोड",
   "columnAttemptsLeft": "शेष प्रयास",
   "errorLoadingLockedAccounts": "लॉक किए गए खातों को लोड करने में विफल।",
-  "loadingLockedAccounts": "लॉक किए गए खाते लोड हो रहे हैं..."
+  "loadingLockedAccounts": "लॉक किए गए खाते लोड हो रहे हैं...",
+  "columnActions": "कार्रवाइयाँ",
+  "unblockAccountButton": "अनलॉक करें",
+  "accountUnblockedTitle": "खाता अनलॉक किया गया",
+  "accountUnblockedDesc": "शिक्षक आईडी {{teacherId}} के लिए खाता अनलॉक कर दिया गया है।",
+  "errorUnblockingAccount": "खाता अनलॉक करने में विफल।"
 }
-

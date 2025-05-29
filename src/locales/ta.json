@@ -197,6 +197,10 @@
   "columnEnteredCode": "உள்ளிட்ட குறியீடு",
   "columnAttemptsLeft": "மீதமுள்ள முயற்சிகள்",
   "errorLoadingLockedAccounts": "பூட்டப்பட்ட கணக்குகளை ஏற்றுவதில் தோல்வி.",
-  "loadingLockedAccounts": "பூட்டப்பட்ட கணக்குகள் ஏற்றப்படுகின்றன..."
+  "loadingLockedAccounts": "பூட்டப்பட்ட கணக்குகள் ஏற்றப்படுகின்றன...",
+  "columnActions": "செயல்கள்",
+  "unblockAccountButton": "தடையை நீக்கு",
+  "accountUnblockedTitle": "கணக்கு தடையை நீக்கப்பட்டது",
+  "accountUnblockedDesc": "ஆசிரியர் ID {{teacherId}} இன் கணக்கு தடையை நீக்கப்பட்டுள்ளது.",
+  "errorUnblockingAccount": "கணக்கு தடையை நீக்குவதில் தோல்வி."
 }
-

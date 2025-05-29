@@ -197,6 +197,10 @@
   "columnEnteredCode": "입력된 코드",
   "columnAttemptsLeft": "남은 시도",
   "errorLoadingLockedAccounts": "잠긴 계정 로드 실패.",
-  "loadingLockedAccounts": "잠긴 계정 로드 중..."
+  "loadingLockedAccounts": "잠긴 계정 로드 중...",
+  "columnActions": "작업",
+  "unblockAccountButton": "차단 해제",
+  "accountUnblockedTitle": "계정 차단 해제됨",
+  "accountUnblockedDesc": "교사 ID {{teacherId}}의 계정이 차단 해제되었습니다.",
+  "errorUnblockingAccount": "계정 차단 해제 실패."
 }
-

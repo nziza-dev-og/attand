@@ -197,6 +197,10 @@
   "columnEnteredCode": "Nambari Iliyowekwa",
   "columnAttemptsLeft": "Majaribio Yaliyosalia",
   "errorLoadingLockedAccounts": "Imeshindwa kupakia akaunti zilizofungwa.",
-  "loadingLockedAccounts": "Inapakia akaunti zilizofungwa..."
+  "loadingLockedAccounts": "Inapakia akaunti zilizofungwa...",
+  "columnActions": "Vitendo",
+  "unblockAccountButton": "Fungua",
+  "accountUnblockedTitle": "Akaunti Imefunguliwa",
+  "accountUnblockedDesc": "Akaunti ya mwalimu ID {{teacherId}} imefunguliwa.",
+  "errorUnblockingAccount": "Imeshindwa kufungua akaunti."
 }
-

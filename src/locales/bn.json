@@ -197,6 +197,10 @@
   "columnEnteredCode": "প্রবেশ করা কোড",
   "columnAttemptsLeft": "বাকি প্রচেষ্টা",
   "errorLoadingLockedAccounts": "লক করা অ্যাকাউন্ট লোড করতে ব্যর্থ।",
-  "loadingLockedAccounts": "লক করা অ্যাকাউন্ট লোড হচ্ছে..."
+  "loadingLockedAccounts": "লক করা অ্যাকাউন্ট লোড হচ্ছে...",
+  "columnActions": "ক্রিয়াকলাপ",
+  "unblockAccountButton": "আনব্লক করুন",
+  "accountUnblockedTitle": "অ্যাকাউন্ট আনব্লক করা হয়েছে",
+  "accountUnblockedDesc": "শিক্ষক আইডি {{teacherId}} এর জন্য অ্যাকাউন্ট আনব্লক করা হয়েছে।",
+  "errorUnblockingAccount": "অ্যাকাউন্ট আনব্লক করতে ব্যর্থ।"
 }
-

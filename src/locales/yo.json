@@ -197,6 +197,10 @@
   "columnEnteredCode": "Kóòdù Tí A Tẹ",
   "columnAttemptsLeft": "Àwọn Ìgbìyànjú Tó Kù",
   "errorLoadingLockedAccounts": "Kò lè gba àwọn àpamọ́ tí a tìpa.",
-  "loadingLockedAccounts": "Ń gba àwọn àpamọ́ tí a tìpa..."
+  "loadingLockedAccounts": "Ń gba àwọn àpamọ́ tí a tìpa...",
+  "columnActions": "Àwọn Ìgbésẹ̀",
+  "unblockAccountButton": "Ṣí Silẹ̀",
+  "accountUnblockedTitle": "Àpamọ́ Ti Silẹ̀",
+  "accountUnblockedDesc": "Àpamọ́ olùkọ́ ID {{teacherId}} ti silẹ̀.",
+  "errorUnblockingAccount": "Kò lè ṣí àpamọ́ silẹ̀."
 }
-

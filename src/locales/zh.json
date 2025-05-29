@@ -197,6 +197,10 @@
   "columnEnteredCode": "输入代码",
   "columnAttemptsLeft": "剩余尝试次数",
   "errorLoadingLockedAccounts": "加载锁定的帐户失败。",
-  "loadingLockedAccounts": "正在加载锁定的帐户..."
+  "loadingLockedAccounts": "正在加载锁定的帐户...",
+  "columnActions": "操作",
+  "unblockAccountButton": "解锁",
+  "accountUnblockedTitle": "帐户已解锁",
+  "accountUnblockedDesc": "教师ID {{teacherId}} 的帐户已解锁。",
+  "errorUnblockingAccount": "解锁帐户失败。"
 }
-

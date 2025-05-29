@@ -197,6 +197,10 @@
   "columnEnteredCode": "入力されたコード",
   "columnAttemptsLeft": "残り試行回数",
   "errorLoadingLockedAccounts": "ロックされたアカウントの読み込みに失敗しました。",
-  "loadingLockedAccounts": "ロックされたアカウントを読み込み中..."
+  "loadingLockedAccounts": "ロックされたアカウントを読み込み中...",
+  "columnActions": "アクション",
+  "unblockAccountButton": "ブロック解除",
+  "accountUnblockedTitle": "アカウントのブロック解除",
+  "accountUnblockedDesc": "教師ID {{teacherId}} のアカウントがブロック解除されました。",
+  "errorUnblockingAccount": "アカウントのブロック解除に失敗しました。"
 }
-

@@ -197,6 +197,10 @@
   "columnEnteredCode": "Lambar da Aka Shigar",
   "columnAttemptsLeft": "Sauran Ƙoƙari",
   "errorLoadingLockedAccounts": "An kasa loda asusun da aka kulle.",
-  "loadingLockedAccounts": "Ana loda asusun da aka kulle..."
+  "loadingLockedAccounts": "Ana loda asusun da aka kulle...",
+  "columnActions": "Ayyuka",
+  "unblockAccountButton": "Buɗe",
+  "accountUnblockedTitle": "An Buɗe Asusu",
+  "accountUnblockedDesc": "An buɗe asusun malami mai ID {{teacherId}}.",
+  "errorUnblockingAccount": "An kasa buɗe asusu."
 }
-

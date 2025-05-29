@@ -197,6 +197,10 @@
   "columnEnteredCode": "Code Entré",
   "columnAttemptsLeft": "Tentatives Restantes",
   "errorLoadingLockedAccounts": "Échec du chargement des comptes verrouillés.",
-  "loadingLockedAccounts": "Chargement des comptes verrouillés..."
+  "loadingLockedAccounts": "Chargement des comptes verrouillés...",
+  "columnActions": "Actions",
+  "unblockAccountButton": "Débloquer",
+  "accountUnblockedTitle": "Compte Débloqué",
+  "accountUnblockedDesc": "Le compte de l'enseignant ID {{teacherId}} a été débloqué.",
+  "errorUnblockingAccount": "Échec du déblocage du compte."
 }
-
