@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
-export type Language = 'en' | 'fr' | 'rw';
+export type Language = 'en' | 'fr' | 'rw' | 'sw' | 'hi' | 'zh' | 'ja' | 'ko' | 'ha' | 'yo' | 'bn' | 'ta';
 
 interface LanguageContextType {
   language: Language;
@@ -18,7 +18,18 @@ const translations: Record<Language, Record<string, string>> = {
   en: {},
   fr: {},
   rw: {},
+  sw: {},
+  hi: {},
+  zh: {},
+  ja: {},
+  ko: {},
+  ha: {},
+  yo: {},
+  bn: {},
+  ta: {},
 };
+
+const allSupportedLanguages: Language[] = ['en', 'fr', 'rw', 'sw', 'hi', 'zh', 'ja', 'ko', 'ha', 'yo', 'bn', 'ta'];
 
 // Helper to dynamically load translations
 async function loadTranslations(lang: Language) {
@@ -50,10 +61,15 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   
   useEffect(() => {
     const savedLanguage = localStorage.getItem('appLanguage') as Language | null;
-    if (savedLanguage && ['en', 'fr', 'rw'].includes(savedLanguage)) {
+    if (savedLanguage && allSupportedLanguages.includes(savedLanguage)) {
       setLanguageState(savedLanguage);
+       if (!loadedLanguages.has(savedLanguage)) {
+        loadTranslations(savedLanguage).then(() => {
+          setLoadedLanguages(prev => new Set(prev).add(savedLanguage));
+        });
+      }
     }
-  }, []);
+  }, [loadedLanguages]);
 
   const setLanguage = useCallback((lang: Language) => {
     loadTranslations(lang).then(() => {
@@ -76,7 +92,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   // Ensure the current language translations are loaded before rendering children
   if (!loadedLanguages.has(language)) {
     // Render a loading state or null while translations are loading
-    // This simple approach might cause a flicker, more sophisticated solutions exist
     return null; 
   }
 
@@ -94,3 +109,4 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+

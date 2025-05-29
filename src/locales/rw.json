@@ -9,6 +9,15 @@
   "english": "Icyongereza",
   "french": "Igifaransa",
   "kinyarwanda": "Ikinyarwanda",
+  "swahili": "Igiswahili",
+  "hindi": "Igihindi",
+  "chineseSimplified": "Igishinwa (cyoroshye)",
+  "japanese": "Ikiyapani",
+  "korean": "Igikoreya",
+  "hausa": "Igihawusa",
+  "yoruba": "Ikiyoruba",
+  "bengali": "Ikibengali",
+  "tamil": "Igitamili",
   "welcomeMessage": "Murakaza neza, {{name}}!",
   "manageClasses": "Gucunga Amashuri",
   "manageStudents": "Gucunga Abanyeshuri",
@@ -26,3 +35,4 @@
   "notifications": "Amenyesha",
   "mobileMenuTitle": "Menu"
 }
+

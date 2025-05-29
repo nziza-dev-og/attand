@@ -7,7 +7,7 @@ import { signOut } from "firebase/auth";
 import { LogOut, GraduationCap, PanelLeft, Languages, Check } from "lucide-react"; // Added Languages and Check
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle
 import Link from "next/link";
 import type { ReactNode } from 'react';
 import { useLanguage, type Language } from "@/contexts/LanguageContext"; // Import useLanguage
@@ -46,6 +46,15 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
     { value: 'en', labelKey: 'english' },
     { value: 'fr', labelKey: 'french' },
     { value: 'rw', labelKey: 'kinyarwanda' },
+    { value: 'sw', labelKey: 'swahili' },
+    { value: 'hi', labelKey: 'hindi' },
+    { value: 'zh', labelKey: 'chineseSimplified' },
+    { value: 'ja', labelKey: 'japanese' },
+    { value: 'ko', labelKey: 'korean' },
+    { value: 'ha', labelKey: 'hausa' },
+    { value: 'yo', labelKey: 'yoruba' },
+    { value: 'bn', labelKey: 'bengali' },
+    { value: 'ta', labelKey: 'tamil' },
   ];
 
   return (
@@ -113,3 +122,4 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
     </header>
   );
 }
+

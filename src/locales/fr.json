@@ -9,6 +9,15 @@
   "english": "Anglais",
   "french": "Français",
   "kinyarwanda": "Kinyarwanda",
+  "swahili": "Swahili",
+  "hindi": "Hindi",
+  "chineseSimplified": "Chinois (Simplifié)",
+  "japanese": "Japonais",
+  "korean": "Coréen",
+  "hausa": "Haoussa",
+  "yoruba": "Yoruba",
+  "bengali": "Bengali",
+  "tamil": "Tamoul",
   "welcomeMessage": "Bienvenue, {{name}} !",
   "manageClasses": "Gérer les Classes",
   "manageStudents": "Gérer les Étudiants",
@@ -26,3 +35,4 @@
   "notifications": "Notifications",
   "mobileMenuTitle": "Menu"
 }
+
