@@ -4,7 +4,8 @@
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { LogOut, UserCheck, PanelLeft, Languages, Check } from "lucide-react"; // Changed GraduationCap to UserCheck
+import { LogOut, PanelLeft, Languages, Check } from "lucide-react"; // Removed UserCheck
+import Image from 'next/image'; // Added Image import
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -71,10 +72,10 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
               </SheetTrigger>
               <SheetContent side="left" className="p-0 flex flex-col">
                 <SheetHeader>
-                  <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Menu'}</SheetTitle>
+                  <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Mobile Menu'}</SheetTitle>
                 </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
-                   <UserCheck className="h-6 w-6 text-primary" /> {/* Changed icon here */}
+                   <Image src="/icon.png" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
                    <span className="text-lg font-semibold text-primary">{translate('appName')}</span>
                 </Link>
                 <div className="flex-grow overflow-y-auto">
@@ -86,7 +87,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
         )}
 
         <Link href={homePath} className="hidden items-center gap-2 sm:flex">
-           <UserCheck className="h-6 w-6 text-primary" />  {/* Changed icon here */}
+           <Image src="/icon.png" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
            <h1 className="text-xl font-semibold text-primary">{translate('appName')}</h1>
         </Link>
         <span className="text-xl font-light text-muted-foreground hidden sm:inline">| {title}</span>
