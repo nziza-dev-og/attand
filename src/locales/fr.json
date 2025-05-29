@@ -88,5 +88,15 @@
   "loadTeacherError": "Échec du chargement des informations de l'enseignant.",
   "contactSupportError": "Veuillez contacter le support si le problème persiste.",
   "noTeacherDataTitle": "Aucune donnée d'enseignant",
-  "noTeacherDataDesc": "Impossible de trouver les informations de l'enseignant."
+  "noTeacherDataDesc": "Impossible de trouver les informations de l'enseignant.",
+  "attendance": "Présence",
+  "selectChild": "Sélectionner Enfant",
+  "selectChildPageTitle": "Sélectionner un Enfant",
+  "selectChildPageDesc": "Choisissez un enfant pour voir ses rapports spécifiques de présence et de comportement.",
+  "viewChildAttendanceLink": "Voir Présence",
+  "viewChildBehaviorReportsLink": "Voir Rapports Comportement",
+  "noChildrenToSelect": "Aucun enfant lié à votre compte à sélectionner.",
+  "mustBeLoggedInError": "Vous devez être connecté pour voir cette page.",
+  "errorLoadingChildren": "Échec du chargement des détails des enfants.",
+  "loadingChildrenDetails": "Chargement des détails des enfants..."
 }

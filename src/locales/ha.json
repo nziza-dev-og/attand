@@ -88,5 +88,15 @@
   "loadTeacherError": "An kasa loda bayanan malami.",
   "contactSupportError": "Da fatan za a tuntuɓi tallafi idan matsalar ta ci gaba.",
   "noTeacherDataTitle": "Babu Bayanan Malami",
-  "noTeacherDataDesc": "Ba a iya samun bayanan malami ba."
+  "noTeacherDataDesc": "Ba a iya samun bayanan malami ba.",
+  "attendance": "Zuwa",
+  "selectChild": "Zaɓi Yaro",
+  "selectChildPageTitle": "Zaɓi Yaro",
+  "selectChildPageDesc": "Zaɓi yaro don duba takamaiman zuwansa da rahotannin hali.",
+  "viewChildAttendanceLink": "Duba Zuwa",
+  "viewChildBehaviorReportsLink": "Duba Rahotannin Hali",
+  "noChildrenToSelect": "Babu yaran da aka haɗa da asusunka da za a zaɓa.",
+  "mustBeLoggedInError": "Dole ne ka shiga don duba wannan shafin.",
+  "errorLoadingChildren": "An kasa loda cikakkun bayanai na yara.",
+  "loadingChildrenDetails": "Ana loda cikakkun bayanai na yara..."
 }

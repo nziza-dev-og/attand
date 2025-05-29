@@ -88,5 +88,15 @@
   "loadTeacherError": "Failed to load teacher information.",
   "contactSupportError": "Please contact support if the issue persists.",
   "noTeacherDataTitle": "No Teacher Data",
-  "noTeacherDataDesc": "Could not find teacher information."
+  "noTeacherDataDesc": "Could not find teacher information.",
+  "attendance": "Attendance",
+  "selectChild": "Select Child",
+  "selectChildPageTitle": "Select a Child",
+  "selectChildPageDesc": "Choose a child to view their specific attendance and behavior reports.",
+  "viewChildAttendanceLink": "View Attendance",
+  "viewChildBehaviorReportsLink": "View Behavior Reports",
+  "noChildrenToSelect": "No children linked to your account to select from.",
+  "mustBeLoggedInError": "You must be logged in to view this page.",
+  "errorLoadingChildren": "Failed to load children details.",
+  "loadingChildrenDetails": "Loading children details..."
 }

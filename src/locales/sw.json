@@ -88,5 +88,15 @@
   "loadTeacherError": "Imeshindwa kupakia taarifa za mwalimu.",
   "contactSupportError": "Tafadhali wasiliana na usaidizi ikiwa tatizo litaendelea.",
   "noTeacherDataTitle": "Hakuna Data ya Mwalimu",
-  "noTeacherDataDesc": "Haikuweza kupata taarifa za mwalimu."
+  "noTeacherDataDesc": "Haikuweza kupata taarifa za mwalimu.",
+  "attendance": "Mahudhurio",
+  "selectChild": "Chagua Mtoto",
+  "selectChildPageTitle": "Chagua Mtoto",
+  "selectChildPageDesc": "Chagua mtoto ili kuona mahudhurio yake maalum na ripoti za tabia.",
+  "viewChildAttendanceLink": "Tazama Mahudhurio",
+  "viewChildBehaviorReportsLink": "Tazama Ripoti za Tabia",
+  "noChildrenToSelect": "Hakuna watoto walioUnganishwa na akaunti yako wa kuchagua.",
+  "mustBeLoggedInError": "Lazima uwe umeingia ili kuona ukurasa huu.",
+  "errorLoadingChildren": "Imeshindwa kupakia maelezo ya watoto.",
+  "loadingChildrenDetails": "Inapakia maelezo ya watoto..."
 }

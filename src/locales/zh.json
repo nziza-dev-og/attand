@@ -88,5 +88,15 @@
   "loadTeacherError": "加载教师信息失败。",
   "contactSupportError": "如果问题仍然存在，请联系支持人员。",
   "noTeacherDataTitle": "无教师数据",
-  "noTeacherDataDesc": "无法找到教师信息。"
+  "noTeacherDataDesc": "无法找到教师信息。",
+  "attendance": "考勤",
+  "selectChild": "选择孩子",
+  "selectChildPageTitle": "选择一个孩子",
+  "selectChildPageDesc": "选择一个孩子以查看其特定的考勤和行为报告。",
+  "viewChildAttendanceLink": "查看考勤",
+  "viewChildBehaviorReportsLink": "查看行为报告",
+  "noChildrenToSelect": "您的帐户没有可供选择的关联孩子。",
+  "mustBeLoggedInError": "您必须登录才能查看此页面。",
+  "errorLoadingChildren": "加载孩子详细信息失败。",
+  "loadingChildrenDetails": "正在加载孩子详细信息..."
 }

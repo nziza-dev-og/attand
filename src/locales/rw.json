@@ -88,5 +88,15 @@
   "loadTeacherError": "Kutabasha gutwara amakuru ya mwarimu.",
   "contactSupportError": "Hamagara ubufasha niba ikibazo gikomeje.",
   "noTeacherDataTitle": "Nta makuru ya Mwarimu",
-  "noTeacherDataDesc": "Kutabasha kubona amakuru ya mwarimu."
+  "noTeacherDataDesc": "Kutabasha kubona amakuru ya mwarimu.",
+  "attendance": "Itabira",
+  "selectChild": "Hitamo Umwana",
+  "selectChildPageTitle": "Hitamo Umwana",
+  "selectChildPageDesc": "Hitamo umwana urebe itabira rye ryihariye na raporo z'imyitwarire.",
+  "viewChildAttendanceLink": "Reba Itabira",
+  "viewChildBehaviorReportsLink": "Reba Raporu z'Imyitwarire",
+  "noChildrenToSelect": "Nta bana bahujwe na konti yawe ngo ubahitemo.",
+  "mustBeLoggedInError": "Ugomba kuba winjiye kugira ngo urebe iyi page.",
+  "errorLoadingChildren": "Kutabasha gutwara amakuru y'abana.",
+  "loadingChildrenDetails": "Gutwara amakuru y'abana..."
 }

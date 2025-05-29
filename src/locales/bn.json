@@ -88,5 +88,15 @@
   "loadTeacherError": "শিক্ষকের তথ্য লোড করতে ব্যর্থ হয়েছে।",
   "contactSupportError": "সমস্যাটি অব্যাহত থাকলে অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
   "noTeacherDataTitle": "কোনো শিক্ষকের ডেটা নেই",
-  "noTeacherDataDesc": "শিক্ষকের তথ্য খুঁজে পাওয়া যায়নি।"
+  "noTeacherDataDesc": "শিক্ষকের তথ্য খুঁজে পাওয়া যায়নি।",
+  "attendance": "উপস্থিতি",
+  "selectChild": "শিশু নির্বাচন করুন",
+  "selectChildPageTitle": "একটি শিশু নির্বাচন করুন",
+  "selectChildPageDesc": "তাদের নির্দিষ্ট উপস্থিতি এবং আচরণ প্রতিবেদন দেখতে একটি শিশু নির্বাচন করুন।",
+  "viewChildAttendanceLink": "উপস্থিতি দেখুন",
+  "viewChildBehaviorReportsLink": "আচরণ প্রতিবেদন দেখুন",
+  "noChildrenToSelect": "আপনার অ্যাকাউন্টের সাথে নির্বাচন করার জন্য কোনো শিশু লিঙ্ক করা নেই।",
+  "mustBeLoggedInError": "এই পৃষ্ঠাটি দেখতে আপনাকে অবশ্যই লগ ইন করতে হবে।",
+  "errorLoadingChildren": "শিশুদের বিবরণ লোড করতে ব্যর্থ।",
+  "loadingChildrenDetails": "শিশুদের বিবরণ লোড হচ্ছে..."
 }

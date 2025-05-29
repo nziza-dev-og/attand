@@ -88,5 +88,15 @@
   "loadTeacherError": "Kò lè gba ìwífún olùkọ́.",
   "contactSupportError": "Jọ̀wọ́ kan sí àtìlẹ́yìn tí ìṣòro bá ń báa lọ.",
   "noTeacherDataTitle": "Kò sí Dátà Olùkọ́",
-  "noTeacherDataDesc": "Kò lè rí ìwífún olùkọ́."
+  "noTeacherDataDesc": "Kò lè rí ìwífún olùkọ́.",
+  "attendance": "Wíwàsí",
+  "selectChild": "Yan Ọmọ",
+  "selectChildPageTitle": "Yan Ọmọ Kan",
+  "selectChildPageDesc": "Yan ọmọ kan láti wo wíwàsí wọn pàtó àti àwọn ìròyìn ìwà.",
+  "viewChildAttendanceLink": "Wo Wíwàsí",
+  "viewChildBehaviorReportsLink": "Wo Àwọn Ìròyìn Ìwà",
+  "noChildrenToSelect": "Kò sí ọmọ kankan tí ó sopọ̀ mọ́ àpamọ́ rẹ láti yàn.",
+  "mustBeLoggedInError": "O gbọ́dọ̀ wọlé láti wo ojú-ewé yìí.",
+  "errorLoadingChildren": "Kò lè gba àwọn àlàyé ọmọ.",
+  "loadingChildrenDetails": "Ń gba àwọn àlàyé ọmọ..."
 }
