@@ -145,7 +145,7 @@ export default function ProfilePage() {
           <CardContent className="space-y-6">
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-32 w-32 border-4 border-primary shadow-lg">
-                <AvatarImage src={currentAvatarDisplay} alt={name} data-ai-hint="user large avatar" />
+                <AvatarImage src={currentAvatarDisplay} alt={name} />
                 <AvatarFallback className="text-4xl">{getInitials(name)}</AvatarFallback>
               </Avatar>
             </div>

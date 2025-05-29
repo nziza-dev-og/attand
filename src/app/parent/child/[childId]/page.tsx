@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams } from 'next/navigation';
@@ -157,7 +158,7 @@ export default function ChildAttendancePage() {
             <Card>
               <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
                 <Avatar className="h-16 w-16">
-                   <AvatarImage src={childInfo.avatarUrl} alt={childInfo.name} data-ai-hint="child student portrait"/>
+                   <AvatarImage src={childInfo.avatarUrl} alt={childInfo.name} />
                    <AvatarFallback>{getInitials(childInfo.name)}</AvatarFallback>
                  </Avatar>
                  <div>

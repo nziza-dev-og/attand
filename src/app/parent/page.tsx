@@ -224,7 +224,7 @@ export default function ParentDashboard() {
                <Card key={child.id} className="hover:shadow-md transition-shadow">
                  <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
                     <Avatar className="h-12 w-12">
-                       <AvatarImage src={child.avatarUrl} alt={child.name} data-ai-hint="child student portrait" />
+                       <AvatarImage src={child.avatarUrl} alt={child.name} />
                        <AvatarFallback>{getInitials(child.name)}</AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
@@ -267,7 +267,7 @@ export default function ParentDashboard() {
         <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={parentAvatarUrl} alt={parentName} data-ai-hint="user avatar" />
+                    <AvatarImage src={parentAvatarUrl} alt={parentName} />
                     <AvatarFallback>{getInitials(parentName)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">

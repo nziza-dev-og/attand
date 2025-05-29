@@ -320,7 +320,7 @@ export default function ManageStudentsPage() {
                     <TableRow key={student.id}>
                       <TableCell>
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={student.avatarUrl || undefined} alt={student.name} data-ai-hint="student avatar" />
+                          <AvatarImage src={student.avatarUrl || undefined} alt={student.name} />
                           <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
                         </Avatar>
                       </TableCell>
@@ -366,7 +366,7 @@ export default function ManageStudentsPage() {
             <div className="grid gap-4 py-4">
                 <div className="flex justify-center mb-4">
                     <Avatar className="h-24 w-24">
-                        <AvatarImage src={newAvatarUrl || currentEditingStudent?.avatarUrl || undefined} alt={currentEditingStudent?.name} data-ai-hint="student avatar large" />
+                        <AvatarImage src={newAvatarUrl || currentEditingStudent?.avatarUrl || undefined} alt={currentEditingStudent?.name} />
                         <AvatarFallback>{getInitials(currentEditingStudent?.name || "S")}</AvatarFallback>
                     </Avatar>
                 </div>

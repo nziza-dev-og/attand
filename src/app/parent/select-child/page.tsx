@@ -139,7 +139,7 @@ export default function SelectChildPage() {
           <Card key={child.id} className="flex flex-col overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="flex flex-col items-center gap-4 p-6 bg-secondary/30">
               <Avatar className="h-24 w-24 border-4 border-background shadow-md">
-                <AvatarImage src={child.avatarUrl} alt={child.name} data-ai-hint="child student portrait" />
+                <AvatarImage src={child.avatarUrl} alt={child.name} />
                 <AvatarFallback className="text-3xl bg-muted text-muted-foreground">{getInitials(child.name)}</AvatarFallback>
               </Avatar>
               <CardTitle className="text-xl font-semibold text-center">{child.name}</CardTitle>

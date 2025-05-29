@@ -1,3 +1,4 @@
+
 // src/app/parent/child/[childId]/behavior-reports/page.tsx
 "use client";
 
@@ -115,7 +116,7 @@ export default function ChildBehaviorReportsPage() {
       return;
     }
 
-    const parentNameForResponse = user.displayName || user.email;
+    const parentNameForResponse = user.displayName || user.email || 'Anonymous Parent';
     if (!parentNameForResponse) {
         toast({ variant: "destructive", title: "Profile Incomplete", description: "Could not identify your account. Please ensure your profile is complete or contact support." });
         return;
@@ -190,7 +191,7 @@ export default function ChildBehaviorReportsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center gap-4 space-y-0">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={childInfo.avatarUrl} alt={childInfo.name} data-ai-hint="child student portrait" />
+            <AvatarImage src={childInfo.avatarUrl} alt={childInfo.name} />
             <AvatarFallback>{getInitials(childInfo.name)}</AvatarFallback>
           </Avatar>
           <div>

@@ -327,7 +327,7 @@ export default function AdminDashboard() {
         <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={adminAvatarUrl} alt={adminName} data-ai-hint="user avatar" />
+                    <AvatarImage src={adminAvatarUrl} alt={adminName} />
                     <AvatarFallback>{getInitials(adminName)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">
