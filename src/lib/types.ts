@@ -38,11 +38,18 @@ export interface Teacher {
     assignedClassIds?: string[]; // IDs of classes the teacher is assigned to
 }
 
+export interface ParentNotificationPreferences {
+  absenceAlerts?: boolean;
+  lowAttendanceThreshold?: boolean; // Placeholder, not fully implemented
+  newBehaviorReport?: boolean;
+}
+
 export interface Parent {
     id: string; // Firestore document ID (user UID)
     name: string;
     email: string;
     childIds?: string[]; // UIDs of linked children (students)
+    notificationPreferences?: ParentNotificationPreferences;
 }
 
 
@@ -61,6 +68,13 @@ export interface AttendanceRecord {
 
 export type BehaviorReportSeverity = 'Minor' | 'Moderate' | 'Severe';
 
+export interface ParentResponse {
+  parentId: string;
+  parentName: string;
+  comment: string;
+  respondedAt: Timestamp;
+}
+
 export interface BehaviorReport {
   id: string; // Firestore document ID
   studentId: string;
@@ -75,4 +89,6 @@ export interface BehaviorReport {
   createdAt: Timestamp; // When the report was created in the system
   parentNotifiedAt?: Timestamp; // Optional: When parent was "notified"
   seenByParentIds?: string[]; // Optional: if tracking individual parent views
+  parentResponses?: ParentResponse[];
 }
+

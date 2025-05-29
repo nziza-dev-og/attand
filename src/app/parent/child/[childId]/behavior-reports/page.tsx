@@ -5,12 +5,18 @@ import { useParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useState, useEffect, type FormEvent } from 'react';
 import { format } from 'date-fns';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
-import type { Student, BehaviorReport, BehaviorReportSeverity } from '@/lib/types';
-import { Loader2, Megaphone, AlertCircle, Info } from 'lucide-react';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, Timestamp as FirestoreTimestamp, updateDoc, arrayUnion } from 'firebase/firestore';
+import type { Student, BehaviorReport, BehaviorReportSeverity, ParentResponse } from '@/lib/types';
+import { Loader2, Megaphone, AlertCircle, Info, MessageSquare, Send } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('') || '??';
@@ -19,9 +25,9 @@ const getInitials = (name: string = '') => {
 const getSeverityBadgeVariant = (severity?: BehaviorReportSeverity): 'default' | 'destructive' | 'secondary' | 'outline' => {
   if (!severity) return 'outline';
   switch (severity) {
-    case 'Minor': return 'default'; // Consider a less alarming color, e.g., blue or green based on theme. Using default (primary) for now.
-    case 'Moderate': return 'secondary'; // Yellow
-    case 'Severe': return 'destructive'; // Red
+    case 'Minor': return 'default'; 
+    case 'Moderate': return 'secondary';
+    case 'Severe': return 'destructive';
     default: return 'outline';
   }
 };
@@ -31,7 +37,7 @@ const getSeverityBadgeClasses = (severity?: BehaviorReportSeverity): string => {
     switch (severity) {
       case 'Minor': return 'bg-blue-500 hover:bg-blue-600 text-white'; 
       case 'Moderate': return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-      case 'Severe': return ''; // Destructive variant handles its own styling
+      case 'Severe': return ''; 
       default: return '';
     }
   };
@@ -39,11 +45,16 @@ const getSeverityBadgeClasses = (severity?: BehaviorReportSeverity): string => {
 export default function ChildBehaviorReportsPage() {
   const params = useParams();
   const childId = params.childId as string;
+  const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
 
   const [childInfo, setChildInfo] = useState<Student | null>(null);
   const [behaviorReports, setBehaviorReports] = useState<BehaviorReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [currentResponse, setCurrentResponse] = useState<Record<string, string>>({}); // { reportId: comment }
+  const [submittingResponse, setSubmittingResponse] = useState<Record<string, boolean>>({}); // { reportId: isLoading }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +77,6 @@ export default function ChildBehaviorReportsPage() {
             id: studentDocSnap.id,
             name: data.name || 'Unknown Child',
             avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'U')}&background=random`,
-            // Add other student fields if needed
           } as Student);
         } else {
           setError(studentDocSnap.exists() ? "User is not a Student." : "Student profile not found.");
@@ -78,10 +88,10 @@ export default function ChildBehaviorReportsPage() {
         const reportsQuery = query(
           collection(db, 'behaviorReports'),
           where('studentId', '==', childId),
-          orderBy('reportDate', 'desc') // Show newest incidents first
+          orderBy('reportDate', 'desc') 
         );
         const reportsSnap = await getDocs(reportsQuery);
-        const reportsData = reportsSnap.docs.map(d => ({ id: d.id, ...d.data() } as BehaviorReport));
+        const reportsData = reportsSnap.docs.map(d => ({ id: d.id, ...d.data(), parentResponses: d.data().parentResponses || [] } as BehaviorReport));
         setBehaviorReports(reportsData);
 
       } catch (err: any) {
@@ -95,7 +105,55 @@ export default function ChildBehaviorReportsPage() {
     fetchData();
   }, [childId]);
 
-  if (loading) {
+  const handleResponseChange = (reportId: string, comment: string) => {
+    setCurrentResponse(prev => ({ ...prev, [reportId]: comment }));
+  };
+
+  const handleAddResponse = async (reportId: string) => {
+    if (!user || !user.displayName) {
+      toast({ variant: "destructive", title: "Error", description: "You must be logged in and have a display name to respond." });
+      return;
+    }
+    const comment = currentResponse[reportId]?.trim();
+    if (!comment) {
+      toast({ variant: "destructive", title: "Error", description: "Response cannot be empty." });
+      return;
+    }
+
+    setSubmittingResponse(prev => ({ ...prev, [reportId]: true }));
+    try {
+      const newResponse: ParentResponse = {
+        parentId: user.uid,
+        parentName: user.displayName,
+        comment: comment,
+        respondedAt: FirestoreTimestamp.now(),
+      };
+
+      const reportRef = doc(db, "behaviorReports", reportId);
+      await updateDoc(reportRef, {
+        parentResponses: arrayUnion(newResponse)
+      });
+
+      // Update local state
+      setBehaviorReports(prevReports =>
+        prevReports.map(report =>
+          report.id === reportId
+            ? { ...report, parentResponses: [...(report.parentResponses || []), newResponse] }
+            : report
+        )
+      );
+      setCurrentResponse(prev => ({ ...prev, [reportId]: "" })); // Clear textarea
+      toast({ title: "Response Added", description: "Your response has been submitted." });
+    } catch (err) {
+      console.error("Error adding response:", err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to submit your response." });
+    } finally {
+      setSubmittingResponse(prev => ({ ...prev, [reportId]: false }));
+    }
+  };
+
+
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -166,6 +224,47 @@ export default function ChildBehaviorReportsPage() {
           </CardHeader>
           <CardContent>
             <p className="whitespace-pre-wrap">{report.description}</p>
+            
+            {/* Parent Responses Section */}
+            {(report.parentResponses && report.parentResponses.length > 0) && (
+              <div className="mt-4 pt-4 border-t">
+                <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-muted-foreground" /> Parent Responses
+                </h4>
+                <div className="space-y-3">
+                  {report.parentResponses.map((response, index) => (
+                    <div key={index} className="p-3 rounded-md bg-secondary/50 border">
+                      <p className="text-sm whitespace-pre-wrap">{response.comment}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        By: {response.parentName} on {format(response.respondedAt.toDate(), 'PPP p')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Add Response Form */}
+            <div className="mt-4 pt-4 border-t">
+              <Label htmlFor={`response-${report.id}`} className="text-md font-semibold mb-2 block">Add Your Response</Label>
+              <Textarea
+                id={`response-${report.id}`}
+                value={currentResponse[report.id] || ""}
+                onChange={(e) => handleResponseChange(report.id, e.target.value)}
+                placeholder="Type your comment or acknowledgment here..."
+                rows={3}
+                disabled={submittingResponse[report.id]}
+              />
+              <Button 
+                onClick={() => handleAddResponse(report.id)} 
+                disabled={submittingResponse[report.id] || !currentResponse[report.id]?.trim()}
+                className="mt-2"
+                size="sm"
+              >
+                {submittingResponse[report.id] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                Submit Response
+              </Button>
+            </div>
           </CardContent>
           <CardFooter className="text-xs text-muted-foreground">
             Report logged on: {format(report.createdAt.toDate(), 'PPP p')}
