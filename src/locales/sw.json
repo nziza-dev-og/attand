@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Inapakia, tafadhali subiri...",
   "schoolVerificationNeededTitle": "Uthibitishaji wa Nambari ya Shule Unahitajika",
   "schoolVerificationNeededDesc": "Tafadhali thibitisha nambari ya shule yako ili kufikia dashibodi.",
-  "goToVerificationPage": "Nenda kwenye Ukurasa wa Uthibitishaji"
+  "goToVerificationPage": "Nenda kwenye Ukurasa wa Uthibitishaji",
+  "invalidSchoolCodeAttemptsError": "Nambari ya shule batili. Tafadhali angalia nambari na ujaribu tena. Majaribio yaliyosalia: {{attempts}}.",
+  "accountLockedError": "Akaunti yako imefungwa kutokana na majaribio mengi ya uthibitishaji yaliyoshindikana.",
+  "accountLockedDesc": "Akaunti yako imefungwa kwa sasa. Tafadhali wasiliana na msimamizi wa shule yako ili kuifungua.",
+  "accountLockedTitle": "Akaunti Imefungwa",
+  "attemptsRemaining": "Majaribio yaliyosalia: {{attempts}}",
+  "accountLockedContactAdmin": "Akaunti yako imefungwa kutokana na majaribio mengi yaliyoshindikana. Tafadhali wasiliana na msimamizi wa shule yako kwa usaidizi."
 }

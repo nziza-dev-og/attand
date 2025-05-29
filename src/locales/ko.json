@@ -172,7 +172,7 @@
   "teacherInvalidSchoolCodeError": "귀하의 계정과 연결된 학교 코드가 인식되지 않습니다. 관리자에게 문의하십시오.",
   "teacherNoClassesAssigned": "현재 배정된 수업이 없습니다. 관리자에게 문의하십시오.",
   "verifySchoolCodeTitle": "학교 코드 확인",
-  "verifySchoolCodeDesc": "학교 대시보드에 액세스하려면 관리자가 제공한 학교 식별 코드를 입력하십시오.",
+  "verifySchoolCodeDesc": "학교 대시보드에 액세스하려면 관리자가 제공한 학교 식별 코드를 입력하십시오。",
   "schoolCodeRequiredError": "학교 코드는 필수입니다.",
   "validationErrorTitle": "유효성 검사 오류",
   "verificationFailedTitle": "확인 실패",
@@ -183,5 +183,11 @@
   "loadingPleaseWait": "로드 중입니다. 잠시만 기다려 주십시오...",
   "schoolVerificationNeededTitle": "학교 코드 확인 필요",
   "schoolVerificationNeededDesc": "대시보드에 액세스하려면 학교 코드를 확인하십시오.",
-  "goToVerificationPage": "확인 페이지로 이동"
+  "goToVerificationPage": "확인 페이지로 이동",
+  "invalidSchoolCodeAttemptsError": "학교 코드가 잘못되었습니다. 코드를 확인하고 다시 시도하십시오. 남은 시도 횟수: {{attempts}}회.",
+  "accountLockedError": "너무 많은 확인 시도 실패로 인해 계정이 잠겼습니다.",
+  "accountLockedDesc": "계정이 현재 잠겨 있습니다. 잠금을 해제하려면 학교 관리자에게 문의하십시오.",
+  "accountLockedTitle": "계정 잠김",
+  "attemptsRemaining": "남은 시도 횟수: {{attempts}}회",
+  "accountLockedContactAdmin": "너무 많은 시도 실패로 인해 계정이 잠겼습니다. 도움이 필요하면 학교 관리자에게 문의하십시오."
 }

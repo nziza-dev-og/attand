@@ -183,5 +183,11 @@
   "loadingPleaseWait": "正在加载，请稍候...",
   "schoolVerificationNeededTitle": "需要学校代码验证",
   "schoolVerificationNeededDesc": "请验证您的学校代码以访问仪表板。",
-  "goToVerificationPage": "转到验证页面"
+  "goToVerificationPage": "转到验证页面",
+  "invalidSchoolCodeAttemptsError": "学校代码无效。请检查代码并重试。剩余尝试次数：{{attempts}}次。",
+  "accountLockedError": "由于验证尝试失败次数过多，您的帐户已被锁定。",
+  "accountLockedDesc": "您的帐户目前已被锁定。请联系您的学校管理员以解锁。",
+  "accountLockedTitle": "帐户已锁定",
+  "attemptsRemaining": "剩余尝试次数：{{attempts}}次",
+  "accountLockedContactAdmin": "由于尝试次数过多，您的帐户已被锁定。请联系您的学校管理员寻求帮助。"
 }

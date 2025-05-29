@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Gutwara, nyamuneka tegereza...",
   "schoolVerificationNeededTitle": "Kugenzura Kode y'Ishuri Birakenewe",
   "schoolVerificationNeededDesc": "Nyamuneka genzura kode y'ishuri yawe kugira ngo ugere ku mbonerahamwe.",
-  "goToVerificationPage": "Jya ku Rupapuro rwo Kugenzura"
+  "goToVerificationPage": "Jya ku Rupapuro rwo Kugenzura",
+  "invalidSchoolCodeAttemptsError": "Kode y'ishuri itemewe. Nyamuneka genzura kode hanyuma ugerageze nanone. Amahirwe asigaye: {{attempts}}.",
+  "accountLockedError": "Konti yawe yahagaritswe kubera kugerageza kwemeza kode kenshi bikanga.",
+  "accountLockedDesc": "Konti yawe yahagaritswe. Nyamuneka hamagara umuyobozi w'ishuri ryawe kugira ngo ayifungure.",
+  "accountLockedTitle": "Konti Yahagaritswe",
+  "attemptsRemaining": "Amahirwe asigaye: {{attempts}}",
+  "accountLockedContactAdmin": "Konti yawe yahagaritswe kubera kugerageza kenshi bikanga. Nyamuneka hamagara umuyobozi w'ishuri ryawe kugira ngo agufashe."
 }

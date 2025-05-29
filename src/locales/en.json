@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Loading, please wait...",
   "schoolVerificationNeededTitle": "School Verification Required",
   "schoolVerificationNeededDesc": "Please verify your school code to access the dashboard.",
-  "goToVerificationPage": "Go to Verification Page"
+  "goToVerificationPage": "Go to Verification Page",
+  "invalidSchoolCodeAttemptsError": "Invalid school code. Please check the code and try again. Attempts remaining: {{attempts}}.",
+  "accountLockedError": "Your account has been locked due to too many failed verification attempts.",
+  "accountLockedDesc": "Your account is currently locked. Please contact your school administrator to unlock it.",
+  "accountLockedTitle": "Account Locked",
+  "attemptsRemaining": "Attempts remaining: {{attempts}}",
+  "accountLockedContactAdmin": "Your account is locked due to too many failed attempts. Please contact your school administrator for assistance."
 }

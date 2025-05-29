@@ -18,6 +18,7 @@ import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance";
+const MAX_VERIFICATION_ATTEMPTS = 3;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -108,17 +109,17 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-        isSchoolCodeVerified: role === 'Admin', // Admins are implicitly "verified" for their own school code
+        isSchoolCodeVerified: role === 'Admin', 
       };
 
       if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
+        userDocData.isSchoolCodeVerified = false; // Explicitly false for teachers on signup
+        userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
+        userDocData.isSchoolCodeLocked = false;
       } else if (role === 'Parent') {
         userDocData.childIds = [];
-      } else if (role === 'Student') {
-        userDocData.classIds = [];
-        userDocData.parentIds = [];
       }
       // For Admins, their schoolIdentifierCode is set on their dashboard.
 

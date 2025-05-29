@@ -183,5 +183,11 @@
   "loadingPleaseWait": "लोड हो रहा है, कृपया प्रतीक्षा करें...",
   "schoolVerificationNeededTitle": "स्कूल कोड सत्यापन आवश्यक",
   "schoolVerificationNeededDesc": "कृपया डैशबोर्ड तक पहुंचने के लिए अपना स्कूल कोड सत्यापित करें।",
-  "goToVerificationPage": "सत्यापन पृष्ठ पर जाएं"
+  "goToVerificationPage": "सत्यापन पृष्ठ पर जाएं",
+  "invalidSchoolCodeAttemptsError": "अमान्य स्कूल कोड। कृपया कोड जांचें और पुनः प्रयास करें। शेष प्रयास: {{attempts}}।",
+  "accountLockedError": "बहुत अधिक असफल सत्यापन प्रयासों के कारण आपका खाता लॉक कर दिया गया है।",
+  "accountLockedDesc": "आपका खाता वर्तमान में लॉक है। इसे अनलॉक करने के लिए कृपया अपने स्कूल व्यवस्थापक से संपर्क करें।",
+  "accountLockedTitle": "खाता लॉक",
+  "attemptsRemaining": "शेष प्रयास: {{attempts}}",
+  "accountLockedContactAdmin": "बहुत अधिक असफल प्रयासों के कारण आपका खाता लॉक कर दिया गया है। सहायता के लिए कृपया अपने स्कूल व्यवस्थापक से संपर्क करें।"
 }

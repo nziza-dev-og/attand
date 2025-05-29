@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Ń gba data, jọ̀wọ́ dúró...",
   "schoolVerificationNeededTitle": "Ìṣayẹ̀wò Kóòdù Ilé-ìwé Jẹ́ Dandan",
   "schoolVerificationNeededDesc": "Jọ̀wọ́ ṣayẹ̀wò kóòdù ilé-ìwé rẹ láti wọlé sí dashboard.",
-  "goToVerificationPage": "Lọ sí Ojúewé Ìṣayẹ̀wò"
+  "goToVerificationPage": "Lọ sí Ojúewé Ìṣayẹ̀wò",
+  "invalidSchoolCodeAttemptsError": "Kóòdù ilé-ìwé tí kò tọ̀nà. Jọ̀wọ́ ṣayẹ̀wò kóòdù náà kí o tún gbìyànjú. Iye ìgbìyànjú tó ṣẹ́kù: {{attempts}}.",
+  "accountLockedError": "Àpamọ́ rẹ ti di títìipa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú ìṣayẹ̀wò tí kò jáse.",
+  "accountLockedDesc": "Àpamọ́ rẹ wà ní títìipa lásìkò yìí. Jọ̀wọ́ kan sí alábòójútó ilé-ìwé rẹ láti ṣí i.",
+  "accountLockedTitle": "Àpamọ́ Tí Di Títìipa",
+  "attemptsRemaining": "Iye ìgbìyànjú tó ṣẹ́kù: {{attempts}}",
+  "accountLockedContactAdmin": "Àpamọ́ rẹ ti di títìipa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú tí kò jáse. Jọ̀wọ́ kan sí alábòójútó ilé-ìwé rẹ fún ìrànlọ́wọ́."
 }

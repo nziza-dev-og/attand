@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Chargement, veuillez patienter...",
   "schoolVerificationNeededTitle": "Vérification du Code de l'École Requise",
   "schoolVerificationNeededDesc": "Veuillez vérifier votre code d'école pour accéder au tableau de bord.",
-  "goToVerificationPage": "Aller à la Page de Vérification"
+  "goToVerificationPage": "Aller à la Page de Vérification",
+  "invalidSchoolCodeAttemptsError": "Code d'école invalide. Veuillez vérifier le code et réessayer. Tentatives restantes : {{attempts}}.",
+  "accountLockedError": "Votre compte a été verrouillé en raison de trop nombreuses tentatives de vérification infructueuses.",
+  "accountLockedDesc": "Votre compte est actuellement verrouillé. Veuillez contacter l'administrateur de votre école pour le déverrouiller.",
+  "accountLockedTitle": "Compte Verrouillé",
+  "attemptsRemaining": "Tentatives restantes : {{attempts}}",
+  "accountLockedContactAdmin": "Votre compte est verrouillé en raison de trop nombreuses tentatives infructueuses. Veuillez contacter l'administrateur de votre école pour obtenir de l'aide."
 }

@@ -183,5 +183,11 @@
   "loadingPleaseWait": "読み込み中、お待ちください...",
   "schoolVerificationNeededTitle": "学校コードの確認が必要です",
   "schoolVerificationNeededDesc": "ダッシュボードにアクセスするには、学校コードを確認してください。",
-  "goToVerificationPage": "確認ページへ移動"
+  "goToVerificationPage": "確認ページへ移動",
+  "invalidSchoolCodeAttemptsError": "学校コードが無効です。コードを確認して再試行してください。残り試行回数：{{attempts}}回。",
+  "accountLockedError": "検証試行回数が多すぎたため、アカウントがロックされました。",
+  "accountLockedDesc": "アカウントは現在ロックされています。ロックを解除するには、学校の管理者にお問い合わせください。",
+  "accountLockedTitle": "アカウントロック",
+  "attemptsRemaining": "残り試行回数：{{attempts}}回",
+  "accountLockedContactAdmin": "試行回数が多すぎたため、アカウントがロックされました。サポートについては、学校の管理者にお問い合わせください。"
 }

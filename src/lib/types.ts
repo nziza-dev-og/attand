@@ -14,8 +14,10 @@ export interface UserProfile {
   avatarUrl?: string;
   schoolIdentifierCode?: string; // For Admins to set their school's code
   enteredSchoolCode?: string; // For Teachers to enter when signing up
-  isSchoolCodeVerified?: boolean; // New: Tracks if teacher's school code is validated
+  isSchoolCodeVerified?: boolean; // Tracks if teacher's school code is validated
   assignedClassIds?: string[];
+  schoolCodeVerificationAttempts?: number; // Number of attempts left for school code verification
+  isSchoolCodeLocked?: boolean; // If true, teacher's school code verification is locked
 }
 
 export interface Class {
@@ -40,6 +42,7 @@ export interface Student {
 export interface Teacher extends UserProfile {
     role: 'Teacher';
     // `enteredSchoolCode` and `isSchoolCodeVerified` are inherited from UserProfile
+    // `schoolCodeVerificationAttempts` and `isSchoolCodeLocked` are inherited
 }
 
 export interface ParentNotificationPreferences {
@@ -94,4 +97,3 @@ export interface BehaviorReport {
   seenByParentIds?: string[]; // Optional: if tracking individual parent views
   parentResponses?: ParentResponse[];
 }
-

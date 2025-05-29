@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth.tsx';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const { user, role, loading, isSchoolCodeVerified } = useAuth();
+  const { user, role, loading, isSchoolCodeVerified, isSchoolCodeLocked } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function Home() {
       if (!user) {
         router.push('/login');
       } else {
-        if (role === 'Teacher' && isSchoolCodeVerified === false) {
+        if (role === 'Teacher' && (isSchoolCodeVerified === false || isSchoolCodeLocked === true)) {
           router.push('/teacher/verify-school');
         } else {
           switch (role) {
@@ -30,13 +30,13 @@ export default function Home() {
               break;
             default:
               console.warn("User logged in but role is unknown, invalid, or verification pending:", role);
-              router.push('/login'); // Fallback to login if role is strange or not yet determined
+              router.push('/login'); 
               break;
           }
         }
       }
     }
-  }, [user, role, loading, router, isSchoolCodeVerified]);
+  }, [user, role, loading, router, isSchoolCodeVerified, isSchoolCodeLocked]);
 
   if (loading) {
     return (

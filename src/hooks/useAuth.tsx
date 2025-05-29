@@ -12,8 +12,10 @@ interface AuthContextType {
   user: User | null;
   role: Role;
   loading: boolean;
-  isSchoolCodeVerified: boolean | null; // Added for teacher school code verification status
-  enteredSchoolCode?: string | null; // Added to store teacher's entered school code
+  isSchoolCodeVerified: boolean | null;
+  enteredSchoolCode?: string | null;
+  schoolCodeVerificationAttempts?: number | null;
+  isSchoolCodeLocked?: boolean | null;
 }
 
 const defaultAuthContextValue: AuthContextType = {
@@ -22,6 +24,8 @@ const defaultAuthContextValue: AuthContextType = {
   loading: true,
   isSchoolCodeVerified: null,
   enteredSchoolCode: null,
+  schoolCodeVerificationAttempts: null,
+  isSchoolCodeLocked: null,
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContextValue);
@@ -32,6 +36,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isSchoolCodeVerified, setIsSchoolCodeVerified] = useState<boolean | null>(null);
   const [enteredSchoolCode, setEnteredSchoolCode] = useState<string | null>(null);
+  const [schoolCodeVerificationAttempts, setSchoolCodeVerificationAttempts] = useState<number | null>(null);
+  const [isSchoolCodeLocked, setIsSchoolCodeLocked] = useState<boolean | null>(null);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -47,10 +54,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setRole(userData.role);
               setIsSchoolCodeVerified(userData.isSchoolCodeVerified === undefined ? null : userData.isSchoolCodeVerified);
               setEnteredSchoolCode(userData.enteredSchoolCode || null);
+              setSchoolCodeVerificationAttempts(userData.schoolCodeVerificationAttempts === undefined ? null : userData.schoolCodeVerificationAttempts);
+              setIsSchoolCodeLocked(userData.isSchoolCodeLocked === undefined ? null : userData.isSchoolCodeLocked);
 
-              // Admins are considered verified for their own school management
+
               if (userData.role === 'Admin') {
-                setIsSchoolCodeVerified(true);
+                setIsSchoolCodeVerified(true); // Admins are implicitly "verified" for their own school code
               }
 
             } else {
@@ -58,24 +67,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setRole(null);
               setIsSchoolCodeVerified(null);
               setEnteredSchoolCode(null);
+              setSchoolCodeVerificationAttempts(null);
+              setIsSchoolCodeLocked(null);
             }
           } else {
             console.warn("User document not found for UID:", currentUser.uid);
             setRole(null);
             setIsSchoolCodeVerified(null);
             setEnteredSchoolCode(null);
+            setSchoolCodeVerificationAttempts(null);
+            setIsSchoolCodeLocked(null);
           }
         } catch (error) {
           console.error("Error fetching user role/details:", error);
           setRole(null);
           setIsSchoolCodeVerified(null);
           setEnteredSchoolCode(null);
+          setSchoolCodeVerificationAttempts(null);
+          setIsSchoolCodeLocked(null);
         }
       } else {
         setUser(null);
         setRole(null);
         setIsSchoolCodeVerified(null);
         setEnteredSchoolCode(null);
+        setSchoolCodeVerificationAttempts(null);
+        setIsSchoolCodeLocked(null);
       }
       setLoading(false);
     });
@@ -84,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, isSchoolCodeVerified, enteredSchoolCode }}>
+    <AuthContext.Provider value={{ user, role, loading, isSchoolCodeVerified, enteredSchoolCode, schoolCodeVerificationAttempts, isSchoolCodeLocked }}>
       {children}
     </AuthContext.Provider>
   );

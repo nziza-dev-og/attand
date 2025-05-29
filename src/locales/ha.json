@@ -183,5 +183,11 @@
   "loadingPleaseWait": "Ana lodawa, da fatan za a jira...",
   "schoolVerificationNeededTitle": "Ana Bukatar Tabbatar da Lambar Makaranta",
   "schoolVerificationNeededDesc": "Da fatan za a tabbatar da lambar makarantarka don samun damar dashboard.",
-  "goToVerificationPage": "Je zuwa Shafin Tabbatarwa"
+  "goToVerificationPage": "Je zuwa Shafin Tabbatarwa",
+  "invalidSchoolCodeAttemptsError": "Lambar makaranta mara inganci. Da fatan za a duba lambar kuma a sake gwadawa. Sauran ƙoƙari: {{attempts}}.",
+  "accountLockedError": "An kulle asusunka saboda yawan ƙoƙarin tabbatarwa da bai yi nasara ba.",
+  "accountLockedDesc": "A halin yanzu an kulle asusunka. Da fatan za a tuntuɓi mai gudanar da makarantarka don buɗe shi.",
+  "accountLockedTitle": "An Kulle Asusu",
+  "attemptsRemaining": "Sauran ƙoƙari: {{attempts}}",
+  "accountLockedContactAdmin": "An kulle asusunka saboda yawan ƙoƙarin da bai yi nasara ba. Da fatan za a tuntuɓi mai gudanar da makarantarka don taimako."
 }
