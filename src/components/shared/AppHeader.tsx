@@ -7,7 +7,7 @@ import { signOut } from "firebase/auth";
 import { LogOut, GraduationCap, PanelLeft, Languages, Check } from "lucide-react"; // Added Languages and Check
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle, SheetTrigger
 import Link from "next/link";
 import type { ReactNode } from 'react';
 import { useLanguage, type Language } from "@/contexts/LanguageContext"; // Import useLanguage
@@ -122,4 +122,3 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
     </header>
   );
 }
-
