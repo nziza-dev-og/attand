@@ -150,14 +150,14 @@ export default function SelectChildPage() {
                 {/* Example: Child's Grade/Class could go here if available */}
               </p>
             </CardContent>
-            <CardFooter className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/20 border-t">
-              <Button asChild variant="secondary" className="w-full sm:flex-1 text-sm">
+            <CardFooter className="flex flex-col md:flex-row gap-3 p-4 bg-muted/20 border-t">
+              <Button asChild variant="secondary" className="w-full md:flex-1 text-sm">
                 <Link href={`/parent/child/${child.id}`} className="flex items-center justify-center gap-2">
                   <CalendarCheck className="h-4 w-4" />
                   {translate('viewChildAttendanceLink')}
                 </Link>
               </Button>
-              <Button asChild variant="default" className="w-full sm:flex-1 text-sm">
+              <Button asChild variant="default" className="w-full md:flex-1 text-sm">
                 <Link href={`/parent/child/${child.id}/behavior-reports`} className="flex items-center justify-center gap-2">
                   <FileText className="h-4 w-4" />
                   {translate('viewChildBehaviorReportsLink')}
@@ -170,4 +170,3 @@ export default function SelectChildPage() {
     </div>
   );
 }
-
