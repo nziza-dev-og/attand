@@ -114,5 +114,16 @@
   "loadingProfile": "प्रोफ़ाइल लोड हो रही है...",
   "enterYourName": "अपना पूरा नाम दर्ज करें",
   "invalidUrlTitle": "अमान्य URL",
-  "invalidUrlDesc": "कृपया एक मान्य छवि URL दर्ज करें।"
+  "invalidUrlDesc": "कृपया एक मान्य छवि URL दर्ज करें।",
+  "schoolIdentifierCodeTitle": "स्कूल पहचान कोड",
+  "schoolIdentifierCodeDesc": "इस कोड को शिक्षकों के साथ साझा करें। वे आपको यह प्रदान कर सकते हैं ताकि आप उन्हें आसानी से पहचान सकें और उन्हें अपने स्कूल सेटअप में कक्षाओं में सौंप सकें।",
+  "generatingCode": "कोड उत्पन्न हो रहा है...",
+  "regenerateCodeButton": "कोड पुनः उत्पन्न करें",
+  "copyCodeButton": "कोड कॉपी करें",
+  "schoolCodeGeneratedTitle": "नया कोड उत्पन्न हुआ",
+  "schoolCodeGeneratedDesc": "एक नया स्कूल पहचान कोड उत्पन्न और सहेजा गया है।",
+  "schoolCodeGenerationFailed": "नया स्कूल कोड उत्पन्न करने में विफल।",
+  "schoolCodeCopiedTitle": "कोड कॉपी किया गया",
+  "schoolCodeCopyFailed": "क्लिपबोर्ड पर कोड कॉपी करने में विफल।"
 }
+

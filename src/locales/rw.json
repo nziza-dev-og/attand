@@ -114,5 +114,16 @@
   "loadingProfile": "Gutwara porofayili...",
   "enterYourName": "Andika amazina yawe yose",
   "invalidUrlTitle": "URL Itemewe",
-  "invalidUrlDesc": "Shyiramo URL y'ifoto yemewe."
+  "invalidUrlDesc": "Shyiramo URL y'ifoto yemewe.",
+  "schoolIdentifierCodeTitle": "Kode yo Kumenyekanisha Ishuri",
+  "schoolIdentifierCodeDesc": "Sangiza iyi kode abarimu. Bashobora kuyiguha kugira ngo ubamenye byoroshye kandi ubashyire mu mashuri muri gahunda y'ishuri ryawe.",
+  "generatingCode": "Gukora kode...",
+  "regenerateCodeButton": "Ongera Ukore Kode",
+  "copyCodeButton": "Koporora Kode",
+  "schoolCodeGeneratedTitle": "Kode Nshya Yakozwe",
+  "schoolCodeGeneratedDesc": "Kode nshya yo kumenyekanisha ishuri yakozwe kandi irabitswe.",
+  "schoolCodeGenerationFailed": "Kunanirwa gukora kode nshya y'ishuri.",
+  "schoolCodeCopiedTitle": "Kode Yakoporowe",
+  "schoolCodeCopyFailed": "Kunanirwa gukoporora kode mu bubiko."
 }
+

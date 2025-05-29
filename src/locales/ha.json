@@ -114,5 +114,16 @@
   "loadingProfile": "Ana loda bayanai...",
   "enterYourName": "Shigar da cikakken sunanka",
   "invalidUrlTitle": "URL Mara Inganci",
-  "invalidUrlDesc": "Da fatan za a shigar da ingantacciyar URL na hoto."
+  "invalidUrlDesc": "Da fatan za a shigar da ingantacciyar URL na hoto.",
+  "schoolIdentifierCodeTitle": "Lambar Gano Makaranta",
+  "schoolIdentifierCodeDesc": "Raba wannan lambar da malamai. Zasu iya baka ita domin ka iya gane su cikin sauki ka kuma sanya su cikin ajujuwa a tsarin makarantar ka.",
+  "generatingCode": "Ana kirkirar lamba...",
+  "regenerateCodeButton": "Sake Kirkirar Lamba",
+  "copyCodeButton": "Kwafi Lamba",
+  "schoolCodeGeneratedTitle": "An Kirkiri Sabuwar Lamba",
+  "schoolCodeGeneratedDesc": "An kirkiri sabuwar lambar gano makaranta kuma an adana ta.",
+  "schoolCodeGenerationFailed": "An kasa kirkirar sabuwar lambar makaranta.",
+  "schoolCodeCopiedTitle": "An Kwafi Lamba",
+  "schoolCodeCopyFailed": "An kasa kwafin lamba zuwa allo."
 }
+

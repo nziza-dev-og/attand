@@ -114,5 +114,16 @@
   "loadingProfile": "プロフィールを読み込み中...",
   "enterYourName": "フルネームを入力してください",
   "invalidUrlTitle": "無効なURL",
-  "invalidUrlDesc": "有効な画像URLを入力してください。"
+  "invalidUrlDesc": "有効な画像URLを入力してください。",
+  "schoolIdentifierCodeTitle": "学校識別コード",
+  "schoolIdentifierCodeDesc": "このコードを教師と共有してください。教師がこのコードを提供することで、簡単に識別し、学校の設定でクラスに割り当てることができます。",
+  "generatingCode": "コードを生成中...",
+  "regenerateCodeButton": "コードを再生成",
+  "copyCodeButton": "コードをコピー",
+  "schoolCodeGeneratedTitle": "新しいコードが生成されました",
+  "schoolCodeGeneratedDesc": "新しい学校識別コードが生成され、保存されました。",
+  "schoolCodeGenerationFailed": "新しい学校コードの生成に失敗しました。",
+  "schoolCodeCopiedTitle": "コードがコピーされました",
+  "schoolCodeCopyFailed": "クリップボードへのコードのコピーに失敗しました。"
 }
+

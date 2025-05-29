@@ -12,6 +12,7 @@ export interface UserProfile {
   name?: string; // Optional: User's display name
   createdAt: Timestamp;
   avatarUrl?: string; // Added avatarUrl here for general user profiles
+  schoolIdentifierCode?: string; // Added for Admins to generate a code for their "school"
 }
 
 export interface Class {
@@ -95,3 +96,4 @@ export interface BehaviorReport {
   seenByParentIds?: string[]; // Optional: if tracking individual parent views
   parentResponses?: ParentResponse[];
 }
+

@@ -114,5 +114,16 @@
   "loadingProfile": "Inapakia wasifu...",
   "enterYourName": "Weka jina lako kamili",
   "invalidUrlTitle": "URL Batili",
-  "invalidUrlDesc": "Tafadhali weka URL halali ya picha."
+  "invalidUrlDesc": "Tafadhali weka URL halali ya picha.",
+  "schoolIdentifierCodeTitle": "Nambari ya Utambulisho wa Shule",
+  "schoolIdentifierCodeDesc": "Shiriki nambari hii na walimu. Wanaweza kukupa ili uweze kuwatambua kwa urahisi na kuwaweka kwenye madarasa katika usanidi wa shule yako.",
+  "generatingCode": "Inatengeneza nambari...",
+  "regenerateCodeButton": "Tengeneza Nambari Mpya",
+  "copyCodeButton": "Nakili Nambari",
+  "schoolCodeGeneratedTitle": "Nambari Mpya Imetengenezwa",
+  "schoolCodeGeneratedDesc": "Nambari mpya ya utambulisho wa shule imetengenezwa na kuhifadhiwa.",
+  "schoolCodeGenerationFailed": "Imeshindwa kutengeneza nambari mpya ya shule.",
+  "schoolCodeCopiedTitle": "Nambari Imekopwa",
+  "schoolCodeCopyFailed": "Imeshindwa kunakili nambari kwenye ubao wa kunakili."
 }
+

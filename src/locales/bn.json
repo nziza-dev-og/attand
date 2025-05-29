@@ -114,5 +114,16 @@
   "loadingProfile": "প্রোফাইল লোড হচ্ছে...",
   "enterYourName": "আপনার পুরো নাম লিখুন",
   "invalidUrlTitle": "অবৈধ ইউআরএল",
-  "invalidUrlDesc": "অনুগ্রহ করে একটি বৈধ ছবির ইউআরএল লিখুন।"
+  "invalidUrlDesc": "অনুগ্রহ করে একটি বৈধ ছবির ইউআরএল লিখুন।",
+  "schoolIdentifierCodeTitle": "স্কুল শনাক্তকারী কোড",
+  "schoolIdentifierCodeDesc": "শিক্ষকদের সাথে এই কোডটি শেয়ার করুন। তারা আপনাকে এটি সরবরাহ করতে পারে যাতে আপনি সহজেই তাদের সনাক্ত করতে এবং আপনার স্কুল সেটআপে ক্লাসে তাদের বরাদ্দ করতে পারেন।",
+  "generatingCode": "কোড তৈরি হচ্ছে...",
+  "regenerateCodeButton": "কোড পুনরায় তৈরি করুন",
+  "copyCodeButton": "কোড কপি করুন",
+  "schoolCodeGeneratedTitle": "নতুন কোড তৈরি হয়েছে",
+  "schoolCodeGeneratedDesc": "একটি নতুন স্কুল শনাক্তকারী কোড তৈরি এবং সংরক্ষণ করা হয়েছে।",
+  "schoolCodeGenerationFailed": "নতুন স্কুল কোড তৈরি করতে ব্যর্থ।",
+  "schoolCodeCopiedTitle": "কোড কপি করা হয়েছে",
+  "schoolCodeCopyFailed": "ক্লিপবোর্ডে কোড কপি করতে ব্যর্থ।"
 }
+

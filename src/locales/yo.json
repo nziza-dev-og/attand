@@ -114,5 +114,16 @@
   "loadingProfile": "Ń gba àpamọ́...",
   "enterYourName": "Tẹ orúkọ kíkún rẹ",
   "invalidUrlTitle": "URL Tí Kò Tọ̀nà",
-  "invalidUrlDesc": "Jọ̀wọ́ tẹ URL àwòrán tó tọ̀nà."
+  "invalidUrlDesc": "Jọ̀wọ́ tẹ URL àwòrán tó tọ̀nà.",
+  "schoolIdentifierCodeTitle": "Kóòdù Ìdánimọ̀ Ilé-ìwé",
+  "schoolIdentifierCodeDesc": "Pín kóòdù yìí pẹ̀lú àwọn olùkọ́. Wọ́n lè fún ọ ní kóòdù yìí kí o lè dá wọn mọ̀ ní ìrọ̀rùn kí o sì fi wọ́n sí àwọn kíláàsì nínú ètò ilé-ìwé rẹ.",
+  "generatingCode": "Ń ṣe kóòdù...",
+  "regenerateCodeButton": "Tun Kóòdù Ṣe",
+  "copyCodeButton": "Da Kóòdù Kọ",
+  "schoolCodeGeneratedTitle": "Kóòdù Tuntun Ti Ṣetan",
+  "schoolCodeGeneratedDesc": "Kóòdù ìdánimọ̀ ilé-ìwé tuntun ti ṣetan ó sì ti wà ní àpamọ́.",
+  "schoolCodeGenerationFailed": "Kò lè ṣe kóòdù ilé-ìwé tuntun.",
+  "schoolCodeCopiedTitle": "Kóòdù Ti Di Kíkọ",
+  "schoolCodeCopyFailed": "Kò lè da kóòdù kọ sínú àkójọpọ̀."
 }
+

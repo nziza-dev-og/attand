@@ -2,20 +2,20 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, Image as ImageIcon, Save } from "lucide-react"; // Added UserCircle, ImageIcon, Save
-import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc } from "firebase/firestore";
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy } from "lucide-react"; 
+import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { format } from 'date-fns';
 import { useLanguage } from "@/contexts/LanguageContext"; 
 import { useEffect, useState } from "react"; 
-import { useAuth } from "@/hooks/useAuth"; // Import useAuth
-import { Button } from "@/components/ui/button"; // Import Button
-import { Input } from "@/components/ui/input"; // Import Input
-import { Label } from "@/components/ui/label"; // Import Label
-import { useToast } from "@/hooks/use-toast"; // Import useToast
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; // Import Avatar components
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
+import { useAuth } from "@/hooks/useAuth"; 
+import { Button } from "@/components/ui/button"; 
+import { Input } from "@/components/ui/input"; 
+import { Label } from "@/components/ui/label"; 
+import { useToast } from "@/hooks/use-toast"; 
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; 
+import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
 
 // Helper function to get initials from name
@@ -73,7 +73,7 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
   const { translate } = useLanguage();
-  const { user: authUser, loading: authLoading } = useAuth(); // Get authUser
+  const { user: authUser, loading: authLoading } = useAuth(); 
   const { toast } = useToast();
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -83,6 +83,8 @@ export default function AdminDashboard() {
   const [newAvatarUrlInput, setNewAvatarUrlInput] = useState<string>("");
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [schoolIdentifierCode, setSchoolIdentifierCode] = useState<string | null>(null);
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,8 +104,13 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  const generateSchoolCode = (uid: string): string => {
+    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `ATTEND-${uid.slice(-4).toUpperCase()}-${randomPart}`;
+  };
+
   useEffect(() => {
-    const fetchAdminProfile = async () => {
+    const fetchAdminProfileAndCode = async () => {
       if (authUser) {
         setLoadingProfile(true);
         try {
@@ -114,24 +121,41 @@ export default function AdminDashboard() {
             setAdminName(userData.name || authUser.displayName || "Admin");
             setAdminAvatarUrl(userData.avatarUrl || authUser.photoURL || "");
             setNewAvatarUrlInput(userData.avatarUrl || authUser.photoURL || "");
+            if (userData.schoolIdentifierCode) {
+              setSchoolIdentifierCode(userData.schoolIdentifierCode);
+            } else {
+              const newCode = generateSchoolCode(authUser.uid);
+              await updateDoc(userDocRef, { schoolIdentifierCode: newCode });
+              setSchoolIdentifierCode(newCode);
+            }
           } else {
              setAdminName(authUser.displayName || "Admin");
              setAdminAvatarUrl(authUser.photoURL || "");
              setNewAvatarUrlInput(authUser.photoURL || "");
+             const newCode = generateSchoolCode(authUser.uid);
+             // This case should be rare if signup creates user doc, but handle it
+             await setDoc(doc(db, 'users', authUser.uid), { 
+               name: authUser.displayName || "Admin",
+               email: authUser.email,
+               role: 'Admin',
+               createdAt: Timestamp.now(),
+               avatarUrl: authUser.photoURL || "",
+               schoolIdentifierCode: newCode 
+             }, { merge: true });
+             setSchoolIdentifierCode(newCode);
           }
         } catch (error) {
-          console.error("Error fetching admin profile:", error);
-          toast({ variant: "destructive", title: "Error", description: "Could not fetch admin profile." });
+          console.error("Error fetching admin profile/code:", error);
+          toast({ variant: "destructive", title: "Error", description: translate('profileLoadFailed') });
         } finally {
           setLoadingProfile(false);
         }
       } else if (!authLoading) {
-        // If auth is done loading and no user, stop loading profile
         setLoadingProfile(false);
       }
     };
-    fetchAdminProfile();
-  }, [authUser, authLoading, toast]);
+    fetchAdminProfileAndCode();
+  }, [authUser, authLoading, toast, translate]);
 
   const handleUpdateAdminAvatar = async () => {
     if (!authUser) {
@@ -150,21 +174,44 @@ export default function AdminDashboard() {
     setIsUpdatingAvatar(true);
     try {
       const newUrl = newAvatarUrlInput.trim() === "" ? null : newAvatarUrlInput.trim();
-      // Update Firebase Auth profile
-      if (auth.currentUser) { // Ensure auth.currentUser is used
+      if (auth.currentUser) { 
         await updateProfile(auth.currentUser, { photoURL: newUrl });
       }
-      // Update Firestore document
       const userDocRef = doc(db, 'users', authUser.uid);
       await updateDoc(userDocRef, { avatarUrl: newUrl });
 
-      setAdminAvatarUrl(newUrl || ""); // Update local state
+      setAdminAvatarUrl(newUrl || ""); 
       toast({ title: "Success", description: "Profile picture updated successfully." });
     } catch (error) {
       console.error("Error updating avatar:", error);
       toast({ variant: "destructive", title: "Error", description: "Failed to update profile picture." });
     } finally {
       setIsUpdatingAvatar(false);
+    }
+  };
+
+  const handleRegenerateSchoolCode = async () => {
+    if (!authUser) return;
+    setIsGeneratingCode(true);
+    try {
+      const newCode = generateSchoolCode(authUser.uid);
+      const userDocRef = doc(db, 'users', authUser.uid);
+      await updateDoc(userDocRef, { schoolIdentifierCode: newCode });
+      setSchoolIdentifierCode(newCode);
+      toast({ title: translate('schoolCodeGeneratedTitle'), description: translate('schoolCodeGeneratedDesc') });
+    } catch (error) {
+      console.error("Error regenerating school code:", error);
+      toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolCodeGenerationFailed') });
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  const handleCopyCode = () => {
+    if (schoolIdentifierCode) {
+      navigator.clipboard.writeText(schoolIdentifierCode)
+        .then(() => toast({ title: translate('schoolCodeCopiedTitle') }))
+        .catch(err => toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolCodeCopyFailed') }));
     }
   };
 
@@ -185,7 +232,7 @@ export default function AdminDashboard() {
 
 
   return (
-    <div className="grid gap-6">
+    <div className="grid auto-rows-min gap-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -239,6 +286,34 @@ export default function AdminDashboard() {
          </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>{translate('schoolIdentifierCodeTitle')}</CardTitle>
+          <CardDescription>{translate('schoolIdentifierCodeDesc')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {schoolIdentifierCode ? (
+            <div className="flex items-center justify-between p-3 border rounded-md bg-secondary">
+              <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
+              <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
+                <Copy className="h-5 w-5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center p-3 border rounded-md bg-secondary">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="ml-2">{translate('generatingCode')}</span>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleRegenerateSchoolCode} disabled={isGeneratingCode || !authUser}>
+            {isGeneratingCode && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <RefreshCw className="mr-2 h-4 w-4" /> {translate('regenerateCodeButton')}
+          </Button>
+        </CardFooter>
+      </Card>
+
       {/* Admin Profile Picture Update Section */}
       <Card>
         <CardHeader>
@@ -278,3 +353,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

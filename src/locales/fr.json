@@ -114,5 +114,16 @@
   "loadingProfile": "Chargement du profil...",
   "enterYourName": "Entrez votre nom complet",
   "invalidUrlTitle": "URL Invalide",
-  "invalidUrlDesc": "Veuillez entrer une URL d'image valide."
+  "invalidUrlDesc": "Veuillez entrer une URL d'image valide.",
+  "schoolIdentifierCodeTitle": "Code d'Identification de l'École",
+  "schoolIdentifierCodeDesc": "Partagez ce code avec les enseignants. Ils peuvent vous le fournir afin que vous puissiez facilement les identifier et les affecter à des classes dans la configuration de votre école.",
+  "generatingCode": "Génération du code...",
+  "regenerateCodeButton": "Régénérer le Code",
+  "copyCodeButton": "Copier le Code",
+  "schoolCodeGeneratedTitle": "Nouveau Code Généré",
+  "schoolCodeGeneratedDesc": "Un nouveau code d'identification d'école a été généré et sauvegardé.",
+  "schoolCodeGenerationFailed": "Échec de la génération du nouveau code d'école.",
+  "schoolCodeCopiedTitle": "Code Copié",
+  "schoolCodeCopyFailed": "Échec de la copie du code dans le presse-papiers."
 }
+

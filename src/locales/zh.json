@@ -114,5 +114,16 @@
   "loadingProfile": "正在加载个人资料...",
   "enterYourName": "请输入您的全名",
   "invalidUrlTitle": "无效URL",
-  "invalidUrlDesc": "请输入有效的图片URL。"
+  "invalidUrlDesc": "请输入有效的图片URL。",
+  "schoolIdentifierCodeTitle": "学校识别码",
+  "schoolIdentifierCodeDesc": "与教师分享此代码。他们可以向您提供此代码，以便您轻松识别他们并将其分配到您学校设置中的班级。",
+  "generatingCode": "正在生成代码...",
+  "regenerateCodeButton": "重新生成代码",
+  "copyCodeButton": "复制代码",
+  "schoolCodeGeneratedTitle": "新代码已生成",
+  "schoolCodeGeneratedDesc": "新的学校识别码已生成并保存。",
+  "schoolCodeGenerationFailed": "生成新学校代码失败。",
+  "schoolCodeCopiedTitle": "代码已复制",
+  "schoolCodeCopyFailed": "复制代码到剪贴板失败。"
 }
+

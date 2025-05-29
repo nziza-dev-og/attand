@@ -114,5 +114,16 @@
   "loadingProfile": "프로필 로드 중...",
   "enterYourName": "성함을 입력하세요",
   "invalidUrlTitle": "잘못된 URL",
-  "invalidUrlDesc": "유효한 이미지 URL을 입력하세요."
+  "invalidUrlDesc": "유효한 이미지 URL을 입력하세요.",
+  "schoolIdentifierCodeTitle": "학교 식별 코드",
+  "schoolIdentifierCodeDesc": "이 코드를 교사들과 공유하십시오. 교사들이 이 코드를 제공하면 쉽게 식별하고 학교 설정에서 수업에 배정할 수 있습니다.",
+  "generatingCode": "코드 생성 중...",
+  "regenerateCodeButton": "코드 재 생성",
+  "copyCodeButton": "코드 복사",
+  "schoolCodeGeneratedTitle": "새 코드 생성됨",
+  "schoolCodeGeneratedDesc": "새로운 학교 식별 코드가 생성되어 저장되었습니다.",
+  "schoolCodeGenerationFailed": "새 학교 코드 생성 실패.",
+  "schoolCodeCopiedTitle": "코드 복사됨",
+  "schoolCodeCopyFailed": "클립보드에 코드 복사 실패."
 }
+

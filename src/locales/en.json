@@ -114,5 +114,16 @@
   "loadingProfile": "Loading profile...",
   "enterYourName": "Enter your full name",
   "invalidUrlTitle": "Invalid URL",
-  "invalidUrlDesc": "Please enter a valid image URL."
+  "invalidUrlDesc": "Please enter a valid image URL.",
+  "schoolIdentifierCodeTitle": "School Identifier Code",
+  "schoolIdentifierCodeDesc": "Share this code with teachers. They can provide it to you so you can easily identify them and assign them to classes in your school setup.",
+  "generatingCode": "Generating code...",
+  "regenerateCodeButton": "Regenerate Code",
+  "copyCodeButton": "Copy Code",
+  "schoolCodeGeneratedTitle": "New Code Generated",
+  "schoolCodeGeneratedDesc": "A new school identifier code has been generated and saved.",
+  "schoolCodeGenerationFailed": "Failed to generate new school code.",
+  "schoolCodeCopiedTitle": "Code Copied",
+  "schoolCodeCopyFailed": "Failed to copy code to clipboard."
 }
+
