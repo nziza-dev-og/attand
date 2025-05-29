@@ -12,7 +12,8 @@ export interface UserProfile {
   name?: string; // Optional: User's display name
   createdAt: Timestamp;
   avatarUrl?: string; // Added avatarUrl here for general user profiles
-  schoolIdentifierCode?: string; // Added for Admins to generate a code for their "school"
+  schoolIdentifierCode?: string; // For Admins to set their school's code
+  enteredSchoolCode?: string; // For Teachers to enter when signing up
 }
 
 export interface Class {
@@ -40,6 +41,7 @@ export interface Teacher {
     email: string;
     assignedClassIds?: string[]; // IDs of classes the teacher is assigned to
     avatarUrl?: string; // Added avatarUrl
+    // enteredSchoolCode?: string; // This is now part of UserProfile
 }
 
 export interface ParentNotificationPreferences {

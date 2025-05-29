@@ -1,8 +1,9 @@
+
 // src/app/login/page.tsx
 "use client";
 
 import { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'; // Added updateProfile
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -14,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance";
 
@@ -23,11 +25,13 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<Role | ''>('');
   const [name, setName] = useState('');
-  const [secretCode, setSecretCode] = useState('');
+  const [adminSecretCode, setAdminSecretCode] = useState('');
+  const [teacherSchoolCode, setTeacherSchoolCode] = useState(''); // New state for teacher's school code
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('login');
   const router = useRouter();
   const { toast } = useToast();
+  const { translate } = useLanguage();
 
   const resetFormFields = () => {
     setEmail('');
@@ -35,7 +39,8 @@ export default function LoginPage() {
     setConfirmPassword('');
     setRole('');
     setName('');
-    setSecretCode('');
+    setAdminSecretCode('');
+    setTeacherSchoolCode('');
     setError(null);
   };
 
@@ -50,11 +55,11 @@ export default function LoginPage() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: "Login Successful", description: "Redirecting to dashboard..." });
+      toast({ title: translate("loginSuccessTitle") || "Login Successful", description: translate("loginSuccessDesc") || "Redirecting to dashboard..." });
       router.push('/');
     } catch (err: any) {
       setError(err.message);
-       toast({ variant: "destructive", title: "Login Failed", description: err.message });
+       toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
     }
   };
 
@@ -62,63 +67,77 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      toast({ variant: "destructive", title: "Sign Up Failed", description: "Passwords do not match" });
+      setError(translate("passwordsDontMatchError"));
+      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("passwordsDontMatchError") });
       return;
     }
     if (!role || role === 'none') {
-        setError("Please select a role");
-        toast({ variant: "destructive", title: "Sign Up Failed", description: "Please select a role" });
+        setError(translate("selectRoleError"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("selectRoleError") });
         return;
     }
      if (!name.trim()) {
-         setError("Please enter your name");
-         toast({ variant: "destructive", title: "Sign Up Failed", description: "Please enter your name" });
+         setError(translate("enterNameError"));
+         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterNameError") });
          return;
      }
 
     if (role === 'Admin') {
-      if (secretCode !== ADMIN_SECRET_CODE) {
-        setError("Invalid secret code for Admin registration.");
-        toast({ variant: "destructive", title: "Sign Up Failed", description: "Invalid secret code for Admin registration." });
+      if (adminSecretCode !== ADMIN_SECRET_CODE) {
+        setError(translate("invalidAdminCodeError"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
         return;
       }
+    }
+
+    if (role === 'Teacher' && !teacherSchoolCode.trim()) {
+        setError(translate("enterSchoolCodeErrorTeacher"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterSchoolCodeErrorTeacher") });
+        return;
     }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Set the displayName on the Firebase Auth user profile
       await updateProfile(user, { displayName: name.trim() });
 
-      // Store user role and name in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
+      const userDocData: any = {
         email: user.email,
         role: role,
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-         ...(role === 'Teacher' && { assignedClassIds: [] }),
-         ...(role === 'Parent' && { childIds: [] }),
-         ...(role === 'Student' && { classIds: [], parentIds: [] }),
-      });
+      };
 
-      toast({ title: "Sign Up Successful", description: "You can now log in." });
+      if (role === 'Teacher') {
+        userDocData.enteredSchoolCode = teacherSchoolCode.trim();
+        userDocData.assignedClassIds = [];
+      } else if (role === 'Parent') {
+        userDocData.childIds = [];
+      } else if (role === 'Student') {
+        userDocData.classIds = [];
+        userDocData.parentIds = [];
+      }
+
+
+      await setDoc(doc(db, 'users', user.uid), userDocData);
+
+      toast({ title: translate("signUpSuccessTitle"), description: translate("signUpSuccessDesc") });
       resetFormFields();
       setCurrentTab('login');
 
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
-        setError("This email address is already in use.");
-        toast({ variant: "destructive", title: "Sign Up Failed", description: "This email address is already in use." });
+        setError(translate("emailInUseError"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("emailInUseError") });
       } else if (err.code === 'auth/weak-password') {
-         setError("Password should be at least 6 characters.");
-         toast({ variant: "destructive", title: "Sign Up Failed", description: "Password should be at least 6 characters." });
+         setError(translate("weakPasswordError"));
+         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("weakPasswordError") });
       }
       else {
         setError(err.message);
-        toast({ variant: "destructive", title: "Sign Up Failed", description: err.message });
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
     }
   };
@@ -127,19 +146,19 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-secondary">
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsTrigger value="login">{translate("loginTab")}</TabsTrigger>
+          <TabsTrigger value="signup">{translate("signUpTab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <Card>
             <CardHeader>
-              <CardTitle>Login</CardTitle>
-              <CardDescription>Enter your credentials to access your account.</CardDescription>
+              <CardTitle>{translate("loginTitle")}</CardTitle>
+              <CardDescription>{translate("loginDescription")}</CardDescription>
             </CardHeader>
             <form onSubmit={handleLogin}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
+                  <Label htmlFor="login-email">{translate("emailLabel")}</Label>
                   <Input
                     id="login-email"
                     type="email"
@@ -151,7 +170,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
+                  <Label htmlFor="login-password">{translate("passwordLabel")}</Label>
                   <Input
                     id="login-password"
                     type="password"
@@ -164,7 +183,7 @@ export default function LoginPage() {
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Login</Button>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">{translate("loginButton")}</Button>
               </CardFooter>
             </form>
           </Card>
@@ -172,17 +191,17 @@ export default function LoginPage() {
         <TabsContent value="signup">
           <Card>
             <CardHeader>
-              <CardTitle>Sign Up</CardTitle>
-              <CardDescription>Create a new account.</CardDescription>
+              <CardTitle>{translate("signUpTitle")}</CardTitle>
+              <CardDescription>{translate("signUpDescription")}</CardDescription>
             </CardHeader>
             <form onSubmit={handleSignUp}>
               <CardContent className="space-y-4">
                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Name</Label>
+                    <Label htmlFor="signup-name">{translate("nameLabel")}</Label>
                     <Input
                        id="signup-name"
                        type="text"
-                       placeholder="Your Full Name"
+                       placeholder={translate("fullNamePlaceholder")}
                        value={name}
                        onChange={(e) => setName(e.target.value)}
                        required
@@ -190,7 +209,7 @@ export default function LoginPage() {
                     />
                  </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">{translate("emailLabel")}</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -202,35 +221,49 @@ export default function LoginPage() {
                   />
                 </div>
                  <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="role">{translate("roleLabel")}</Label>
                    <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
                       <SelectTrigger id="role">
-                        <SelectValue placeholder="Select your role" />
+                        <SelectValue placeholder={translate("selectRolePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                         <SelectItem value="none" disabled>Select your role</SelectItem>
-                        <SelectItem value="Admin">Admin</SelectItem>
-                        <SelectItem value="Teacher">Teacher</SelectItem>
-                        <SelectItem value="Parent">Parent</SelectItem>
+                         <SelectItem value="none" disabled>{translate("selectRolePlaceholder")}</SelectItem>
+                        <SelectItem value="Admin">{translate("roleAdmin")}</SelectItem>
+                        <SelectItem value="Teacher">{translate("roleTeacher")}</SelectItem>
+                        <SelectItem value="Parent">{translate("roleParent")}</SelectItem>
                       </SelectContent>
                     </Select>
                 </div>
                 {role === 'Admin' && (
                   <div className="space-y-2">
-                    <Label htmlFor="secret-code">Admin Secret Code</Label>
+                    <Label htmlFor="admin-secret-code">{translate("adminSecretCodeLabel")}</Label>
                     <Input
-                      id="secret-code"
+                      id="admin-secret-code"
                       type="password"
-                      placeholder="Enter secret code"
-                      value={secretCode}
-                      onChange={(e) => setSecretCode(e.target.value)}
+                      placeholder={translate("enterAdminSecretCodePlaceholder")}
+                      value={adminSecretCode}
+                      onChange={(e) => setAdminSecretCode(e.target.value)}
+                      required
+                      autoComplete="off"
+                    />
+                  </div>
+                )}
+                {role === 'Teacher' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="teacher-school-code">{translate("teacherSchoolCodeLabel")}</Label>
+                    <Input
+                      id="teacher-school-code"
+                      type="text" // Or password if it should be hidden
+                      placeholder={translate("enterSchoolCodePlaceholderTeacher")}
+                      value={teacherSchoolCode}
+                      onChange={(e) => setTeacherSchoolCode(e.target.value)}
                       required
                       autoComplete="off"
                     />
                   </div>
                 )}
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password">{translate("passwordLabel")}</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -241,7 +274,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Label htmlFor="confirm-password">{translate("confirmPasswordLabel")}</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -254,7 +287,7 @@ export default function LoginPage() {
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Sign Up</Button>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">{translate("signUpButton")}</Button>
               </CardFooter>
             </form>
           </Card>

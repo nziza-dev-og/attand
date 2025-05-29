@@ -2,7 +2,7 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy } from "lucide-react"; 
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit } from "lucide-react"; 
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -83,8 +83,11 @@ export default function AdminDashboard() {
   const [newAvatarUrlInput, setNewAvatarUrlInput] = useState<string>("");
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [schoolIdentifierCode, setSchoolIdentifierCode] = useState<string | null>(null);
-  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  
+  const [schoolIdentifierCode, setSchoolIdentifierCode] = useState<string>("");
+  const [schoolCodeInput, setSchoolCodeInput] = useState<string>("");
+  const [isSavingCode, setIsSavingCode] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,11 +107,6 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  const generateSchoolCode = (uid: string): string => {
-    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-    return `ATTEND-${uid.slice(-4).toUpperCase()}-${randomPart}`;
-  };
-
   useEffect(() => {
     const fetchAdminProfileAndCode = async () => {
       if (authUser) {
@@ -121,32 +119,27 @@ export default function AdminDashboard() {
             setAdminName(userData.name || authUser.displayName || "Admin");
             setAdminAvatarUrl(userData.avatarUrl || authUser.photoURL || "");
             setNewAvatarUrlInput(userData.avatarUrl || authUser.photoURL || "");
-            if (userData.schoolIdentifierCode) {
-              setSchoolIdentifierCode(userData.schoolIdentifierCode);
-            } else {
-              const newCode = generateSchoolCode(authUser.uid);
-              await updateDoc(userDocRef, { schoolIdentifierCode: newCode });
-              setSchoolIdentifierCode(newCode);
-            }
+            setSchoolIdentifierCode(userData.schoolIdentifierCode || "");
+            setSchoolCodeInput(userData.schoolIdentifierCode || "");
           } else {
              setAdminName(authUser.displayName || "Admin");
              setAdminAvatarUrl(authUser.photoURL || "");
              setNewAvatarUrlInput(authUser.photoURL || "");
-             const newCode = generateSchoolCode(authUser.uid);
-             // This case should be rare if signup creates user doc, but handle it
+             // If admin doc doesn't exist, create it with default values
              await setDoc(doc(db, 'users', authUser.uid), { 
                name: authUser.displayName || "Admin",
                email: authUser.email,
                role: 'Admin',
                createdAt: Timestamp.now(),
                avatarUrl: authUser.photoURL || "",
-               schoolIdentifierCode: newCode 
+               schoolIdentifierCode: "" // Initialize as empty
              }, { merge: true });
-             setSchoolIdentifierCode(newCode);
+             setSchoolIdentifierCode("");
+             setSchoolCodeInput("");
           }
         } catch (error) {
           console.error("Error fetching admin profile/code:", error);
-          toast({ variant: "destructive", title: "Error", description: translate('profileLoadFailed') });
+          toast({ variant: "destructive", title: translate('errorTitle'), description: translate('profileLoadFailed') });
         } finally {
           setLoadingProfile(false);
         }
@@ -190,20 +183,23 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleRegenerateSchoolCode = async () => {
+  const handleSaveSchoolCode = async () => {
     if (!authUser) return;
-    setIsGeneratingCode(true);
+    if (!schoolCodeInput.trim()) {
+      toast({ variant: "destructive", title: translate('schoolCodeEmptyTitle'), description: translate('schoolCodeEmptyDesc') });
+      return;
+    }
+    setIsSavingCode(true);
     try {
-      const newCode = generateSchoolCode(authUser.uid);
       const userDocRef = doc(db, 'users', authUser.uid);
-      await updateDoc(userDocRef, { schoolIdentifierCode: newCode });
-      setSchoolIdentifierCode(newCode);
-      toast({ title: translate('schoolCodeGeneratedTitle'), description: translate('schoolCodeGeneratedDesc') });
+      await updateDoc(userDocRef, { schoolIdentifierCode: schoolCodeInput.trim() });
+      setSchoolIdentifierCode(schoolCodeInput.trim());
+      toast({ title: translate('schoolCodeSavedTitle'), description: translate('schoolCodeSavedDesc') });
     } catch (error) {
-      console.error("Error regenerating school code:", error);
-      toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolCodeGenerationFailed') });
+      console.error("Error saving school code:", error);
+      toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolCodeSaveFailed') });
     } finally {
-      setIsGeneratingCode(false);
+      setIsSavingCode(false);
     }
   };
 
@@ -289,29 +285,37 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>{translate('schoolIdentifierCodeTitle')}</CardTitle>
-          <CardDescription>{translate('schoolIdentifierCodeDesc')}</CardDescription>
+          <CardDescription>{translate('adminSchoolCodeDesc')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {schoolIdentifierCode ? (
-            <div className="flex items-center justify-between p-3 border rounded-md bg-secondary">
-              <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
-              <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
-                <Copy className="h-5 w-5" />
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="schoolCodeInput" className="text-sm font-medium">{translate('setSchoolCodeLabel')}</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <Input
+                id="schoolCodeInput"
+                value={schoolCodeInput}
+                onChange={(e) => setSchoolCodeInput(e.target.value)}
+                placeholder={translate('enterSchoolCodePlaceholder')}
+                className="flex-1"
+              />
+              <Button onClick={handleSaveSchoolCode} disabled={isSavingCode || !authUser}>
+                {isSavingCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {translate('saveSchoolCodeButton')}
               </Button>
             </div>
-          ) : (
-            <div className="flex items-center justify-center p-3 border rounded-md bg-secondary">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="ml-2">{translate('generatingCode')}</span>
+          </div>
+          {schoolIdentifierCode && (
+            <div>
+              <Label className="text-sm font-medium">{translate('currentSchoolCodeLabel')}</Label>
+              <div className="flex items-center justify-between p-3 mt-1 border rounded-md bg-secondary">
+                <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
+                <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
+                  <Copy className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
-        <CardFooter>
-          <Button onClick={handleRegenerateSchoolCode} disabled={isGeneratingCode || !authUser}>
-            {isGeneratingCode && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <RefreshCw className="mr-2 h-4 w-4" /> {translate('regenerateCodeButton')}
-          </Button>
-        </CardFooter>
       </Card>
 
       {/* Admin Profile Picture Update Section */}
