@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Loader2, User, Users, AlertCircle, Info } from "lucide-react";
+import { Loader2, User, Users, AlertCircle, Info, CalendarCheck, FileText } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -58,13 +58,6 @@ export default function SelectChildPage() {
           return;
         }
         
-        // Redirect if only one child, ParentSidebar should handle this, but as a safeguard:
-        if (childIds.length === 1) {
-            // This page is intended for multiple children selection.
-            // Ideally, navigation should prevent reaching here if only one child.
-            // For now, we can show that one child or redirect. Let's show the child.
-        }
-
         const childrenDetailsPromises = childIds.map(async (childId) => {
           const studentDocRef = doc(db, 'users', childId);
           const studentDocSnap = await getDoc(studentDocRef);
@@ -131,33 +124,42 @@ export default function SelectChildPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Users className="h-6 w-6" /> {translate('selectChildPageTitle')}</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-2xl">
+            <Users className="h-7 w-7 text-primary" /> 
+            {translate('selectChildPageTitle')}
+          </CardTitle>
           <CardDescription>{translate('selectChildPageDesc')}</CardDescription>
         </CardHeader>
       </Card>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {childrenList.map((child) => (
-          <Card key={child.id} className="flex flex-col">
-            <CardHeader className="flex flex-row items-center gap-4 pb-2">
-              <Avatar className="h-16 w-16">
+          <Card key={child.id} className="flex flex-col overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="flex flex-col items-center gap-4 p-6 bg-secondary/30">
+              <Avatar className="h-24 w-24 border-4 border-background shadow-md">
                 <AvatarImage src={child.avatarUrl} alt={child.name} data-ai-hint="child student portrait" />
-                <AvatarFallback>{getInitials(child.name)}</AvatarFallback>
+                <AvatarFallback className="text-3xl bg-muted text-muted-foreground">{getInitials(child.name)}</AvatarFallback>
               </Avatar>
-              <CardTitle className="text-xl">{child.name}</CardTitle>
+              <CardTitle className="text-xl font-semibold text-center">{child.name}</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow">
-              {/* Optional: Add more details here if needed, like class */}
+            <CardContent className="flex-grow p-6">
+              {/* Placeholder for potential future content, e.g., class or grade */}
+              <p className="text-sm text-muted-foreground text-center">
+                {/* Example: Child's Grade/Class could go here if available */}
+              </p>
             </CardContent>
-            <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
-              <Button asChild variant="outline" className="w-full sm:w-auto">
-                <Link href={`/parent/child/${child.id}`}>
+            <CardFooter className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/20 border-t">
+              <Button asChild variant="outline" className="w-full sm:flex-1 text-sm">
+                <Link href={`/parent/child/${child.id}`} className="flex items-center justify-center gap-2">
+                  <CalendarCheck className="h-4 w-4" />
                   {translate('viewChildAttendanceLink')}
                 </Link>
               </Button>
-              <Button asChild className="w-full sm:w-auto">
-                <Link href={`/parent/child/${child.id}/behavior-reports`}>
+              <Button asChild className="w-full sm:flex-1 text-sm bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Link href={`/parent/child/${child.id}/behavior-reports`} className="flex items-center justify-center gap-2">
+                  <FileText className="h-4 w-4" />
                   {translate('viewChildBehaviorReportsLink')}
                 </Link>
               </Button>
@@ -168,4 +170,3 @@ export default function SelectChildPage() {
     </div>
   );
 }
-
