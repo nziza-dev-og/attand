@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -5,9 +6,9 @@ import {
   Home,
   ClipboardCheck,
   History,
-  Megaphone, // Added Megaphone icon
+  Megaphone,
 } from "lucide-react"
-
+import { cn } from "@/lib/utils"
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +16,33 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 
-export function TeacherSidebar() {
+interface TeacherSidebarProps {
+  isMobileSheet?: boolean;
+}
+
+export function TeacherSidebar({ isMobileSheet = false }: TeacherSidebarProps) {
+  const commonLinkClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
+  const mobileLinkClass = "text-lg font-medium text-foreground hover:text-primary";
+
+  if (isMobileSheet) {
+    return (
+      <nav className="grid gap-2 p-4">
+        <Link href="/teacher" className={cn(commonLinkClass, mobileLinkClass)}>
+          <Home className="h-5 w-5" /> Dashboard
+        </Link>
+        <Link href="/teacher/mark-attendance" className={cn(commonLinkClass, mobileLinkClass)}>
+          <ClipboardCheck className="h-5 w-5" /> Mark Attendance
+        </Link>
+        <Link href="/teacher/history" className={cn(commonLinkClass, mobileLinkClass)}>
+          <History className="h-5 w-5" /> Attendance History
+        </Link>
+        <Link href="/teacher/behavior-reports" className={cn(commonLinkClass, mobileLinkClass)}>
+          <Megaphone className="h-5 w-5" /> Behavior Reports
+        </Link>
+      </nav>
+    );
+  }
+
    return (
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
          <TooltipProvider>

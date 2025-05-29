@@ -1,7 +1,8 @@
+
 "use client"
 
 import Link from "next/link"
-import * as React from 'react'; // Added React import
+import * as React from 'react'; 
 import {
   Home,
   User,
@@ -9,14 +10,14 @@ import {
   BarChart3,
   BellRing,
   Loader2,
-  Megaphone, // Added Megaphone icon
+  Megaphone,
 } from "lucide-react"
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import type { Student, Parent } from '@/lib/types';
-
+import { cn } from "@/lib/utils"
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +31,11 @@ interface SidebarChild {
     name: string;
 }
 
-export function ParentSidebar() {
+interface ParentSidebarProps {
+  isMobileSheet?: boolean;
+}
+
+export function ParentSidebar({ isMobileSheet = false }: ParentSidebarProps) {
     const { user, loading: authLoading } = useAuth();
     const [children, setChildren] = useState<SidebarChild[]>([]);
     const [loadingChildren, setLoadingChildren] = useState(true);
@@ -79,6 +84,51 @@ export function ParentSidebar() {
         fetchChildren();
     }, [user, authLoading]);
 
+  const commonLinkClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
+  const mobileLinkClass = "text-lg font-medium text-foreground hover:text-primary";
+
+  if (isMobileSheet) {
+    return (
+      <nav className="grid gap-2 p-4">
+        <Link href="/parent" className={cn(commonLinkClass, mobileLinkClass)}>
+          <Home className="h-5 w-5" /> Dashboard
+        </Link>
+        {loadingChildren && (
+          <div className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground")}>
+            <Loader2 className="h-5 w-5 animate-spin" /> Loading children...
+          </div>
+        )}
+        {!loadingChildren && children.map(child => (
+          <React.Fragment key={child.id}>
+            <Link href={`/parent/child/${child.id}`} className={cn(commonLinkClass, mobileLinkClass)}>
+              <User className="h-5 w-5" /> {child.name}'s Details
+            </Link>
+            <Link href={`/parent/child/${child.id}/behavior-reports`} className={cn(commonLinkClass, mobileLinkClass, "ml-4")}> {/* Indent slightly */}
+              <Megaphone className="h-5 w-5" /> Behavior Reports
+            </Link>
+          </React.Fragment>
+        ))}
+        {!loadingChildren && children.length === 0 && (
+          <div className={cn(commonLinkClass, mobileLinkClass, "text-muted-foreground cursor-not-allowed")}>
+            <User className="h-5 w-5 opacity-50" /> No children linked
+          </div>
+        )}
+        {!loadingChildren && children.length > 0 && (
+          <>
+            <Link href="/parent/attendance" className={cn(commonLinkClass, mobileLinkClass)}>
+              <CalendarDays className="h-5 w-5" /> View All Attendance
+            </Link>
+            <Link href="/parent/summary" className={cn(commonLinkClass, mobileLinkClass)}>
+              <BarChart3 className="h-5 w-5" /> Attendance Summary
+            </Link>
+          </>
+        )}
+        <Link href="/parent/notifications" className={cn(commonLinkClass, mobileLinkClass)}>
+          <BellRing className="h-5 w-5" /> Notifications
+        </Link>
+      </nav>
+    );
+  }
 
    return (
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
