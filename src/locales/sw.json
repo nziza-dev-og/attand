@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "Nambari ya shule batili. Tafadhali angalia nambari na ujaribu tena. Majaribio yaliyosalia: {{attempts}}.",
   "accountLockedError": "Akaunti yako imefungwa kutokana na majaribio mengi ya uthibitishaji yaliyoshindikana.",
   "accountLockedDesc": "Akaunti yako imefungwa kwa sasa. Tafadhali wasiliana na msimamizi wa shule yako ili kuifungua.",
-  "accountLockedTitle": "Akaunti Imefungwa",
+  "accountLockedTitle": "Akaunti Zilizofungwa",
   "attemptsRemaining": "Majaribio yaliyosalia: {{attempts}}",
-  "accountLockedContactAdmin": "Akaunti yako imefungwa kutokana na majaribio mengi yaliyoshindikana. Tafadhali wasiliana na msimamizi wa shule yako kwa usaidizi."
+  "accountLockedContactAdmin": "Akaunti yako imefungwa kutokana na majaribio mengi yaliyoshindikana. Tafadhali wasiliana na msimamizi wa shule yako kwa usaidizi.",
+  "lockedAccountsDesc": "Tazama akaunti za walimu ambazo zimefungwa kutokana na majaribio mengi yaliyoshindikana ya uthibitishaji wa nambari ya shule.",
+  "noLockedAccountsFound": "Hakuna akaunti za walimu zilizofungwa zilizopatikana.",
+  "columnName": "Jina",
+  "columnEmail": "Barua Pepe",
+  "columnEnteredCode": "Nambari Iliyowekwa",
+  "columnAttemptsLeft": "Majaribio Yaliyosalia",
+  "errorLoadingLockedAccounts": "Imeshindwa kupakia akaunti zilizofungwa.",
+  "loadingLockedAccounts": "Inapakia akaunti zilizofungwa..."
 }
+

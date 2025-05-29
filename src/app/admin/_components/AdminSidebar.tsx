@@ -12,7 +12,8 @@ import {
   UserCog,
   Megaphone,
   MessageSquareReply, 
-  UserCircle, // New Icon for Profile
+  UserCircle,
+  ShieldAlert, // New Icon for Locked Accounts
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -43,7 +44,8 @@ export function AdminSidebar({ isMobileSheet = false }: AdminSidebarProps) {
     { href: "/admin/reports", icon: ClipboardList, labelKey: "attendanceReports", srOnlyKey: "attendanceReports" },
     { href: "/admin/behavior-reports", icon: Megaphone, labelKey: "behaviorReports", srOnlyKey: "behaviorReports" },
     { href: "/admin/parent-responses", icon: MessageSquareReply, labelKey: "viewParentResponses", srOnlyKey: "viewParentResponses" },
-    { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"}, // New Profile Link
+    { href: "/admin/locked-accounts", icon: ShieldAlert, labelKey: "lockedAccountsTitle", srOnlyKey: "lockedAccountsTitle"}, // New Locked Accounts Link
+    { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"},
   ];
 
   if (isMobileSheet) {
@@ -81,3 +83,4 @@ export function AdminSidebar({ isMobileSheet = false }: AdminSidebarProps) {
        </aside>
    )
 }
+

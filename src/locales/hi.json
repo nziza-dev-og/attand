@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "अमान्य स्कूल कोड। कृपया कोड जांचें और पुनः प्रयास करें। शेष प्रयास: {{attempts}}।",
   "accountLockedError": "बहुत अधिक असफल सत्यापन प्रयासों के कारण आपका खाता लॉक कर दिया गया है।",
   "accountLockedDesc": "आपका खाता वर्तमान में लॉक है। इसे अनलॉक करने के लिए कृपया अपने स्कूल व्यवस्थापक से संपर्क करें।",
-  "accountLockedTitle": "खाता लॉक",
+  "accountLockedTitle": "लॉक किए गए खाते",
   "attemptsRemaining": "शेष प्रयास: {{attempts}}",
-  "accountLockedContactAdmin": "बहुत अधिक असफल प्रयासों के कारण आपका खाता लॉक कर दिया गया है। सहायता के लिए कृपया अपने स्कूल व्यवस्थापक से संपर्क करें।"
+  "accountLockedContactAdmin": "बहुत अधिक असफल प्रयासों के कारण आपका खाता लॉक कर दिया गया है। सहायता के लिए कृपया अपने स्कूल व्यवस्थापक से संपर्क करें।",
+  "lockedAccountsDesc": "कई असफल स्कूल कोड सत्यापन प्रयासों के कारण लॉक किए गए शिक्षक खातों को देखें।",
+  "noLockedAccountsFound": "कोई लॉक किया गया शिक्षक खाता नहीं मिला।",
+  "columnName": "नाम",
+  "columnEmail": "ईमेल",
+  "columnEnteredCode": "दर्ज किया गया कोड",
+  "columnAttemptsLeft": "शेष प्रयास",
+  "errorLoadingLockedAccounts": "लॉक किए गए खातों को लोड करने में विफल।",
+  "loadingLockedAccounts": "लॉक किए गए खाते लोड हो रहे हैं..."
 }
+

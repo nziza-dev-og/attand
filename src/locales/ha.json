@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "Lambar makaranta mara inganci. Da fatan za a duba lambar kuma a sake gwadawa. Sauran ƙoƙari: {{attempts}}.",
   "accountLockedError": "An kulle asusunka saboda yawan ƙoƙarin tabbatarwa da bai yi nasara ba.",
   "accountLockedDesc": "A halin yanzu an kulle asusunka. Da fatan za a tuntuɓi mai gudanar da makarantarka don buɗe shi.",
-  "accountLockedTitle": "An Kulle Asusu",
+  "accountLockedTitle": "Asusun da Aka Kulle",
   "attemptsRemaining": "Sauran ƙoƙari: {{attempts}}",
-  "accountLockedContactAdmin": "An kulle asusunka saboda yawan ƙoƙarin da bai yi nasara ba. Da fatan za a tuntuɓi mai gudanar da makarantarka don taimako."
+  "accountLockedContactAdmin": "An kulle asusunka saboda yawan ƙoƙarin da bai yi nasara ba. Da fatan za a tuntuɓi mai gudanar da makarantarka don taimako.",
+  "lockedAccountsDesc": "Duba asusun malamai da aka kulle saboda yawan ƙoƙarin tabbatar da lambar makaranta da bai yi nasara ba.",
+  "noLockedAccountsFound": "Ba a sami asusun malamai da aka kulle ba.",
+  "columnName": "Suna",
+  "columnEmail": "Imel",
+  "columnEnteredCode": "Lambar da Aka Shigar",
+  "columnAttemptsLeft": "Sauran Ƙoƙari",
+  "errorLoadingLockedAccounts": "An kasa loda asusun da aka kulle.",
+  "loadingLockedAccounts": "Ana loda asusun da aka kulle..."
 }
+

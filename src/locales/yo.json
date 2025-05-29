@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "Kóòdù ilé-ìwé tí kò tọ̀nà. Jọ̀wọ́ ṣayẹ̀wò kóòdù náà kí o tún gbìyànjú. Iye ìgbìyànjú tó ṣẹ́kù: {{attempts}}.",
   "accountLockedError": "Àpamọ́ rẹ ti di títìipa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú ìṣayẹ̀wò tí kò jáse.",
   "accountLockedDesc": "Àpamọ́ rẹ wà ní títìipa lásìkò yìí. Jọ̀wọ́ kan sí alábòójútó ilé-ìwé rẹ láti ṣí i.",
-  "accountLockedTitle": "Àpamọ́ Tí Di Títìipa",
+  "accountLockedTitle": "Àwọn Àpamọ́ Tí A Tìpa",
   "attemptsRemaining": "Iye ìgbìyànjú tó ṣẹ́kù: {{attempts}}",
-  "accountLockedContactAdmin": "Àpamọ́ rẹ ti di títìipa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú tí kò jáse. Jọ̀wọ́ kan sí alábòójútó ilé-ìwé rẹ fún ìrànlọ́wọ́."
+  "accountLockedContactAdmin": "Àpamọ́ rẹ ti di títìipa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú tí kò jáse. Jọ̀wọ́ kan sí alábòójútó ilé-ìwé rẹ fún ìrànlọ́wọ́.",
+  "lockedAccountsDesc": "Wo àwọn àpamọ́ olùkọ́ tí a ti tìpa nítorí ọ̀pọ̀lọpọ̀ ìgbìyànjú ìṣayẹ̀wò kóòdù ilé-ìwé tí kò jáse.",
+  "noLockedAccountsFound": "Kò sí àpamọ́ olùkọ́ tí a tìpa tí a rí.",
+  "columnName": "Orúkọ",
+  "columnEmail": "Ímeèlì",
+  "columnEnteredCode": "Kóòdù Tí A Tẹ",
+  "columnAttemptsLeft": "Àwọn Ìgbìyànjú Tó Kù",
+  "errorLoadingLockedAccounts": "Kò lè gba àwọn àpamọ́ tí a tìpa.",
+  "loadingLockedAccounts": "Ń gba àwọn àpamọ́ tí a tìpa..."
 }
+

@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "Invalid school code. Please check the code and try again. Attempts remaining: {{attempts}}.",
   "accountLockedError": "Your account has been locked due to too many failed verification attempts.",
   "accountLockedDesc": "Your account is currently locked. Please contact your school administrator to unlock it.",
-  "accountLockedTitle": "Account Locked",
+  "accountLockedTitle": "Locked Accounts",
   "attemptsRemaining": "Attempts remaining: {{attempts}}",
-  "accountLockedContactAdmin": "Your account is locked due to too many failed attempts. Please contact your school administrator for assistance."
+  "accountLockedContactAdmin": "Your account is locked due to too many failed attempts. Please contact your school administrator for assistance.",
+  "lockedAccountsDesc": "View teacher accounts that have been locked due to multiple failed school code verification attempts.",
+  "noLockedAccountsFound": "No locked teacher accounts found.",
+  "columnName": "Name",
+  "columnEmail": "Email",
+  "columnEnteredCode": "Entered Code",
+  "columnAttemptsLeft": "Attempts Left",
+  "errorLoadingLockedAccounts": "Failed to load locked accounts.",
+  "loadingLockedAccounts": "Loading locked accounts..."
 }
+

@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "Kode y'ishuri itemewe. Nyamuneka genzura kode hanyuma ugerageze nanone. Amahirwe asigaye: {{attempts}}.",
   "accountLockedError": "Konti yawe yahagaritswe kubera kugerageza kwemeza kode kenshi bikanga.",
   "accountLockedDesc": "Konti yawe yahagaritswe. Nyamuneka hamagara umuyobozi w'ishuri ryawe kugira ngo ayifungure.",
-  "accountLockedTitle": "Konti Yahagaritswe",
+  "accountLockedTitle": "Amakonti Yahagaritswe",
   "attemptsRemaining": "Amahirwe asigaye: {{attempts}}",
-  "accountLockedContactAdmin": "Konti yawe yahagaritswe kubera kugerageza kenshi bikanga. Nyamuneka hamagara umuyobozi w'ishuri ryawe kugira ngo agufashe."
+  "accountLockedContactAdmin": "Konti yawe yahagaritswe kubera kugerageza kenshi bikanga. Nyamuneka hamagara umuyobozi w'ishuri ryawe kugira ngo agufashe.",
+  "lockedAccountsDesc": "Reba amakonti y'abarimu yahagaritswe kubera kugerageza kwemeza kode y'ishuri kenshi bikanga.",
+  "noLockedAccountsFound": "Nta makonti y'abarimu yahagaritswe aboneka.",
+  "columnName": "Izina",
+  "columnEmail": "Email",
+  "columnEnteredCode": "Kode Yanditswe",
+  "columnAttemptsLeft": "Amahirwe Asigaye",
+  "errorLoadingLockedAccounts": "Kutabasha gutwara amakonti yahagaritswe.",
+  "loadingLockedAccounts": "Gutwara amakonti yahagaritswe..."
 }
+

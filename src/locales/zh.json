@@ -187,7 +187,16 @@
   "invalidSchoolCodeAttemptsError": "学校代码无效。请检查代码并重试。剩余尝试次数：{{attempts}}次。",
   "accountLockedError": "由于验证尝试失败次数过多，您的帐户已被锁定。",
   "accountLockedDesc": "您的帐户目前已被锁定。请联系您的学校管理员以解锁。",
-  "accountLockedTitle": "帐户已锁定",
+  "accountLockedTitle": "锁定的账户",
   "attemptsRemaining": "剩余尝试次数：{{attempts}}次",
-  "accountLockedContactAdmin": "由于尝试次数过多，您的帐户已被锁定。请联系您的学校管理员寻求帮助。"
+  "accountLockedContactAdmin": "由于尝试次数过多，您的帐户已被锁定。请联系您的学校管理员寻求帮助。",
+  "lockedAccountsDesc": "查看因多次学校代码验证尝试失败而被锁定的教师帐户。",
+  "noLockedAccountsFound": "未找到锁定的教师帐户。",
+  "columnName": "姓名",
+  "columnEmail": "电子邮件",
+  "columnEnteredCode": "输入代码",
+  "columnAttemptsLeft": "剩余尝试次数",
+  "errorLoadingLockedAccounts": "加载锁定的帐户失败。",
+  "loadingLockedAccounts": "正在加载锁定的帐户..."
 }
+
