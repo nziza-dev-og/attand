@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { LogOut, PanelLeft, Languages, Check } from "lucide-react"; // Removed UserCheck
+import { LogOut, PanelLeft, Languages, Check } from "lucide-react"; 
 import Image from 'next/image'; // Added Image import
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -72,6 +72,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
               </SheetTrigger>
               <SheetContent side="left" className="p-0 flex flex-col">
                 <SheetHeader>
+                  {/* Visually hidden title for accessibility */}
                   <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Mobile Menu'}</SheetTitle>
                 </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
