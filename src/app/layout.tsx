@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'AttendEase',
   description: 'Streamlined attendance tracking for schools.',
   icons: {
-    icon: '/icon.png', // Next.js will serve src/app/icon.png at this path
+    icon: '/favicon.ico', // Explicitly point to favicon.ico in the public directory
     // apple: '/apple-icon.png', // Example for Apple touch icon
   },
 };

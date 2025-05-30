@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { LogOut, PanelLeft, Languages, Check } from "lucide-react"; 
-import Image from 'next/image'; // Added Image import
+import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -72,11 +72,11 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
               </SheetTrigger>
               <SheetContent side="left" className="p-0 flex flex-col">
                 <SheetHeader>
-                  {/* Visually hidden title for accessibility */}
                   <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Mobile Menu'}</SheetTitle>
                 </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
-                   <Image src="/icon.png" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
+                   {/* Use /favicon.ico from public folder */}
+                   <Image src="/favicon.ico" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
                    <span className="text-lg font-semibold text-primary">{translate('appName')}</span>
                 </Link>
                 <div className="flex-grow overflow-y-auto">
@@ -88,7 +88,8 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
         )}
 
         <Link href={homePath} className="hidden items-center gap-2 sm:flex">
-           <Image src="/icon.png" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
+           {/* Use /favicon.ico from public folder */}
+           <Image src="/favicon.ico" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
            <h1 className="text-xl font-semibold text-primary">{translate('appName')}</h1>
         </Link>
         <span className="text-xl font-light text-muted-foreground hidden sm:inline">| {title}</span>
