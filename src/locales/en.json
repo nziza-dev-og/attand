@@ -21,6 +21,7 @@
   "yoruba": "Yoruba",
   "bengali": "Bengali",
   "tamil": "Tamil",
+  "arabic": "Arabic",
   "welcomeMessage": "Welcome, {{name}}!",
   "manageClasses": "Manage Classes",
   "manageStudents": "Manage Students",

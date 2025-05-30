@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
-export type Language = 'en' | 'fr' | 'rw' | 'sw' | 'hi' | 'zh' | 'ja' | 'ko' | 'ha' | 'yo' | 'bn' | 'ta';
+export type Language = 'en' | 'fr' | 'rw' | 'sw' | 'hi' | 'zh' | 'ja' | 'ko' | 'ha' | 'yo' | 'bn' | 'ta' | 'ar';
 
 interface LanguageContextType {
   language: Language;
@@ -27,9 +27,10 @@ const translations: Record<Language, Record<string, string>> = {
   yo: {},
   bn: {},
   ta: {},
+  ar: {},
 };
 
-const allSupportedLanguages: Language[] = ['en', 'fr', 'rw', 'sw', 'hi', 'zh', 'ja', 'ko', 'ha', 'yo', 'bn', 'ta'];
+const allSupportedLanguages: Language[] = ['en', 'fr', 'rw', 'sw', 'hi', 'zh', 'ja', 'ko', 'ha', 'yo', 'bn', 'ta', 'ar'];
 
 // Helper to dynamically load translations
 async function loadTranslations(lang: Language) {

@@ -56,6 +56,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
     { value: 'yo', labelKey: 'yoruba' },
     { value: 'bn', labelKey: 'bengali' },
     { value: 'ta', labelKey: 'tamil' },
+    { value: 'ar', labelKey: 'arabic' },
   ];
 
   return (
@@ -75,7 +76,6 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
                   <SheetTitle className="sr-only">{translate('mobileMenuTitle') || 'Mobile Menu'}</SheetTitle>
                 </SheetHeader>
                 <Link href={homePath} className="flex items-center gap-2 border-b px-4 py-3.5 mb-2">
-                   {/* Use /favicon.ico from public folder */}
                    <Image src="/favicon.ico" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
                    <span className="text-lg font-semibold text-primary">{translate('appName')}</span>
                 </Link>
@@ -88,7 +88,6 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
         )}
 
         <Link href={homePath} className="hidden items-center gap-2 sm:flex">
-           {/* Use /favicon.ico from public folder */}
            <Image src="/favicon.ico" alt={translate('appName') || 'App Logo'} width={24} height={24} className="h-6 w-6" />
            <h1 className="text-xl font-semibold text-primary">{translate('appName')}</h1>
         </Link>
