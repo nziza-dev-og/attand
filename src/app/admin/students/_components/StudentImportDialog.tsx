@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { collection, addDoc, Timestamp, writeBatch, doc } from "firebase/firestore";
+import { collection, addDoc, Timestamp, writeBatch, doc } from "firebase/firestore"; // Import writeBatch
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,11 +43,12 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-      if (selectedFile.type === "text/csv" || selectedFile.name.endsWith(".csv")) {
+      // Primarily check for .csv, but Excel might save as other text types sometimes
+      if (selectedFile.type === "text/csv" || selectedFile.name.endsWith(".csv") || selectedFile.type === "application/vnd.ms-excel") {
         setFile(selectedFile);
         setError(null);
       } else {
-        setError(translate("studentImportErrorInvalidFileType") || "Invalid file type. Please upload a CSV file.");
+        setError(translate("studentImportErrorInvalidFileType") || "Invalid file type. Please upload a CSV file. If using Excel, please 'Save As' CSV.");
         setFile(null);
       }
     }
@@ -93,7 +94,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         let errorCount = 0;
 
         for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
-          const batch = db.batch();
+          const batch = writeBatch(db); // Correct way to create a batch
           const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
 
           chunk.forEach((csvStudent) => {
@@ -154,12 +155,11 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             setError(translate("studentImportErrorAllFailed") || "All student records failed to import. Check file format and console for errors.");
         }
         
-        if (importedCount > 0 || (studentsToImport.length > 0 && errorCount === studentsToImport.length)) {
-            // Only close if some processing happened or all failed.
-            // If file was empty or malformed from start, keep dialog open with error.
-           // onOpenChange(false); // Let user close manually to see messages
+        // Keep the dialog open to show messages, user can close manually
+        // if (importedCount > 0 || (studentsToImport.length > 0 && errorCount === studentsToImport.length)) {
+           // onOpenChange(false); 
            // resetDialog();
-        }
+        // }
       },
       error: (err) => {
         console.error("CSV Parsing Error:", err);
@@ -180,7 +180,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students from CSV"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDesc") || "Upload a CSV file with student data. Required columns: 'Name'. Optional columns: 'Email', 'StudentInfo', 'AvatarURL'."}
+            {translate("studentImportDescCsvOnly") || "Upload a CSV file with student data. Required columns: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL'. Excel users: please 'Save As' a CSV file."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -191,7 +191,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Input
               id="student-csv-file"
               type="file"
-              accept=".csv"
+              accept=".csv" // Primarily suggest .csv
               onChange={handleFileChange}
               disabled={isImporting}
               className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
