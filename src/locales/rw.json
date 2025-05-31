@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "Inshingano za Super Admin",
   "superAdminManageSchoolsDesc": "Gucunga no kugenzura abayobozi b'amashuri bose banditse n'amashuri yabo.",
   "superAdminManageUsersDesc": "Gukurikirana amakonti y'abakoresha bose kuri urubuga, hamwe n'ubushobozi bwo kugenzura niba bibaye ngombwa.",
-  "superAdminSystemIntegrityDesc": "Kurinda ubuziranenge n'umutekano bya sisitemu ya AttendEase."
+  "superAdminSystemIntegrityDesc": "Kurinda ubuziranenge n'umutekano bya sisitemu ya AttendEase.",
+  "superAdminManageSchoolsTitle": "Gucunga Amashuri (Abayobozi)",
+  "superAdminManageSchoolsDescPage": "Reba kandi ucunge amakonti y'abayobozi b'amashuri bose n'amashuri yabo ajyanye.",
+  "superAdminManageSchoolsPlaceholder": "Imikorere yo kwerekana urutonde, kureba ibisobanuro, no gushobora gucunga (urugero: gufungura/guhagarika) amakonti y'abayobozi b'amashuri izashyirwaho hano.",
+  "superAdminManageAllUsersTitle": "Gucunga Abakoresha Bose",
+  "superAdminManageAllUsersDescPage": "Reba kandi ucunge amakonti y'abakoresha bose kuri urubuga (Abayobozi, Abarimu, Ababyeyi, Abanyeshuri).",
+  "superAdminManageAllUsersPlaceholder": "Imikorere yo kwerekana urutonde, gushakisha, kuyungurura, kureba ibisobanuro, no gushobora gucunga (urugero: guhindura inshingano, guhagarika) amakonti y'abakoresha izashyirwaho hano."
 }
-

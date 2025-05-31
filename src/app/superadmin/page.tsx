@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where } from "firebase/firestore";
+import { collection, getCountFromServer, query, where } from "firebase/firestore"; // Ensure query is imported
 import { db } from "@/lib/firebase";
 
 interface SuperAdminStats {
@@ -146,4 +146,3 @@ export default function SuperAdminDashboardPage() {
     </div>
   );
 }
-

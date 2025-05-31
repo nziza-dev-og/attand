@@ -28,14 +28,10 @@ export function SuperAdminSidebar({ isMobileSheet = false }: SuperAdminSidebarPr
   const commonLinkClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
   const mobileLinkClass = "text-lg font-medium text-foreground hover:text-primary";
 
-  // Placeholder links for now, actual pages would need to be created
   const navItems = [
     { href: "/superadmin", icon: LayoutDashboard, labelKey: "dashboard", srOnlyKey: "dashboard" },
     { href: "/superadmin/schools", icon: School, labelKey: "manageSchools", srOnlyKey: "manageSchools" },
     { href: "/superadmin/users", icon: Users, labelKey: "manageAllUsers", srOnlyKey: "manageAllUsers" },
-    // Could add more specific management links like:
-    // { href: "/superadmin/system-settings", icon: Settings, labelKey: "systemSettings", srOnlyKey: "systemSettings" },
-    // { href: "/superadmin/content-moderation", icon: ShieldAlert, labelKey: "contentModeration", srOnlyKey: "contentModeration" },
     { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"},
   ];
 

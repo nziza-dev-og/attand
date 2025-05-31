@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "Àwọn Ojúṣe Alábòójútó Gbogbogbò",
   "superAdminManageSchoolsDesc": "Ṣakoso àti ṣe àbójútó gbogbo àwọn alábòójútó ilé-ìwé tí wọ́n ti forúkọsílẹ̀ àti àwọn ilé-ìwé wọn.",
   "superAdminManageUsersDesc": "Ṣe àbójútó gbogbo àwọn àpamọ́ olùṣe ní gbogbo pẹpẹ, pẹ̀lú agbára fún ìṣàkóso tí ó bá pọndandan.",
-  "superAdminSystemIntegrityDesc": "Ríi dájú pé ìlera gbogbogbò àti ìdúróṣinṣin pẹpẹ AttendEase wà ní ipò tó dára."
+  "superAdminSystemIntegrityDesc": "Ríi dájú pé ìlera gbogbogbò àti ìdúróṣinṣin pẹpẹ AttendEase wà ní ipò tó dára.",
+  "superAdminManageSchoolsTitle": "Ṣakoso Àwọn Ilé-ìwé (Alábòójútó)",
+  "superAdminManageSchoolsDescPage": "Wo àti ṣakoso gbogbo àwọn àpamọ́ alábòójútó ilé-ìwé àti àwọn ilé-ìwé wọn tí ó báramu.",
+  "superAdminManageSchoolsPlaceholder": "Iṣẹ́ láti ṣe àkójọ, wo àwọn àlàyé, àti bóyá ṣakoso (f.a., mú ṣiṣẹ́/dá dúró) àwọn àpamọ́ alábòójútó ilé-ìwé yóò wà níbí.",
+  "superAdminManageAllUsersTitle": "Ṣakoso Gbogbo Àwọn Olùṣe",
+  "superAdminManageAllUsersDescPage": "Wo àti ṣakoso gbogbo àwọn àpamọ́ olùṣe ní gbogbo pẹpẹ (Alábòójútó, Olùkọ́, Òbí, Akẹ́kọ̀ọ́).",
+  "superAdminManageAllUsersPlaceholder": "Iṣẹ́ láti ṣe àkójọ, wá, ṣe àṣàyàn, wo àwọn àlàyé, àti bóyá ṣakoso (f.a., yí ipa padà, dá dúró) àwọn àpamọ́ olùṣe yóò wà níbí."
 }
-

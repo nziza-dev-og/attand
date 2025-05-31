@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "Responsabilités du Super Admin",
   "superAdminManageSchoolsDesc": "Gérer et surveiller tous les administrateurs d'école enregistrés et leurs écoles respectives.",
   "superAdminManageUsersDesc": "Superviser tous les comptes d'utilisateurs sur la plateforme, avec des capacités de modération si nécessaire.",
-  "superAdminSystemIntegrityDesc": "Assurer la santé globale et l'intégrité de la plateforme AttendEase."
+  "superAdminSystemIntegrityDesc": "Assurer la santé globale et l'intégrité de la plateforme AttendEase.",
+  "superAdminManageSchoolsTitle": "Gérer les Écoles (Administrateurs)",
+  "superAdminManageSchoolsDescPage": "Afficher et gérer tous les comptes d'administrateurs d'école et leurs écoles associées.",
+  "superAdminManageSchoolsPlaceholder": "La fonctionnalité pour lister, afficher les détails et potentiellement gérer (par exemple, activer/désactiver) les comptes d'administrateurs d'école sera implémentée ici.",
+  "superAdminManageAllUsersTitle": "Gérer Tous les Utilisateurs",
+  "superAdminManageAllUsersDescPage": "Afficher et gérer tous les comptes d'utilisateurs sur la plateforme (Administrateurs, Enseignants, Parents, Étudiants).",
+  "superAdminManageAllUsersPlaceholder": "La fonctionnalité pour lister, rechercher, filtrer, afficher les détails et potentiellement gérer (par exemple, modifier les rôles, suspendre) les comptes d'utilisateurs sera implémentée ici."
 }
-

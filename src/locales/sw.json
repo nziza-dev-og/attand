@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "Majukumu ya Msimamizi Mkuu",
   "superAdminManageSchoolsDesc": "Dhibiti na fuatilia wasimamizi wote wa shule waliosajiliwa na shule zao husika.",
   "superAdminManageUsersDesc": "Simamia akaunti zote za watumiaji kwenye jukwaa, na uwezo wa kusimamia ikiwa ni lazima.",
-  "superAdminSystemIntegrityDesc": "Hakikisha afya ya jumla na uadilifu wa jukwaa la AttendEase."
+  "superAdminSystemIntegrityDesc": "Hakikisha afya ya jumla na uadilifu wa jukwaa la AttendEase.",
+  "superAdminManageSchoolsTitle": "Dhibiti Shule (Wasimamizi)",
+  "superAdminManageSchoolsDescPage": "Tazama na udhibiti akaunti zote za wasimamizi wa shule na shule zao zinazohusiana.",
+  "superAdminManageSchoolsPlaceholder": "Utendaji wa kuorodhesha, kutazama maelezo, na uwezekano wa kudhibiti (k.m., kuwezesha/kuzima) akaunti za wasimamizi wa shule utatekelezwa hapa.",
+  "superAdminManageAllUsersTitle": "Dhibiti Watumiaji Wote",
+  "superAdminManageAllUsersDescPage": "Tazama na udhibiti akaunti zote za watumiaji kwenye jukwaa (Wasimamizi, Walimu, Wazazi, Wanafunzi).",
+  "superAdminManageAllUsersPlaceholder": "Utendaji wa kuorodhesha, kutafuta, kuchuja, kutazama maelezo, na uwezekano wa kudhibiti (k.m., kubadilisha majukumu, kusimamisha) akaunti za watumiaji utatekelezwa hapa."
 }
-

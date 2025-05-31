@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "مسؤوليات المسؤول الأعلى",
   "superAdminManageSchoolsDesc": "إدارة ومراقبة جميع مسؤولي المدارس المسجلين ومدارسهم.",
   "superAdminManageUsersDesc": "الإشراف على جميع حسابات المستخدمين عبر المنصة، مع إمكانيات الإشراف إذا لزم الأمر.",
-  "superAdminSystemIntegrityDesc": "ضمان الصحة العامة وسلامة منصة AttendEase."
+  "superAdminSystemIntegrityDesc": "ضمان الصحة العامة وسلامة منصة AttendEase.",
+  "superAdminManageSchoolsTitle": "إدارة المدارس (المسؤولون)",
+  "superAdminManageSchoolsDescPage": "عرض وإدارة جميع حسابات مسؤولي المدارس والمدارس المرتبطة بها.",
+  "superAdminManageSchoolsPlaceholder": "سيتم هنا تنفيذ وظيفة سرد حسابات مسؤولي المدارس وعرض تفاصيلها وإمكانية إدارتها (مثل التنشيط/التعطيل).",
+  "superAdminManageAllUsersTitle": "إدارة جميع المستخدمين",
+  "superAdminManageAllUsersDescPage": "عرض وإدارة جميع حسابات المستخدمين عبر المنصة (المسؤولون، المعلمون، أولياء الأمور، الطلاب).",
+  "superAdminManageAllUsersPlaceholder": "سيتم هنا تنفيذ وظيفة سرد حسابات المستخدمين والبحث عنها وتصفيتها وعرض تفاصيلها وإمكانية إدارتها (مثل تعديل الأدوار، التعليق)."
 }
-

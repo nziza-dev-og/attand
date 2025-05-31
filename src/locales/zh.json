@@ -224,6 +224,11 @@
   "superAdminResponsibilitiesTitle": "超级管理员职责",
   "superAdminManageSchoolsDesc": "管理和监控所有注册的学校管理员及其各自的学校。",
   "superAdminManageUsersDesc": "监督平台上的所有用户帐户，并在必要时具有审核功能。",
-  "superAdminSystemIntegrityDesc": "确保AttendEase平台的整体健康和完整性。"
+  "superAdminSystemIntegrityDesc": "确保AttendEase平台的整体健康和完整性。",
+  "superAdminManageSchoolsTitle": "管理学校（管理员）",
+  "superAdminManageSchoolsDescPage": "查看和管理所有学校管理员帐户及其关联学校。",
+  "superAdminManageSchoolsPlaceholder": "此处将实现列出、查看详细信息以及可能管理（例如，激活/停用）学校管理员帐户的功能。",
+  "superAdminManageAllUsersTitle": "管理所有用户",
+  "superAdminManageAllUsersDescPage": "查看和管理平台上的所有用户帐户（管理员、教师、家长、学生）。",
+  "superAdminManageAllUsersPlaceholder": "此处将实现列出、搜索、筛选、查看详细信息以及可能管理（例如，编辑角色、暂停）用户帐户的功能。"
 }
-
