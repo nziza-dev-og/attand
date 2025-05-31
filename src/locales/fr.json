@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Entrez le code de l'administrateur de votre école",
   "parentSchoolCodeLabel": "Code de l'École (Optionnel)",
   "enterSchoolCodePlaceholderParentOptional": "Entrez le code de l'école (optionnel)",
+  "parentSchoolCodeVerifiedDesc": "Code de l'école vérifié. Votre compte est maintenant associé à cette école.",
+  "schoolCodeNotFoundTitle": "Code d'École Introuvable",
+  "parentSchoolCodeNotFoundDesc": "Le code d'école que vous avez entré n'a pas été trouvé. Vous pouvez continuer l'inscription et vous lier à une école plus tard ou contacter l'administration de l'école.",
   "confirmPasswordLabel": "Confirmez le Mot de Passe",
   "signUpButton": "S'inscrire",
   "teacherMissingSchoolCodeError": "Votre compte n'est pas associé à un code d'école. Veuillez contacter votre administrateur.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Débloquer",
   "accountUnblockedTitle": "Compte Débloqué",
   "accountUnblockedDesc": "Le compte de l'enseignant ID {{teacherId}} a été débloqué.",
-  "errorUnblockingAccount": "Échec du déblocage du compte."
+  "errorUnblockingAccount": "Échec du déblocage du compte.",
+  "roleSuperAdmin": "Super Admin",
+  "superAdminSecretCodeLabel": "Code Secret Super Admin",
+  "enterSuperAdminSecretCodePlaceholder": "Entrez le code secret Super Admin",
+  "invalidSuperAdminCodeError": "Code secret invalide pour l'inscription Super Admin.",
+  "superAdminDashboardTitle": "Tableau de Bord Super Admin",
+  "superAdminDashboardDesc": "Superviser toutes les écoles, gérer les utilisateurs et maintenir l'intégrité du système.",
+  "manageSchools": "Gérer les Écoles (Admins)",
+  "manageAllUsers": "Gérer Tous les Utilisateurs",
+  "totalSchoolsManaged": "Total des Écoles Gérées",
+  "totalAdminAccounts": "Représente le nombre de comptes Admin",
+  "totalUsersSystem": "Nombre Total d'Utilisateurs dans le Système",
+  "allUserRolesCombined": "Inclut Admins, Enseignants, Parents, Étudiants",
+  "superAdminResponsibilitiesTitle": "Responsabilités du Super Admin",
+  "superAdminManageSchoolsDesc": "Gérer et surveiller tous les administrateurs d'école enregistrés et leurs écoles respectives.",
+  "superAdminManageUsersDesc": "Superviser tous les comptes d'utilisateurs sur la plateforme, avec des capacités de modération si nécessaire.",
+  "superAdminSystemIntegrityDesc": "Assurer la santé globale et l'intégrité de la plateforme AttendEase."
 }
-
-    

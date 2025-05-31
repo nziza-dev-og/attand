@@ -6,7 +6,7 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
-type Role = 'Admin' | 'Teacher' | 'Parent' | null;
+type Role = 'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin' | null;
 
 interface AuthContextType {
   user: User | null;
@@ -16,7 +16,7 @@ interface AuthContextType {
   enteredSchoolCode?: string | null;
   schoolCodeVerificationAttempts?: number | null;
   isSchoolCodeLocked?: boolean | null;
-  schoolId?: string | null; // Added schoolId
+  schoolId?: string | null; 
 }
 
 const defaultAuthContextValue: AuthContextType = {
@@ -27,7 +27,7 @@ const defaultAuthContextValue: AuthContextType = {
   enteredSchoolCode: null,
   schoolCodeVerificationAttempts: null,
   isSchoolCodeLocked: null,
-  schoolId: null, // Initialize schoolId
+  schoolId: null, 
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContextValue);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [enteredSchoolCode, setEnteredSchoolCode] = useState<string | null>(null);
   const [schoolCodeVerificationAttempts, setSchoolCodeVerificationAttempts] = useState<number | null>(null);
   const [isSchoolCodeLocked, setIsSchoolCodeLocked] = useState<boolean | null>(null);
-  const [schoolId, setSchoolId] = useState<string | null>(null); // State for schoolId
+  const [schoolId, setSchoolId] = useState<string | null>(null); 
 
 
   useEffect(() => {
@@ -53,9 +53,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userDocSnap = await getDoc(userDocRef);
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
-            if (userData.role === 'Admin' || userData.role === 'Teacher' || userData.role === 'Parent') {
+            if (userData.role === 'Admin' || userData.role === 'Teacher' || userData.role === 'Parent' || userData.role === 'SuperAdmin') {
               setRole(userData.role);
-              setSchoolId(userData.schoolId || null); // Set schoolId
+              setSchoolId(userData.schoolId || null); 
               setIsSchoolCodeVerified(userData.isSchoolCodeVerified === undefined ? null : userData.isSchoolCodeVerified);
               setEnteredSchoolCode(userData.enteredSchoolCode || null);
               setSchoolCodeVerificationAttempts(userData.schoolCodeVerificationAttempts === undefined ? null : userData.schoolCodeVerificationAttempts);
@@ -63,8 +63,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
               if (userData.role === 'Admin') {
-                setIsSchoolCodeVerified(true); // Admins are implicitly "verified" for their own school code
-                // For Admins, their schoolId is their own uid, set during signup.
+                setIsSchoolCodeVerified(true);
+              }
+              if (userData.role === 'SuperAdmin') {
+                setIsSchoolCodeVerified(true); // SuperAdmins are always "verified" in their context
+                setSchoolId(null); // SuperAdmins don't have a specific schoolId
               }
 
             } else {

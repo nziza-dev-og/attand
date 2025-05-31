@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, type ReactNode } from 'react';
@@ -7,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRoles: Array<'Admin' | 'Teacher' | 'Parent'>;
+  allowedRoles: Array<'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin'>;
 }
 
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {

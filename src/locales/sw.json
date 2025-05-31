@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Weka nambari kutoka kwa msimamizi wa shule yako",
   "parentSchoolCodeLabel": "Nambari ya Shule (Si lazima)",
   "enterSchoolCodePlaceholderParentOptional": "Weka nambari kutoka shuleni (si lazima)",
+  "parentSchoolCodeVerifiedDesc": "Nambari ya shule imethibitishwa. Akaunti yako sasa imehusishwa na shule hii.",
+  "schoolCodeNotFoundTitle": "Nambari ya Shule Haikupatikana",
+  "parentSchoolCodeNotFoundDesc": "Nambari ya shule uliyoweka haikupatikana. Unaweza kuendelea na usajili na kuunganisha na shule baadaye au wasiliana na usimamizi wa shule.",
   "confirmPasswordLabel": "Thibitisha Nenosiri",
   "signUpButton": "Jisajili",
   "teacherMissingSchoolCodeError": "Akaunti yako haihusishwi na nambari ya shule. Tafadhali wasiliana na msimamizi wako.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Fungua",
   "accountUnblockedTitle": "Akaunti Imefunguliwa",
   "accountUnblockedDesc": "Akaunti ya mwalimu ID {{teacherId}} imefunguliwa.",
-  "errorUnblockingAccount": "Imeshindwa kufungua akaunti."
+  "errorUnblockingAccount": "Imeshindwa kufungua akaunti.",
+  "roleSuperAdmin": "Msimamizi Mkuu",
+  "superAdminSecretCodeLabel": "Nambari ya Siri ya Msimamizi Mkuu",
+  "enterSuperAdminSecretCodePlaceholder": "Weka nambari ya siri ya Msimamizi Mkuu",
+  "invalidSuperAdminCodeError": "Nambari ya siri batili kwa usajili wa Msimamizi Mkuu.",
+  "superAdminDashboardTitle": "Dashibodi ya Msimamizi Mkuu",
+  "superAdminDashboardDesc": "Simamia shule zote, dhibiti watumiaji, na dumisha uadilifu wa mfumo.",
+  "manageSchools": "Dhibiti Shule (Wasimamizi)",
+  "manageAllUsers": "Dhibiti Watumiaji Wote",
+  "totalSchoolsManaged": "Jumla ya Shule Zinazosimamiwa",
+  "totalAdminAccounts": "Inawakilisha idadi ya akaunti za Wasimamizi",
+  "totalUsersSystem": "Jumla ya Watumiaji katika Mfumo",
+  "allUserRolesCombined": "Inajumuisha Wasimamizi, Walimu, Wazazi, Wanafunzi",
+  "superAdminResponsibilitiesTitle": "Majukumu ya Msimamizi Mkuu",
+  "superAdminManageSchoolsDesc": "Dhibiti na fuatilia wasimamizi wote wa shule waliosajiliwa na shule zao husika.",
+  "superAdminManageUsersDesc": "Simamia akaunti zote za watumiaji kwenye jukwaa, na uwezo wa kusimamia ikiwa ni lazima.",
+  "superAdminSystemIntegrityDesc": "Hakikisha afya ya jumla na uadilifu wa jukwaa la AttendEase."
 }
-
-    

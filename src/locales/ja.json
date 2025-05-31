@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "学校の管理者からのコードを入力してください",
   "parentSchoolCodeLabel": "学校コード（任意）",
   "enterSchoolCodePlaceholderParentOptional": "学校からのコードを入力してください（任意）",
+  "parentSchoolCodeVerifiedDesc": "学校コードが確認されました。あなたのアカウントはこの学校に関連付けられました。",
+  "schoolCodeNotFoundTitle": "学校コードが見つかりません",
+  "parentSchoolCodeNotFoundDesc": "入力された学校コードが見つかりませんでした。サインアップを続行して後で学校にリンクするか、学校の管理者に連絡することができます。",
   "confirmPasswordLabel": "パスワードを確認",
   "signUpButton": "サインアップ",
   "teacherMissingSchoolCodeError": "あなたのアカウントは学校コードに関連付けられていません。管理者に連絡してください。",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "ブロック解除",
   "accountUnblockedTitle": "アカウントのブロック解除",
   "accountUnblockedDesc": "教師ID {{teacherId}} のアカウントがブロック解除されました。",
-  "errorUnblockingAccount": "アカウントのブロック解除に失敗しました。"
+  "errorUnblockingAccount": "アカウントのブロック解除に失敗しました。",
+  "roleSuperAdmin": "スーパー管理者",
+  "superAdminSecretCodeLabel": "スーパー管理者秘密コード",
+  "enterSuperAdminSecretCodePlaceholder": "スーパー管理者の秘密コードを入力してください",
+  "invalidSuperAdminCodeError": "スーパー管理者登録の秘密コードが無効です。",
+  "superAdminDashboardTitle": "スーパー管理者ダッシュボード",
+  "superAdminDashboardDesc": "すべての学校を監督し、ユーザーを管理し、システムの整合性を維持します。",
+  "manageSchools": "学校管理（管理者）",
+  "manageAllUsers": "全ユーザー管理",
+  "totalSchoolsManaged": "管理対象の学校総数",
+  "totalAdminAccounts": "管理者アカウント数を表します",
+  "totalUsersSystem": "システム内の総ユーザー数",
+  "allUserRolesCombined": "管理者、教師、保護者、生徒を含みます",
+  "superAdminResponsibilitiesTitle": "スーパー管理者の責任",
+  "superAdminManageSchoolsDesc": "登録されているすべての学校管理者とその各学校を管理および監視します。",
+  "superAdminManageUsersDesc": "プラットフォーム全体のすべてのユーザーアカウントを監督し、必要に応じてモデレーション機能を使用します。",
+  "superAdminSystemIntegrityDesc": "AttendEaseプラットフォーム全体の健全性と整合性を確保します。"
 }
-
-    

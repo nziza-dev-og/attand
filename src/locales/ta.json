@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "உங்கள் பள்ளி நிர்வாகியிடமிருந்து குறியீட்டை உள்ளிடவும்",
   "parentSchoolCodeLabel": "பள்ளி குறியீடு (விருப்பத்தேர்வு)",
   "enterSchoolCodePlaceholderParentOptional": "பள்ளியிலிருந்து குறியீட்டை உள்ளிடவும் (விருப்பத்தேர்வு)",
+  "parentSchoolCodeVerifiedDesc": "பள்ளி குறியீடு சரிபார்க்கப்பட்டது. உங்கள் கணக்கு இப்போது இந்தப் பள்ளியுடன் இணைக்கப்பட்டுள்ளது.",
+  "schoolCodeNotFoundTitle": "பள்ளி குறியீடு கிடைக்கவில்லை",
+  "parentSchoolCodeNotFoundDesc": "நீங்கள் உள்ளிட்ட பள்ளி குறியீடு கிடைக்கவில்லை. நீங்கள் பதிவு செய்து பின்னர் ஒரு பள்ளியுடன் இணைக்கலாம் அல்லது பள்ளி நிர்வாகத்தைத் தொடர்பு கொள்ளலாம்.",
   "confirmPasswordLabel": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
   "signUpButton": "பதிவுசெய்",
   "teacherMissingSchoolCodeError": "உங்கள் கணக்கு எந்த பள்ளி குறியீட்டுடனும் இணைக்கப்படவில்லை. தயவுசெய்து உங்கள் நிர்வாகியைத் தொடர்பு கொள்ளவும்.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "தடையை நீக்கு",
   "accountUnblockedTitle": "கணக்கு தடையை நீக்கப்பட்டது",
   "accountUnblockedDesc": "ஆசிரியர் ID {{teacherId}} இன் கணக்கு தடையை நீக்கப்பட்டுள்ளது.",
-  "errorUnblockingAccount": "கணக்கு தடையை நீக்குவதில் தோல்வி."
+  "errorUnblockingAccount": "கணக்கு தடையை நீக்குவதில் தோல்வி.",
+  "roleSuperAdmin": "சூப்பர் நிர்வாகி",
+  "superAdminSecretCodeLabel": "சூப்பர் நிர்வாகி ரகசிய குறியீடு",
+  "enterSuperAdminSecretCodePlaceholder": "சூப்பர் நிர்வாகி ரகசிய குறியீட்டை உள்ளிடவும்",
+  "invalidSuperAdminCodeError": "சூப்பர் நிர்வாகி பதிவுக்கு தவறான ரகசிய குறியீடு.",
+  "superAdminDashboardTitle": "சூப்பர் நிர்வாகி டாஷ்போர்டு",
+  "superAdminDashboardDesc": "அனைத்துப் பள்ளிகளையும் மேற்பார்வையிடவும், பயனர்களை நிர்வகிக்கவும், கணினி ஒருமைப்பாட்டைப் பராமரிக்கவும்.",
+  "manageSchools": "பள்ளிகளை நிர்வகி (நிர்வாகிகள்)",
+  "manageAllUsers": "அனைத்துப் பயனர்களையும் நிர்வகி",
+  "totalSchoolsManaged": "நிர்வகிக்கப்படும் மொத்த பள்ளிகள்",
+  "totalAdminAccounts": "நிர்வாகி கணக்குகளின் எண்ணிக்கையைக் குறிக்கிறது",
+  "totalUsersSystem": "கணினியில் உள்ள மொத்த பயனர்கள்",
+  "allUserRolesCombined": "நிர்வாகிகள், ஆசிரியர்கள், பெற்றோர், மாணவர்கள் அடங்கும்",
+  "superAdminResponsibilitiesTitle": "சூப்பர் நிர்வாகி பொறுப்புகள்",
+  "superAdminManageSchoolsDesc": "பதிவுசெய்யப்பட்ட அனைத்து பள்ளி நிர்வாகிகளையும் அந்தந்த பள்ளிகளையும் நிர்வகிக்கவும் கண்காணிக்கவும்.",
+  "superAdminManageUsersDesc": "தேவைப்பட்டால் மிதப்படுத்தும் திறன்களுடன், தளம் முழுவதும் உள்ள அனைத்து பயனர் கணக்குகளையும் மேற்பார்வையிடவும்.",
+  "superAdminSystemIntegrityDesc": "AttendEase தளத்தின் ஒட்டுமொத்த ஆரோக்கியம் மற்றும் ஒருமைப்பாட்டை உறுதிசெய்யவும்."
 }
-
-    

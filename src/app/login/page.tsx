@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { setDoc, doc, Timestamp } from 'firebase/firestore';
+import { setDoc, doc, Timestamp, query, collection, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance";
+const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
 
 export default function LoginPage() {
@@ -27,8 +28,9 @@ export default function LoginPage() {
   const [role, setRole] = useState<Role | ''>('');
   const [name, setName] = useState('');
   const [adminSecretCode, setAdminSecretCode] = useState('');
+  const [superAdminSecretCode, setSuperAdminSecretCode] = useState('');
   const [teacherSchoolCode, setTeacherSchoolCode] = useState('');
-  const [parentSchoolCode, setParentSchoolCode] = useState(''); // New state for parent's school code
+  const [parentSchoolCode, setParentSchoolCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('login');
   const router = useRouter();
@@ -42,8 +44,9 @@ export default function LoginPage() {
     setRole('');
     setName('');
     setAdminSecretCode('');
+    setSuperAdminSecretCode('');
     setTeacherSchoolCode('');
-    setParentSchoolCode(''); // Reset parent school code
+    setParentSchoolCode('');
     setError(null);
   };
 
@@ -92,6 +95,14 @@ export default function LoginPage() {
         return;
       }
     }
+    
+    if (role === 'SuperAdmin') {
+      if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
+        setError(translate("invalidSuperAdminCodeError"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidSuperAdminCodeError") });
+        return;
+      }
+    }
 
     if (role === 'Teacher' && !teacherSchoolCode.trim()) {
         setError(translate("enterSchoolCodeErrorTeacher"));
@@ -111,22 +122,42 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-        isSchoolCodeVerified: role === 'Admin', 
+        isSchoolCodeVerified: role === 'Admin' || role === 'SuperAdmin', 
       };
       
       if (role === 'Admin') {
         userDocData.schoolId = user.uid; 
         userDocData.schoolIdentifierCode = ""; 
+      } else if (role === 'SuperAdmin') {
+        userDocData.schoolId = null; // SuperAdmins don't belong to a specific school
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
         userDocData.isSchoolCodeVerified = false;
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
+        // schoolId for Teacher will be set upon successful verification
       } else if (role === 'Parent') {
         userDocData.childIds = [];
         if (parentSchoolCode.trim()) {
           userDocData.enteredSchoolCode = parentSchoolCode.trim();
+          // Attempt to auto-verify and set schoolId if code is valid
+          const adminsQuery = query(
+            collection(db, "users"),
+            where("role", "==", "Admin"),
+            where("schoolIdentifierCode", "==", parentSchoolCode.trim())
+          );
+          const adminSnap = await getDocs(adminsQuery);
+          if (!adminSnap.empty) {
+            userDocData.schoolId = adminSnap.docs[0].id;
+            userDocData.isSchoolCodeVerified = true;
+            toast({ title: translate('schoolCodeVerifiedTitle'), description: translate('parentSchoolCodeVerifiedDesc') });
+          } else {
+            userDocData.isSchoolCodeVerified = false;
+            toast({ variant: "warning", title: translate('schoolCodeNotFoundTitle'), description: translate('parentSchoolCodeNotFoundDesc') });
+          }
+        } else {
+            userDocData.isSchoolCodeVerified = false;
         }
       }
 
@@ -237,6 +268,7 @@ export default function LoginPage() {
                       </SelectTrigger>
                       <SelectContent>
                          <SelectItem value="none" disabled>{translate("selectRolePlaceholder")}</SelectItem>
+                         <SelectItem value="SuperAdmin">{translate("roleSuperAdmin")}</SelectItem>
                         <SelectItem value="Admin">{translate("roleAdmin")}</SelectItem>
                         <SelectItem value="Teacher">{translate("roleTeacher")}</SelectItem>
                         <SelectItem value="Parent">{translate("roleParent")}</SelectItem>
@@ -257,6 +289,20 @@ export default function LoginPage() {
                     />
                   </div>
                 )}
+                {role === 'SuperAdmin' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="super-admin-secret-code">{translate("superAdminSecretCodeLabel")}</Label>
+                    <Input
+                      id="super-admin-secret-code"
+                      type="password"
+                      placeholder={translate("enterSuperAdminSecretCodePlaceholder")}
+                      value={superAdminSecretCode}
+                      onChange={(e) => setSuperAdminSecretCode(e.target.value)}
+                      required
+                      autoComplete="off"
+                    />
+                  </div>
+                )}
                 {role === 'Teacher' && (
                   <div className="space-y-2">
                     <Label htmlFor="teacher-school-code">{translate("teacherSchoolCodeLabel")}</Label>
@@ -271,7 +317,7 @@ export default function LoginPage() {
                     />
                   </div>
                 )}
-                {role === 'Parent' && ( // New field for Parent School Code
+                {role === 'Parent' && (
                   <div className="space-y-2">
                     <Label htmlFor="parent-school-code">{translate("parentSchoolCodeLabel")}</Label>
                     <Input
@@ -318,5 +364,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Tẹ kóòdù láti ọwọ́ alábòójútó ilé-ìwé rẹ",
   "parentSchoolCodeLabel": "Kóòdù Ilé-ìwé (Kò pọndandan)",
   "enterSchoolCodePlaceholderParentOptional": "Tẹ kóòdù láti ilé-ìwé (kò pọndandan)",
+  "parentSchoolCodeVerifiedDesc": "Kóòdù ilé-ìwé ti di mímọ̀. Àpamọ́ rẹ ti sopọ̀ mọ́ ilé-ìwé yìí báyìí.",
+  "schoolCodeNotFoundTitle": "A Kò Rí Kóòdù Ilé-ìwé",
+  "parentSchoolCodeNotFoundDesc": "A kò rí kóòdù ilé-ìwé tí o tẹ̀. O lè tẹ̀síwájú pẹ̀lú ìforúkọsílẹ̀ kí o sì so mọ́ ilé-ìwé kan nígbà tó yá tàbí kan sí àwọn aláṣẹ ilé-ìwé.",
   "confirmPasswordLabel": "Túntún Ọ̀rọ̀ìpamọ́",
   "signUpButton": "Forúkọsílẹ̀",
   "teacherMissingSchoolCodeError": "Àpamọ́ rẹ kò sopọ̀ mọ́ kóòdù ilé-ìwé kan. Jọ̀wọ́ kan sí alábòójútó rẹ.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Ṣí Silẹ̀",
   "accountUnblockedTitle": "Àpamọ́ Ti Silẹ̀",
   "accountUnblockedDesc": "Àpamọ́ olùkọ́ ID {{teacherId}} ti silẹ̀.",
-  "errorUnblockingAccount": "Kò lè ṣí àpamọ́ silẹ̀."
+  "errorUnblockingAccount": "Kò lè ṣí àpamọ́ silẹ̀.",
+  "roleSuperAdmin": "Alábòójútó Gbogbogbò",
+  "superAdminSecretCodeLabel": "Kóòdù Ìkọ̀kọ̀ Alábòójútó Gbogbogbò",
+  "enterSuperAdminSecretCodePlaceholder": "Tẹ kóòdù ìkọ̀kọ̀ Alábòójútó Gbogbogbò",
+  "invalidSuperAdminCodeError": "Kóòdù ìkọ̀kọ̀ tí kò tọ̀nà fún ìforúkọsílẹ̀ Alábòójútó Gbogbogbò.",
+  "superAdminDashboardTitle": "Dashboard Alábòójútó Gbogbogbò",
+  "superAdminDashboardDesc": "Ṣe àbójútó gbogbo ilé-ìwé, ṣakoso àwọn olùṣe, àti pa ìdúróṣinṣin ètò mọ́.",
+  "manageSchools": "Ṣakoso Àwọn Ilé-ìwé (Àwọn Alábòójútó)",
+  "manageAllUsers": "Ṣakoso Gbogbo Àwọn Olùṣe",
+  "totalSchoolsManaged": "Àpapọ̀ Àwọn Ilé-ìwé Tí A Ń Ṣakoso",
+  "totalAdminAccounts": "Ṣe àfihàn iye àwọn àpamọ́ Alábòójútó",
+  "totalUsersSystem": "Àpapọ̀ Àwọn Olùṣe Nínú Ètò",
+  "allUserRolesCombined": "Pẹlú Àwọn Alábòójútó, Olùkọ́, Òbí, Akẹ́kọ̀ọ́",
+  "superAdminResponsibilitiesTitle": "Àwọn Ojúṣe Alábòójútó Gbogbogbò",
+  "superAdminManageSchoolsDesc": "Ṣakoso àti ṣe àbójútó gbogbo àwọn alábòójútó ilé-ìwé tí wọ́n ti forúkọsílẹ̀ àti àwọn ilé-ìwé wọn.",
+  "superAdminManageUsersDesc": "Ṣe àbójútó gbogbo àwọn àpamọ́ olùṣe ní gbogbo pẹpẹ, pẹ̀lú agbára fún ìṣàkóso tí ó bá pọndandan.",
+  "superAdminSystemIntegrityDesc": "Ríi dájú pé ìlera gbogbogbò àti ìdúróṣinṣin pẹpẹ AttendEase wà ní ipò tó dára."
 }
-
-    

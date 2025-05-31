@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Andika kode wavanye ku muyobozi w'ishuri ryawe",
   "parentSchoolCodeLabel": "Kode y'Ishuri (Si ngombwa)",
   "enterSchoolCodePlaceholderParentOptional": "Andika kode y'ishuri (si ngombwa)",
+  "parentSchoolCodeVerifiedDesc": "Kode y'ishuri yemejwe. Konti yawe yahujwe n'iri shuri.",
+  "schoolCodeNotFoundTitle": "Kode y'Ishuri Ntiyabonetse",
+  "parentSchoolCodeNotFoundDesc": "Kode y'ishuri wanditse ntiyabonetse. Ushobora gukomeza kwiyandikisha hanyuma ugahuza n'ishuri nyuma cyangwa ukavugana n'ubuyobozi bw'ishuri.",
   "confirmPasswordLabel": "Emeza Ijambobanga",
   "signUpButton": "Kwiyandikisha",
   "teacherMissingSchoolCodeError": "Konti yawe ntihujwe na kode y'ishuri. Hamagara umuyobozi wawe.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Fungura",
   "accountUnblockedTitle": "Konti Yafunguwe",
   "accountUnblockedDesc": "Konti y'umwarimu ID {{teacherId}} yafunguwe.",
-  "errorUnblockingAccount": "Kunanirwa gufungura konti."
+  "errorUnblockingAccount": "Kunanirwa gufungura konti.",
+  "roleSuperAdmin": "Super Admin",
+  "superAdminSecretCodeLabel": "Kode y'Ibanga ya Super Admin",
+  "enterSuperAdminSecretCodePlaceholder": "Andika kode y'ibanga ya Super Admin",
+  "invalidSuperAdminCodeError": "Kode y'ibanga y'Ubuyobozi Bukuru itemewe.",
+  "superAdminDashboardTitle": "Imbonerahamwe ya Super Admin",
+  "superAdminDashboardDesc": "Genzura amashuri yose, gucunga abakoresha, no kubungabunga ubuziranenge bwa sisitemu.",
+  "manageSchools": "Gucunga Amashuri (Abayobozi)",
+  "manageAllUsers": "Gucunga Abakoresha Bose",
+  "totalSchoolsManaged": "Amashuri Yose Acunzwe",
+  "totalAdminAccounts": "Byerekana umubare w'amakonti y'Abayobozi",
+  "totalUsersSystem": "Abakoresha Bose muri Sisitemu",
+  "allUserRolesCombined": "Harimo Abayobozi, Abarimu, Ababyeyi, Abanyeshuri",
+  "superAdminResponsibilitiesTitle": "Inshingano za Super Admin",
+  "superAdminManageSchoolsDesc": "Gucunga no kugenzura abayobozi b'amashuri bose banditse n'amashuri yabo.",
+  "superAdminManageUsersDesc": "Gukurikirana amakonti y'abakoresha bose kuri urubuga, hamwe n'ubushobozi bwo kugenzura niba bibaye ngombwa.",
+  "superAdminSystemIntegrityDesc": "Kurinda ubuziranenge n'umutekano bya sisitemu ya AttendEase."
 }
-
-    

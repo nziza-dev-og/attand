@@ -19,6 +19,9 @@ export default function Home() {
           router.push('/teacher/verify-school');
         } else {
           switch (role) {
+            case 'SuperAdmin':
+              router.push('/superadmin');
+              break;
             case 'Admin':
               router.push('/admin');
               break;

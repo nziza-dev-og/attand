@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "输入您学校管理员提供的代码",
   "parentSchoolCodeLabel": "学校代码（可选）",
   "enterSchoolCodePlaceholderParentOptional": "输入学校提供的代码（可选）",
+  "parentSchoolCodeVerifiedDesc": "学校代码已验证。您的帐户现已与此学校关联。",
+  "schoolCodeNotFoundTitle": "学校代码未找到",
+  "parentSchoolCodeNotFoundDesc": "您输入的学校代码未找到。您可以继续注册并在以后链接到学校，或联系学校管理部门。",
   "confirmPasswordLabel": "确认密码",
   "signUpButton": "注册",
   "teacherMissingSchoolCodeError": "您的帐户未与学校代码关联。请联系您的管理员。",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "解锁",
   "accountUnblockedTitle": "帐户已解锁",
   "accountUnblockedDesc": "教师ID {{teacherId}} 的帐户已解锁。",
-  "errorUnblockingAccount": "解锁帐户失败。"
+  "errorUnblockingAccount": "解锁帐户失败。",
+  "roleSuperAdmin": "超级管理员",
+  "superAdminSecretCodeLabel": "超级管理员秘密代码",
+  "enterSuperAdminSecretCodePlaceholder": "输入超级管理员秘密代码",
+  "invalidSuperAdminCodeError": "超级管理员注册的秘密代码无效。",
+  "superAdminDashboardTitle": "超级管理员仪表板",
+  "superAdminDashboardDesc": "监督所有学校，管理用户并维护系统完整性。",
+  "manageSchools": "管理学校（管理员）",
+  "manageAllUsers": "管理所有用户",
+  "totalSchoolsManaged": "管理的总学校数",
+  "totalAdminAccounts": "代表管理员帐户数量",
+  "totalUsersSystem": "系统中的总用户数",
+  "allUserRolesCombined": "包括管理员、教师、家长、学生",
+  "superAdminResponsibilitiesTitle": "超级管理员职责",
+  "superAdminManageSchoolsDesc": "管理和监控所有注册的学校管理员及其各自的学校。",
+  "superAdminManageUsersDesc": "监督平台上的所有用户帐户，并在必要时具有审核功能。",
+  "superAdminSystemIntegrityDesc": "确保AttendEase平台的整体健康和完整性。"
 }
-
-    

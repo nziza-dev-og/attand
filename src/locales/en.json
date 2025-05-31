@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Enter code from your school admin",
   "parentSchoolCodeLabel": "School Code (Optional)",
   "enterSchoolCodePlaceholderParentOptional": "Enter code from the school (optional)",
+  "parentSchoolCodeVerifiedDesc": "School code verified. Your account is now associated with this school.",
+  "schoolCodeNotFoundTitle": "School Code Not Found",
+  "parentSchoolCodeNotFoundDesc": "The school code you entered was not found. You can proceed with signup and link to a school later or contact school administration.",
   "confirmPasswordLabel": "Confirm Password",
   "signUpButton": "Sign Up",
   "teacherMissingSchoolCodeError": "Your account is not associated with a school code. Please contact your administrator.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Unblock",
   "accountUnblockedTitle": "Account Unblocked",
   "accountUnblockedDesc": "The account for teacher ID {{teacherId}} has been unblocked.",
-  "errorUnblockingAccount": "Failed to unblock the account."
+  "errorUnblockingAccount": "Failed to unblock the account.",
+  "roleSuperAdmin": "Super Admin",
+  "superAdminSecretCodeLabel": "Super Admin Secret Code",
+  "enterSuperAdminSecretCodePlaceholder": "Enter Super Admin secret code",
+  "invalidSuperAdminCodeError": "Invalid secret code for Super Admin registration.",
+  "superAdminDashboardTitle": "Super Admin Dashboard",
+  "superAdminDashboardDesc": "Oversee all schools, manage users, and maintain system integrity.",
+  "manageSchools": "Manage Schools (Admins)",
+  "manageAllUsers": "Manage All Users",
+  "totalSchoolsManaged": "Total Schools Managed",
+  "totalAdminAccounts": "Represents number of Admin accounts",
+  "totalUsersSystem": "Total Users in System",
+  "allUserRolesCombined": "Includes Admins, Teachers, Parents, Students",
+  "superAdminResponsibilitiesTitle": "Super Admin Responsibilities",
+  "superAdminManageSchoolsDesc": "Manage and monitor all registered school administrators and their respective schools.",
+  "superAdminManageUsersDesc": "Oversee all user accounts across the platform, with capabilities for moderation if necessary.",
+  "superAdminSystemIntegrityDesc": "Ensure the overall health and integrity of the AttendEase platform."
 }
-
-    

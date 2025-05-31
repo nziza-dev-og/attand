@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "আপনার স্কুল অ্যাডমিন থেকে কোড প্রবেশ করান",
   "parentSchoolCodeLabel": "স্কুল কোড (ঐচ্ছিক)",
   "enterSchoolCodePlaceholderParentOptional": "স্কুল থেকে কোড প্রবেশ করান (ঐচ্ছিক)",
+  "parentSchoolCodeVerifiedDesc": "স্কুল কোড যাচাই করা হয়েছে। আপনার অ্যাকাউন্ট এখন এই স্কুলের সাথে যুক্ত।",
+  "schoolCodeNotFoundTitle": "স্কুল কোড পাওয়া যায়নি",
+  "parentSchoolCodeNotFoundDesc": "আপনার প্রবেশ করা স্কুল কোডটি পাওয়া যায়নি। আপনি সাইন আপ চালিয়ে যেতে পারেন এবং পরে একটি স্কুলের সাথে লিঙ্ক করতে পারেন বা স্কুল প্রশাসনের সাথে যোগাযোগ করতে পারেন।",
   "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
   "signUpButton": "সাইন আপ করুন",
   "teacherMissingSchoolCodeError": "আপনার অ্যাকাউন্ট কোনো স্কুল কোডের সাথে যুক্ত নয়। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "আনব্লক করুন",
   "accountUnblockedTitle": "অ্যাকাউন্ট আনব্লক করা হয়েছে",
   "accountUnblockedDesc": "শিক্ষক আইডি {{teacherId}} এর জন্য অ্যাকাউন্ট আনব্লক করা হয়েছে।",
-  "errorUnblockingAccount": "অ্যাকাউন্ট আনব্লক করতে ব্যর্থ।"
+  "errorUnblockingAccount": "অ্যাকাউন্ট আনব্লক করতে ব্যর্থ।",
+  "roleSuperAdmin": "সুপার অ্যাডমিন",
+  "superAdminSecretCodeLabel": "সুপার অ্যাডমিন গোপন কোড",
+  "enterSuperAdminSecretCodePlaceholder": "সুপার অ্যাডমিন গোপন কোড প্রবেশ করান",
+  "invalidSuperAdminCodeError": "সুপার অ্যাডমিন নিবন্ধনের জন্য অবৈধ গোপন কোড।",
+  "superAdminDashboardTitle": "সুপার অ্যাডমিন ড্যাশবোর্ড",
+  "superAdminDashboardDesc": "সমস্ত স্কুল তত্ত্বাবধান করুন, ব্যবহারকারীদের পরিচালনা করুন এবং সিস্টেমের অখণ্ডতা বজায় রাখুন।",
+  "manageSchools": "স্কুল পরিচালনা করুন (অ্যাডমিন)",
+  "manageAllUsers": "সমস্ত ব্যবহারকারী পরিচালনা করুন",
+  "totalSchoolsManaged": "পরিচালিত মোট স্কুল",
+  "totalAdminAccounts": "অ্যাডমিন অ্যাকাউন্টের সংখ্যা প্রতিনিধিত্ব করে",
+  "totalUsersSystem": "সিস্টেমে মোট ব্যবহারকারী",
+  "allUserRolesCombined": "অ্যাডমিন, শিক্ষক, অভিভাবক, ছাত্র অন্তর্ভুক্ত",
+  "superAdminResponsibilitiesTitle": "সুপার অ্যাডমিন দায়িত্ব",
+  "superAdminManageSchoolsDesc": "সমস্ত নিবন্ধিত স্কুল প্রশাসক এবং তাদের নিজ নিজ স্কুল পরিচালনা এবং পর্যবেক্ষণ করুন।",
+  "superAdminManageUsersDesc": "প্রয়োজনে সংযম ক্ষমতা সহ প্ল্যাটফর্ম জুড়ে সমস্ত ব্যবহারকারী অ্যাকাউন্ট তত্ত্বাবধান করুন।",
+  "superAdminSystemIntegrityDesc": "AttendEase প্ল্যাটফর্মের সামগ্রিক স্বাস্থ্য এবং অখণ্ডতা নিশ্চিত করুন।"
 }
-
-    

@@ -3,7 +3,7 @@
 
 import type { Timestamp } from "firebase/firestore";
 
-export type Role = 'Admin' | 'Teacher' | 'Parent';
+export type Role = 'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin' | null;
 
 export interface UserProfile {
   uid: string;
@@ -13,14 +13,15 @@ export interface UserProfile {
   createdAt: Timestamp;
   avatarUrl?: string;
   schoolIdentifierCode?: string; // For Admins to set their school's code
-  enteredSchoolCode?: string; // For Teachers to enter when signing up
-  isSchoolCodeVerified?: boolean; // Tracks if teacher's school code is validated
+  enteredSchoolCode?: string; // For Teachers/Parents to enter when signing up
+  isSchoolCodeVerified?: boolean; // Tracks if teacher's/parent's school code is validated
   assignedClassIds?: string[]; // For Teachers: IDs of classes they are assigned to
   schoolCodeVerificationAttempts?: number; // Number of attempts left for school code verification
   isSchoolCodeLocked?: boolean; // If true, teacher's school code verification is locked
-  schoolId?: string; // UID of the Admin whose school this user belongs to (Admin's own UID for Admins)
+  schoolId?: string | null; // UID of the Admin whose school this user belongs to (Admin's own UID for Admins). Null for SuperAdmins.
   // For Students, this is the schoolId they are enrolled in.
   // For Teachers, this is the schoolId they are verified with.
+  // For Parents, this can be set if they enter a valid school code during signup.
 }
 
 export interface Class {
@@ -40,12 +41,12 @@ export interface Student extends UserProfile {
   studentInfo?: string; // e.g., Roll number, Admission ID
   classIds?: string[]; // IDs of classes the student is enrolled in
   parentIds?: string[]; // UIDs of linked parents
-  // schoolId is inherited from UserProfile
+  schoolId: string; // Students must belong to a school
 }
 
 export interface Teacher extends UserProfile {
     role: 'Teacher';
-    // schoolId, enteredSchoolCode, isSchoolCodeVerified, schoolCodeVerificationAttempts, isSchoolCodeLocked are inherited
+    schoolId: string; // Teachers must belong to a school after verification
 }
 
 export interface ParentNotificationPreferences {
@@ -58,7 +59,7 @@ export interface Parent extends UserProfile {
     role: 'Parent';
     childIds?: string[];
     notificationPreferences?: ParentNotificationPreferences;
-    // schoolId is not directly on Parent, linkage is through children's schoolId
+    // schoolId can be null or set if they entered a valid school code at signup
 }
 
 

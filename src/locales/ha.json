@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "Shigar da lamba daga mai gudanar da makarantar ka",
   "parentSchoolCodeLabel": "Lambar Makaranta (Ba Dole Ba)",
   "enterSchoolCodePlaceholderParentOptional": "Shigar da lamba daga makaranta (ba dole ba)",
+  "parentSchoolCodeVerifiedDesc": "An tabbatar da lambar makaranta. Yanzu an haɗa asusunka da wannan makarantar.",
+  "schoolCodeNotFoundTitle": "Ba a Sami Lambar Makaranta Ba",
+  "parentSchoolCodeNotFoundDesc": "Ba a sami lambar makarantar da ka shigar ba. Za ka iya ci gaba da yin rajista kuma ka haɗa da makaranta daga baya ko ka tuntuɓi hukumar makaranta.",
   "confirmPasswordLabel": "Tabbatar da Kalmar Shiga",
   "signUpButton": "Yi Rajista",
   "teacherMissingSchoolCodeError": "Asusunka ba a haɗa shi da lambar makaranta ba. Da fatan za a tuntuɓi mai gudanarwarka.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "Buɗe",
   "accountUnblockedTitle": "An Buɗe Asusu",
   "accountUnblockedDesc": "An buɗe asusun malami mai ID {{teacherId}}.",
-  "errorUnblockingAccount": "An kasa buɗe asusu."
+  "errorUnblockingAccount": "An kasa buɗe asusu.",
+  "roleSuperAdmin": "Babban Mai Gudanarwa",
+  "superAdminSecretCodeLabel": "Lambar Sirri ta Babban Mai Gudanarwa",
+  "enterSuperAdminSecretCodePlaceholder": "Shigar da lambar sirri ta Babban Mai Gudanarwa",
+  "invalidSuperAdminCodeError": "Lambar sirri mara inganci don rajistar Babban Mai Gudanarwa.",
+  "superAdminDashboardTitle": "Dashboard na Babban Mai Gudanarwa",
+  "superAdminDashboardDesc": "Kula da dukkan makarantu, sarrafa masu amfani, da kiyaye ingancin tsarin.",
+  "manageSchools": "Sarrafa Makarantu (Masu Gudanarwa)",
+  "manageAllUsers": "Sarrafa Dukkan Masu Amfani",
+  "totalSchoolsManaged": "Jimlar Makarantun da Ake Sarrafawa",
+  "totalAdminAccounts": "Yana nuna adadin asusun Masu Gudanarwa",
+  "totalUsersSystem": "Jimlar Masu Amfani a cikin Tsarin",
+  "allUserRolesCombined": "Ya haɗa da Masu Gudanarwa, Malamai, Iyaye, Dalibai",
+  "superAdminResponsibilitiesTitle": "Nauyin Babban Mai Gudanarwa",
+  "superAdminManageSchoolsDesc": "Sarrafa da kula da dukkan masu gudanar da makarantu da suka yi rajista da makarantunsu.",
+  "superAdminManageUsersDesc": "Kula da dukkan asusun masu amfani a kan dandamali, tare da ikon yin gyara idan ya cancanta.",
+  "superAdminSystemIntegrityDesc": "Tabbatar da lafiyar gaba ɗaya da ingancin dandalin AttendEase."
 }
-
-    

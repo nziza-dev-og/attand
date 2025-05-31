@@ -169,6 +169,9 @@
   "enterSchoolCodePlaceholderTeacher": "أدخل الرمز من مسؤول مدرستك",
   "parentSchoolCodeLabel": "رمز المدرسة (اختياري)",
   "enterSchoolCodePlaceholderParentOptional": "أدخل الرمز من المدرسة (اختياري)",
+  "parentSchoolCodeVerifiedDesc": "تم التحقق من رمز المدرسة. حسابك مرتبط الآن بهذه المدرسة.",
+  "schoolCodeNotFoundTitle": "لم يتم العثور على رمز المدرسة",
+  "parentSchoolCodeNotFoundDesc": "لم يتم العثور على رمز المدرسة الذي أدخلته. يمكنك المتابعة في التسجيل والربط بمدرسة لاحقًا أو الاتصال بإدارة المدرسة.",
   "confirmPasswordLabel": "تأكيد كلمة المرور",
   "signUpButton": "تسجيل",
   "teacherMissingSchoolCodeError": "حسابك غير مرتبط برمز مدرسة. يرجى الاتصال بالمسؤول.",
@@ -205,7 +208,21 @@
   "unblockAccountButton": "إلغاء القفل",
   "accountUnblockedTitle": "تم إلغاء قفل الحساب",
   "accountUnblockedDesc": "تم إلغاء قفل حساب المعلم ذي المعرف {{teacherId}}.",
-  "errorUnblockingAccount": "فشل إلغاء قفل الحساب."
+  "errorUnblockingAccount": "فشل إلغاء قفل الحساب.",
+  "roleSuperAdmin": "المسؤول الأعلى",
+  "superAdminSecretCodeLabel": "الرمز السري للمسؤول الأعلى",
+  "enterSuperAdminSecretCodePlaceholder": "أدخل الرمز السري للمسؤول الأعلى",
+  "invalidSuperAdminCodeError": "رمز سري غير صالح لتسجيل المسؤول الأعلى.",
+  "superAdminDashboardTitle": "لوحة تحكم المسؤول الأعلى",
+  "superAdminDashboardDesc": "الإشراف على جميع المدارس، وإدارة المستخدمين، والحفاظ على سلامة النظام.",
+  "manageSchools": "إدارة المدارس (المسؤولون)",
+  "manageAllUsers": "إدارة جميع المستخدمين",
+  "totalSchoolsManaged": "إجمالي المدارس المدارة",
+  "totalAdminAccounts": "يمثل عدد حسابات المسؤولين",
+  "totalUsersSystem": "إجمالي المستخدمين في النظام",
+  "allUserRolesCombined": "يشمل المسؤولين والمعلمين وأولياء الأمور والطلاب",
+  "superAdminResponsibilitiesTitle": "مسؤوليات المسؤول الأعلى",
+  "superAdminManageSchoolsDesc": "إدارة ومراقبة جميع مسؤولي المدارس المسجلين ومدارسهم.",
+  "superAdminManageUsersDesc": "الإشراف على جميع حسابات المستخدمين عبر المنصة، مع إمكانيات الإشراف إذا لزم الأمر.",
+  "superAdminSystemIntegrityDesc": "ضمان الصحة العامة وسلامة منصة AttendEase."
 }
-
-    
