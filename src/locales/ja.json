@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "学校管理者アカウントの一覧表示、詳細表示、および潜在的な管理（例：有効化/無効化）機能はここに実装されます。",
   "superAdminManageAllUsersTitle": "全ユーザー管理",
   "superAdminManageAllUsersDescPage": "プラットフォーム上のすべてのユーザーアカウント（管理者、教師、保護者、生徒）を表示および管理します。",
-  "superAdminManageAllUsersPlaceholder": "ユーザーアカウントの一覧表示、検索、フィルタリング、詳細表示、および潜在的な管理（例：役割の編集、一時停止）機能はここに実装されます。"
+  "superAdminManageAllUsersPlaceholder": "ユーザーアカウントの一覧表示、検索、フィルタリング、詳細表示、および潜在的な管理（例：役割の編集、一時停止）機能はここに実装されます。",
+  "notFoundTitle": "ページが見つかりません",
+  "notFoundDescription": "お探しのページは利用できません。",
+  "notFoundGoHomeButton": "{{countdown}}秒後にホームに戻ります"
 }

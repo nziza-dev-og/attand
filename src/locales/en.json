@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "Functionality to list, view details, and potentially manage (e.g., activate/deactivate) school administrator accounts will be implemented here.",
   "superAdminManageAllUsersTitle": "Manage All Users",
   "superAdminManageAllUsersDescPage": "View and manage all user accounts across the platform (Admins, Teachers, Parents, Students).",
-  "superAdminManageAllUsersPlaceholder": "Functionality to list, search, filter, view details, and potentially manage (e.g., edit roles, suspend) user accounts will be implemented here."
+  "superAdminManageAllUsersPlaceholder": "Functionality to list, search, filter, view details, and potentially manage (e.g., edit roles, suspend) user accounts will be implemented here.",
+  "notFoundTitle": "Page not found",
+  "notFoundDescription": "The page you're searching for isn't available.",
+  "notFoundGoHomeButton": "Go home in {{countdown}}"
 }

@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "Utendaji wa kuorodhesha, kutazama maelezo, na uwezekano wa kudhibiti (k.m., kuwezesha/kuzima) akaunti za wasimamizi wa shule utatekelezwa hapa.",
   "superAdminManageAllUsersTitle": "Dhibiti Watumiaji Wote",
   "superAdminManageAllUsersDescPage": "Tazama na udhibiti akaunti zote za watumiaji kwenye jukwaa (Wasimamizi, Walimu, Wazazi, Wanafunzi).",
-  "superAdminManageAllUsersPlaceholder": "Utendaji wa kuorodhesha, kutafuta, kuchuja, kutazama maelezo, na uwezekano wa kudhibiti (k.m., kubadilisha majukumu, kusimamisha) akaunti za watumiaji utatekelezwa hapa."
+  "superAdminManageAllUsersPlaceholder": "Utendaji wa kuorodhesha, kutafuta, kuchuja, kutazama maelezo, na uwezekano wa kudhibiti (k.m., kubadilisha majukumu, kusimamisha) akaunti za watumiaji utatekelezwa hapa.",
+  "notFoundTitle": "Ukurasa Haukupatikana",
+  "notFoundDescription": "Ukurasa unaotafuta haupatikani.",
+  "notFoundGoHomeButton": "Nenda nyumbani baada ya sekunde {{countdown}}"
 }

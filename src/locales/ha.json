@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "Za a aiwatar da aikin jeri, duba cikakkun bayanai, da yiwuwar sarrafa (misali, kunna/kashe) asusun masu gudanar da makarantu a nan.",
   "superAdminManageAllUsersTitle": "Sarrafa Dukkan Masu Amfani",
   "superAdminManageAllUsersDescPage": "Duba da sarrafa dukkan asusun masu amfani a kan dandamali (Masu Gudanarwa, Malamai, Iyaye, Dalibai).",
-  "superAdminManageAllUsersPlaceholder": "Za a aiwatar da aikin jeri, bincike, tacewa, duba cikakkun bayanai, da yiwuwar sarrafa (misali, gyara matsayi, dakatar da) asusun masu amfani a nan."
+  "superAdminManageAllUsersPlaceholder": "Za a aiwatar da aikin jeri, bincike, tacewa, duba cikakkun bayanai, da yiwuwar sarrafa (misali, gyara matsayi, dakatar da) asusun masu amfani a nan.",
+  "notFoundTitle": "Ba a Sami Shafin Ba",
+  "notFoundDescription": "Shafin da kake nema ba ya samuwa.",
+  "notFoundGoHomeButton": "Koma gida cikin daƙiƙa {{countdown}}"
 }

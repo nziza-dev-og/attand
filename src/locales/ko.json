@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "학교 관리자 계정을 나열하고, 세부 정보를 보고, 잠재적으로 관리(예: 활성화/비활성화)하는 기능이 여기에 구현됩니다.",
   "superAdminManageAllUsersTitle": "모든 사용자 관리",
   "superAdminManageAllUsersDescPage": "플랫폼의 모든 사용자 계정(관리자, 교사, 학부모, 학생)을 보고 관리합니다.",
-  "superAdminManageAllUsersPlaceholder": "사용자 계정을 나열, 검색, 필터링, 세부 정보 보기 및 잠재적으로 관리(예: 역할 편집, 일시 중지)하는 기능이 여기에 구현됩니다."
+  "superAdminManageAllUsersPlaceholder": "사용자 계정을 나열, 검색, 필터링, 세부 정보 보기 및 잠재적으로 관리(예: 역할 편집, 일시 중지)하는 기능이 여기에 구현됩니다.",
+  "notFoundTitle": "페이지를 찾을 수 없습니다",
+  "notFoundDescription": "검색하신 페이지를 사용할 수 없습니다.",
+  "notFoundGoHomeButton": "{{countdown}}초 후에 홈으로 이동합니다"
 }

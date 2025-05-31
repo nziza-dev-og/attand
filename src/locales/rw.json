@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "Imikorere yo kwerekana urutonde, kureba ibisobanuro, no gushobora gucunga (urugero: gufungura/guhagarika) amakonti y'abayobozi b'amashuri izashyirwaho hano.",
   "superAdminManageAllUsersTitle": "Gucunga Abakoresha Bose",
   "superAdminManageAllUsersDescPage": "Reba kandi ucunge amakonti y'abakoresha bose kuri urubuga (Abayobozi, Abarimu, Ababyeyi, Abanyeshuri).",
-  "superAdminManageAllUsersPlaceholder": "Imikorere yo kwerekana urutonde, gushakisha, kuyungurura, kureba ibisobanuro, no gushobora gucunga (urugero: guhindura inshingano, guhagarika) amakonti y'abakoresha izashyirwaho hano."
+  "superAdminManageAllUsersPlaceholder": "Imikorere yo kwerekana urutonde, gushakisha, kuyungurura, kureba ibisobanuro, no gushobora gucunga (urugero: guhindura inshingano, guhagarika) amakonti y'abakoresha izashyirwaho hano.",
+  "notFoundTitle": "Urupapuro Ntirubonetse",
+  "notFoundDescription": "Urupapuro mushaka ntiruboneka.",
+  "notFoundGoHomeButton": "Subira ahabanza mu masegonda {{countdown}}"
 }

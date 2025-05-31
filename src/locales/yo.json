@@ -230,5 +230,8 @@
   "superAdminManageSchoolsPlaceholder": "Iṣẹ́ láti ṣe àkójọ, wo àwọn àlàyé, àti bóyá ṣakoso (f.a., mú ṣiṣẹ́/dá dúró) àwọn àpamọ́ alábòójútó ilé-ìwé yóò wà níbí.",
   "superAdminManageAllUsersTitle": "Ṣakoso Gbogbo Àwọn Olùṣe",
   "superAdminManageAllUsersDescPage": "Wo àti ṣakoso gbogbo àwọn àpamọ́ olùṣe ní gbogbo pẹpẹ (Alábòójútó, Olùkọ́, Òbí, Akẹ́kọ̀ọ́).",
-  "superAdminManageAllUsersPlaceholder": "Iṣẹ́ láti ṣe àkójọ, wá, ṣe àṣàyàn, wo àwọn àlàyé, àti bóyá ṣakoso (f.a., yí ipa padà, dá dúró) àwọn àpamọ́ olùṣe yóò wà níbí."
+  "superAdminManageAllUsersPlaceholder": "Iṣẹ́ láti ṣe àkójọ, wá, ṣe àṣàyàn, wo àwọn àlàyé, àti bóyá ṣakoso (f.a., yí ipa padà, dá dúró) àwọn àpamọ́ olùṣe yóò wà níbí.",
+  "notFoundTitle": "Ojú-ewé Kò Rí",
+  "notFoundDescription": "Ojú-ewé tí ò ń wá kò sí.",
+  "notFoundGoHomeButton": "Padà sílé ní {{countdown}}"
 }
