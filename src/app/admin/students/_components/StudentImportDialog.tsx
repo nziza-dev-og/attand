@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { collection, addDoc, Timestamp, writeBatch, doc } from "firebase/firestore"; // Import writeBatch
+import { collection, Timestamp, writeBatch, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,6 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-      // Primarily check for .csv, but Excel might save as other text types sometimes
       if (selectedFile.type === "text/csv" || selectedFile.name.endsWith(".csv") || selectedFile.type === "application/vnd.ms-excel") {
         setFile(selectedFile);
         setError(null);
@@ -94,17 +93,17 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         let errorCount = 0;
 
         for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
-          const batch = writeBatch(db); // Correct way to create a batch
+          const batch = writeBatch(db);
           const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
 
           chunk.forEach((csvStudent) => {
             if (!csvStudent.Name || csvStudent.Name.trim() === "") {
               console.warn("Skipping row due to missing Name:", csvStudent);
               errorCount++;
-              return; // Skip if Name is missing
+              return; 
             }
             
-            const studentDocRef = doc(collection(db, "users")); // Auto-generate ID
+            const studentDocRef = doc(collection(db, "users")); 
             const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' | 'classIds'> & Partial<Pick<Student, 'classIds'>> = {
               name: csvStudent.Name.trim(),
               email: csvStudent.Email?.trim() || null,
@@ -113,14 +112,13 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
               avatarUrl: csvStudent.AvatarURL?.trim() || null,
               createdAt: Timestamp.now(),
               schoolId: adminSchoolId,
-              // classIds will be empty initially, admin can assign them later
             };
             batch.set(studentDocRef, studentData);
           });
 
           try {
             await batch.commit();
-            importedCount += chunk.length - chunk.filter(s => !s.Name || s.Name.trim() === "").length; // Adjust count for skipped rows within chunk
+            importedCount += chunk.length - chunk.filter(s => !s.Name || s.Name.trim() === "").length; 
             setImportProgress(importedCount);
           } catch (batchError) {
             console.error("Error importing batch:", batchError);
@@ -154,12 +152,6 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         } else if (importedCount === 0 && errorCount > 0) {
             setError(translate("studentImportErrorAllFailed") || "All student records failed to import. Check file format and console for errors.");
         }
-        
-        // Keep the dialog open to show messages, user can close manually
-        // if (importedCount > 0 || (studentsToImport.length > 0 && errorCount === studentsToImport.length)) {
-           // onOpenChange(false); 
-           // resetDialog();
-        // }
       },
       error: (err) => {
         console.error("CSV Parsing Error:", err);
@@ -180,7 +172,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students from CSV"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDescCsvOnly") || "Upload a CSV file with student data. Required columns: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL'. Excel users: please 'Save As' a CSV file."}
+            {translate("studentImportDescCsvOnly") || "Upload a CSV file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs. Excel: 'Save As' CSV."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -191,7 +183,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Input
               id="student-csv-file"
               type="file"
-              accept=".csv" // Primarily suggest .csv
+              accept=".csv, text/csv" 
               onChange={handleFileChange}
               disabled={isImporting}
               className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
