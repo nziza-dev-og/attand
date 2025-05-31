@@ -1,3 +1,4 @@
+
 // src/app/admin/behavior-reports/page.tsx
 "use client";
 
@@ -39,7 +40,7 @@ interface StudentSelectItem {
 }
 
 export default function AdminBehaviorReportsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, schoolId: adminSchoolId, loading: authLoading } = useAuth(); // Get adminSchoolId
   const [students, setStudents] = useState<StudentSelectItem[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const { toast } = useToast();
@@ -53,10 +54,16 @@ export default function AdminBehaviorReportsPage() {
 
   useEffect(() => {
     const fetchStudents = async () => {
-      if (authLoading) return;
+      if (authLoading || !adminSchoolId) {
+        if (!authLoading && !adminSchoolId) {
+            setLoadingStudents(false);
+            toast({ variant: "destructive", title: "Error", description: "Admin school context missing. Cannot load students." });
+        }
+        return;
+      }
       setLoadingStudents(true);
       try {
-        const q = query(collection(db, "users"), where("role", "==", "Student"));
+        const q = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
         const querySnapshot = await getDocs(q);
         const studentList = querySnapshot.docs.map(doc => ({
           id: doc.id,
@@ -65,23 +72,23 @@ export default function AdminBehaviorReportsPage() {
         setStudents(studentList);
       } catch (err) {
         console.error("Error fetching students:", err);
-        toast({ variant: "destructive", title: "Error", description: "Failed to load students." });
+        toast({ variant: "destructive", title: "Error", description: "Failed to load students for your school." });
       } finally {
         setLoadingStudents(false);
       }
     };
     fetchStudents();
-  }, [authLoading, toast]);
+  }, [authLoading, adminSchoolId, toast]);
 
   const onSubmit: SubmitHandler<ReportFormData> = async (data) => {
-    if (!user || user.email === null) {
-      toast({ variant: "destructive", title: "Error", description: "You must be logged in to submit a report." });
+    if (!user || user.email === null || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "You must be logged in as an admin with a school context to submit a report." });
       return;
     }
 
     const selectedStudent = students.find(s => s.id === data.studentId);
     if (!selectedStudent) {
-        toast({ variant: "destructive", title: "Error", description: "Selected student not found." });
+        toast({ variant: "destructive", title: "Error", description: "Selected student not found in your school." });
         return;
     }
 
@@ -97,6 +104,7 @@ export default function AdminBehaviorReportsPage() {
         description: data.description,
         severity: data.severity || null,
         createdAt: Timestamp.now(),
+        schoolId: adminSchoolId, // Tag report with admin's schoolId
       });
       toast({ title: "Success", description: "Behavior report submitted successfully." });
       reset({ reportDate: new Date(), title: "", description: "", studentId: "", severity: undefined });
@@ -106,7 +114,7 @@ export default function AdminBehaviorReportsPage() {
     }
   };
 
-  if (authLoading || loadingStudents) {
+  if (authLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -115,23 +123,33 @@ export default function AdminBehaviorReportsPage() {
     );
   }
 
+  if (!adminSchoolId && !authLoading) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>Behavior Reports Unavailable</CardTitle></CardHeader>
+        <CardContent><p>Admin school context is missing. Cannot create behavior reports.</p></CardContent>
+      </Card>
+    );
+  }
+
+
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><Megaphone className="h-6 w-6" />Create Behavior Report</CardTitle>
-        <CardDescription>Document and submit a student behavior incident.</CardDescription>
+        <CardDescription>Document and submit a student behavior incident for your school.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="studentId">Student</Label>
+            <Label htmlFor="studentId">Student (Your School)</Label>
             <Controller
               name="studentId"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value} disabled={students.length === 0}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={loadingStudents || students.length === 0}>
                   <SelectTrigger id="studentId" className={errors.studentId ? 'border-destructive' : ''}>
-                    <SelectValue placeholder={students.length === 0 ? "No students available" : "Select a student"} />
+                    <SelectValue placeholder={loadingStudents ? "Loading students..." : (students.length === 0 ? "No students in your school" : "Select a student")} />
                   </SelectTrigger>
                   <SelectContent>
                     {students.map(student => (
@@ -203,7 +221,7 @@ export default function AdminBehaviorReportsPage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" disabled={isSubmitting || students.length === 0} className="w-full">
+          <Button type="submit" disabled={isSubmitting || students.length === 0 || loadingStudents} className="w-full">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Send className="mr-2 h-4 w-4" /> Submit Report
           </Button>
@@ -212,3 +230,4 @@ export default function AdminBehaviorReportsPage() {
     </Card>
   );
 }
+

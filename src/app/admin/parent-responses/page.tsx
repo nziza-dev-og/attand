@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, Timestamp, where } from 'firebase/firestore'; // Added where
 import { db } from '@/lib/firebase';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -12,7 +12,8 @@ import { Loader2, MessageSquare, Info, UserCircle, CalendarDays, ClipboardList }
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { BehaviorReport, ParentResponse } from '@/lib/types';
-import { cn } from "@/lib/utils"; // Added import for cn
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth"; // Import useAuth
 
 const getSeverityBadgeVariant = (severity?: BehaviorReport['severity']): 'default' | 'destructive' | 'secondary' | 'outline' => {
   if (!severity) return 'outline';
@@ -36,24 +37,33 @@ const getSeverityBadgeClasses = (severity?: BehaviorReport['severity']): string 
 
 export default function ParentResponsesPage() {
   const { translate } = useLanguage();
+  const { schoolId: adminSchoolId, loading: authLoading } = useAuth(); // Get adminSchoolId
   const [reports, setReports] = useState<BehaviorReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReportsWithResponses = async () => {
+      if (!adminSchoolId && !authLoading) {
+        setError(translate('errorLoadingReports') || "Admin school context missing. Cannot load reports.");
+        setLoading(false);
+        return;
+      }
+      if (authLoading || !adminSchoolId) return;
+
       setLoading(true);
       setError(null);
       try {
         const reportsQuery = query(
           collection(db, 'behaviorReports'),
-          orderBy('createdAt', 'desc') // Get most recent reports first
+          where('schoolId', '==', adminSchoolId), // Filter by admin's schoolId
+          orderBy('createdAt', 'desc') 
         );
         const querySnapshot = await getDocs(reportsQuery);
         const fetchedReports = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          parentResponses: doc.data().parentResponses || [] // Ensure parentResponses is an array
+          parentResponses: doc.data().parentResponses || [] 
         } as BehaviorReport));
         
         setReports(fetchedReports);
@@ -66,7 +76,16 @@ export default function ParentResponsesPage() {
     };
 
     fetchReportsWithResponses();
-  }, [translate]);
+  }, [adminSchoolId, authLoading, translate]);
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
 
   if (loading) {
     return (
@@ -76,6 +95,16 @@ export default function ParentResponsesPage() {
       </div>
     );
   }
+  
+  if (!adminSchoolId && !authLoading) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>Parent Responses Unavailable</CardTitle></CardHeader>
+        <CardContent><p>Admin school context is missing. Cannot load parent responses.</p></CardContent>
+      </Card>
+    );
+  }
+
 
   if (error) {
     return (
@@ -95,13 +124,13 @@ export default function ParentResponsesPage() {
     <Card>
       <CardHeader>
         <CardTitle>{translate('parentResponsesTitle') || "Parent Responses to Behavior Reports"}</CardTitle>
-        <CardDescription>{translate('parentResponsesDescription') || "Review comments and acknowledgments from parents regarding student behavior incidents."}</CardDescription>
+        <CardDescription>{translate('parentResponsesDescription') || "Review comments and acknowledgments from parents regarding student behavior incidents in your school."}</CardDescription>
       </CardHeader>
       <CardContent>
         {reportsWithResponses.length === 0 ? (
           <div className="text-center text-muted-foreground py-10">
             <Info className="mx-auto h-12 w-12" />
-            <p className="mt-4">{translate('noParentResponsesFound') || "No parent responses found for any behavior reports yet."}</p>
+            <p className="mt-4">{translate('noParentResponsesFound') || "No parent responses found for any behavior reports in your school yet."}</p>
           </div>
         ) : (
           <Accordion type="multiple" className="w-full space-y-4">
@@ -161,3 +190,4 @@ export default function ParentResponsesPage() {
     </Card>
   );
 }
+

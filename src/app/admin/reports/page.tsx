@@ -1,3 +1,4 @@
+
 // src/app/admin/reports/page.tsx
 "use client";
 
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import Papa from 'papaparse'; // Import papaparse
 import type { Class, Student, AttendanceRecord, UserProfile, AttendanceStatus } from "@/lib/types"; // Import types
+import { useAuth } from "@/hooks/useAuth"; // Import useAuth
 
 // Extended type for display including names
 interface AttendanceRecordDisplay extends AttendanceRecord {
@@ -41,6 +43,7 @@ const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 
 
 
 export default function AttendanceReportsPage() {
+  const { schoolId: adminSchoolId, loading: authLoading } = useAuth(); // Get adminSchoolId
   const [classes, setClasses] = useState<SelectItemType[]>([]);
   const [students, setStudents] = useState<SelectItemType[]>([]);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
@@ -62,12 +65,20 @@ export default function AttendanceReportsPage() {
    // Fetch classes and students for dropdowns
   useEffect(() => {
     const fetchDropdownData = async () => {
+      if (!adminSchoolId && !authLoading) { // Check if adminSchoolId is available
+        setLoadingDropdowns(false);
+        toast({ variant: "destructive", title: "Error", description: "Admin school context missing. Cannot load filters." });
+        return;
+      }
+      if (authLoading || !adminSchoolId) return;
+
       setLoadingDropdowns(true);
       try {
-        const classSnap = await getDocs(collection(db, "classes"));
+        const classQuery = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
+        const classSnap = await getDocs(classQuery);
         setClasses(classSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name })));
 
-        const studentQuery = query(collection(db, "users"), where("role", "==", "Student"));
+        const studentQuery = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
         const studentSnap = await getDocs(studentQuery);
         setStudents(studentSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name || 'Unnamed Student' })));
 
@@ -79,17 +90,25 @@ export default function AttendanceReportsPage() {
       }
     };
     fetchDropdownData();
-  }, [toast]);
+  }, [adminSchoolId, authLoading, toast]);
 
   // Generate Report Function
   const handleGenerateReport = async () => {
+    if (!adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Admin school context missing. Cannot generate report." });
+      return;
+    }
     setLoadingReport(true);
     setReportGenerated(false);
     setReportError(null);
     setReportData([]);
 
     try {
-      let attendanceQuery = query(collection(db, "attendanceRecords"), orderBy("timestamp", "desc")); // Base query
+      let attendanceQuery = query(
+        collection(db, "attendanceRecords"), 
+        where("schoolId", "==", adminSchoolId), // Filter by admin's schoolId
+        orderBy("timestamp", "desc")
+      );
 
       // Apply filters - check against 'all' instead of truthiness
       if (selectedClass && selectedClass !== 'all') {
@@ -99,12 +118,10 @@ export default function AttendanceReportsPage() {
         attendanceQuery = query(attendanceQuery, where("studentId", "==", selectedStudent));
       }
       if (startDate) {
-         // Convert JS Date to Firestore Timestamp for the start of the day
         const startTimestamp = Timestamp.fromDate(startOfDay(startDate));
         attendanceQuery = query(attendanceQuery, where("timestamp", ">=", startTimestamp));
       }
        if (endDate) {
-           // Convert JS Date to Firestore Timestamp for the end of the day
            const endTimestamp = Timestamp.fromDate(endOfDay(endDate));
            attendanceQuery = query(attendanceQuery, where("timestamp", "<=", endTimestamp));
        }
@@ -114,6 +131,7 @@ export default function AttendanceReportsPage() {
       const records = attendanceSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 
       // Fetch all class and student names once for enrichment (optimization)
+      // These are already filtered by schoolId from the useEffect hook
       const studentMap = new Map(students.map(s => [s.id, s.name]));
       const classMap = new Map(classes.map(c => [c.id, c.name]));
 
@@ -129,7 +147,7 @@ export default function AttendanceReportsPage() {
       setReportGenerated(true);
 
       if (enrichedData.length === 0) {
-           toast({ title: "Info", description: "No attendance records found matching the criteria." });
+           toast({ title: "Info", description: "No attendance records found matching the criteria for your school." });
       }
 
     } catch (err: any) {
@@ -149,13 +167,12 @@ export default function AttendanceReportsPage() {
       }
 
       try {
-         // Map data to desired CSV format
         const csvData = reportData.map(record => ({
-            Date: record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date, // Handle both timestamp and date string
+            Date: record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date, 
             'Student Name': record.studentName,
             'Class Name': record.className,
             Status: record.status,
-             Notes: record.notes || '', // Include notes if available
+             Notes: record.notes || '', 
           }));
 
           const csv = Papa.unparse(csvData);
@@ -177,11 +194,24 @@ export default function AttendanceReportsPage() {
   };
 
 
+  if (authLoading) {
+    return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+  if (!adminSchoolId && !authLoading) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>Reports Unavailable</CardTitle></CardHeader>
+        <CardContent><p>Admin school context is missing. Cannot load reports.</p></CardContent>
+      </Card>
+    );
+  }
+
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Attendance Reports</CardTitle>
-        <CardDescription>Filter and view attendance records. Use the Export button to download as CSV.</CardDescription>
+        <CardDescription>Filter and view attendance records for your school. Use the Export button to download as CSV.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Filter Section */}
@@ -194,7 +224,6 @@ export default function AttendanceReportsPage() {
                 <SelectValue placeholder="Select a Class" />
               </SelectTrigger>
               <SelectContent>
-                 {/* Use 'all' as value for the 'All Classes' option */}
                  <SelectItem value="all">All Classes</SelectItem>
                 {classes.map(cls => (
                   <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
@@ -211,7 +240,6 @@ export default function AttendanceReportsPage() {
                  <SelectValue placeholder="Select a Student" />
                 </SelectTrigger>
                 <SelectContent>
-                 {/* Use 'all' as value for the 'All Students' option */}
                  <SelectItem value="all">All Students</SelectItem>
                  {students.map(stu => (
                    <SelectItem key={stu.id} value={stu.id}>{stu.name}</SelectItem>
@@ -220,7 +248,6 @@ export default function AttendanceReportsPage() {
              </Select>
            </div>
 
-          {/* Start Date Filter */}
            <div className="space-y-1">
                <Label htmlFor="start-date-picker">Start Date</Label>
                <Popover>
@@ -240,7 +267,6 @@ export default function AttendanceReportsPage() {
                </Popover>
            </div>
 
-           {/* End Date Filter */}
            <div className="space-y-1">
                <Label htmlFor="end-date-picker">End Date</Label>
                <Popover>
@@ -260,7 +286,6 @@ export default function AttendanceReportsPage() {
                </Popover>
            </div>
 
-           {/* Generate Button */}
             <div className="col-span-full flex justify-end mt-2">
                 <Button onClick={handleGenerateReport} disabled={loadingReport || loadingDropdowns}>
                     {loadingReport && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -301,7 +326,6 @@ export default function AttendanceReportsPage() {
                     {reportData.length > 0 ? (
                       reportData.map((record) => (
                         <TableRow key={record.id}>
-                          {/* Use Firestore timestamp if available and format, otherwise use date string */}
                           <TableCell>{record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date}</TableCell>
                           <TableCell>{record.studentName}</TableCell>
                           <TableCell>{record.className}</TableCell>
@@ -335,10 +359,7 @@ export default function AttendanceReportsPage() {
                <p className="text-center text-muted-foreground py-10">Select filters and click "Generate Report" to view attendance data.</p>
           )}
       </CardContent>
-       {/* Footer potentially for pagination or summary stats */}
-       {/* <CardFooter>
-           <p>Report Summary Stats Here...</p>
-       </CardFooter> */}
     </Card>
   );
 }
+
