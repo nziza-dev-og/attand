@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "비밀 코드를 입력하십시오",
   "teacherSchoolCodeLabel": "학교 식별 코드",
   "enterSchoolCodePlaceholderTeacher": "학교 관리자가 제공한 코드를 입력하십시오",
+  "parentSchoolCodeLabel": "학교 코드 (선택 사항)",
+  "enterSchoolCodePlaceholderParentOptional": "학교에서 제공한 코드 입력 (선택 사항)",
   "confirmPasswordLabel": "비밀번호 확인",
   "signUpButton": "회원가입",
   "teacherMissingSchoolCodeError": "귀하의 계정은 학교 코드와 연결되어 있지 않습니다. 관리자에게 문의하십시오.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "교사 ID {{teacherId}}의 계정이 차단 해제되었습니다.",
   "errorUnblockingAccount": "계정 차단 해제 실패."
 }
+
+    

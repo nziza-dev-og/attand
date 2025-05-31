@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "أدخل الرمز السري",
   "teacherSchoolCodeLabel": "رمز تعريف المدرسة",
   "enterSchoolCodePlaceholderTeacher": "أدخل الرمز من مسؤول مدرستك",
+  "parentSchoolCodeLabel": "رمز المدرسة (اختياري)",
+  "enterSchoolCodePlaceholderParentOptional": "أدخل الرمز من المدرسة (اختياري)",
   "confirmPasswordLabel": "تأكيد كلمة المرور",
   "signUpButton": "تسجيل",
   "teacherMissingSchoolCodeError": "حسابك غير مرتبط برمز مدرسة. يرجى الاتصال بالمسؤول.",
@@ -191,7 +193,6 @@
   "accountLockedTitle": "الحسابات المقفلة",
   "attemptsRemaining": "المحاولات المتبقية: {{attempts}}",
   "accountLockedContactAdmin": "تم قفل حسابك بسبب كثرة المحاولات الفاشلة. يرجى الاتصال بمسؤول مدرستك للحصول على المساعدة.",
-  "lockedAccountsTitle": "الحسابات المقفلة",
   "lockedAccountsDesc": "عرض حسابات المعلمين التي تم قفلها بسبب محاولات التحقق من رمز المدرسة الفاشلة المتعددة.",
   "noLockedAccountsFound": "لم يتم العثور على حسابات معلمين مقفلة.",
   "columnName": "الاسم",
@@ -206,3 +207,5 @@
   "accountUnblockedDesc": "تم إلغاء قفل حساب المعلم ذي المعرف {{teacherId}}.",
   "errorUnblockingAccount": "فشل إلغاء قفل الحساب."
 }
+
+    

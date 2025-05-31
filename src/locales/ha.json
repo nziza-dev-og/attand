@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Shigar da lambar sirri",
   "teacherSchoolCodeLabel": "Lambar Gano Makaranta",
   "enterSchoolCodePlaceholderTeacher": "Shigar da lamba daga mai gudanar da makarantar ka",
+  "parentSchoolCodeLabel": "Lambar Makaranta (Ba Dole Ba)",
+  "enterSchoolCodePlaceholderParentOptional": "Shigar da lamba daga makaranta (ba dole ba)",
   "confirmPasswordLabel": "Tabbatar da Kalmar Shiga",
   "signUpButton": "Yi Rajista",
   "teacherMissingSchoolCodeError": "Asusunka ba a haɗa shi da lambar makaranta ba. Da fatan za a tuntuɓi mai gudanarwarka.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "An buɗe asusun malami mai ID {{teacherId}}.",
   "errorUnblockingAccount": "An kasa buɗe asusu."
 }
+
+    

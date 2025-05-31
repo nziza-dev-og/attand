@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "输入秘密代码",
   "teacherSchoolCodeLabel": "学校识别码",
   "enterSchoolCodePlaceholderTeacher": "输入您学校管理员提供的代码",
+  "parentSchoolCodeLabel": "学校代码（可选）",
+  "enterSchoolCodePlaceholderParentOptional": "输入学校提供的代码（可选）",
   "confirmPasswordLabel": "确认密码",
   "signUpButton": "注册",
   "teacherMissingSchoolCodeError": "您的帐户未与学校代码关联。请联系您的管理员。",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "教师ID {{teacherId}} 的帐户已解锁。",
   "errorUnblockingAccount": "解锁帐户失败。"
 }
+
+    

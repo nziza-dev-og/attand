@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Tẹ kóòdù ìkọ̀kọ̀",
   "teacherSchoolCodeLabel": "Kóòdù Ìdánimọ̀ Ilé-ìwé",
   "enterSchoolCodePlaceholderTeacher": "Tẹ kóòdù láti ọwọ́ alábòójútó ilé-ìwé rẹ",
+  "parentSchoolCodeLabel": "Kóòdù Ilé-ìwé (Kò pọndandan)",
+  "enterSchoolCodePlaceholderParentOptional": "Tẹ kóòdù láti ilé-ìwé (kò pọndandan)",
   "confirmPasswordLabel": "Túntún Ọ̀rọ̀ìpamọ́",
   "signUpButton": "Forúkọsílẹ̀",
   "teacherMissingSchoolCodeError": "Àpamọ́ rẹ kò sopọ̀ mọ́ kóòdù ilé-ìwé kan. Jọ̀wọ́ kan sí alábòójútó rẹ.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "Àpamọ́ olùkọ́ ID {{teacherId}} ti silẹ̀.",
   "errorUnblockingAccount": "Kò lè ṣí àpamọ́ silẹ̀."
 }
+
+    

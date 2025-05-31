@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Entrez le code secret",
   "teacherSchoolCodeLabel": "Code d'Identification de l'École",
   "enterSchoolCodePlaceholderTeacher": "Entrez le code de l'administrateur de votre école",
+  "parentSchoolCodeLabel": "Code de l'École (Optionnel)",
+  "enterSchoolCodePlaceholderParentOptional": "Entrez le code de l'école (optionnel)",
   "confirmPasswordLabel": "Confirmez le Mot de Passe",
   "signUpButton": "S'inscrire",
   "teacherMissingSchoolCodeError": "Votre compte n'est pas associé à un code d'école. Veuillez contacter votre administrateur.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "Le compte de l'enseignant ID {{teacherId}} a été débloqué.",
   "errorUnblockingAccount": "Échec du déblocage du compte."
 }
+
+    

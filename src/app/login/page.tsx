@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [name, setName] = useState('');
   const [adminSecretCode, setAdminSecretCode] = useState('');
   const [teacherSchoolCode, setTeacherSchoolCode] = useState('');
+  const [parentSchoolCode, setParentSchoolCode] = useState(''); // New state for parent's school code
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState('login');
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function LoginPage() {
     setName('');
     setAdminSecretCode('');
     setTeacherSchoolCode('');
+    setParentSchoolCode(''); // Reset parent school code
     setError(null);
   };
 
@@ -57,7 +59,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: translate("loginSuccessTitle") || "Login Successful", description: translate("loginSuccessDesc") || "Redirecting to dashboard..." });
-      router.push('/'); // Root page will handle role-based redirects and verification checks
+      router.push('/'); 
     } catch (err: any) {
       setError(err.message);
        toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
@@ -113,20 +115,20 @@ export default function LoginPage() {
       };
       
       if (role === 'Admin') {
-        userDocData.schoolId = user.uid; // Admin's schoolId is their own UID
-        userDocData.schoolIdentifierCode = ""; // Admin sets this on their dashboard
+        userDocData.schoolId = user.uid; 
+        userDocData.schoolIdentifierCode = ""; 
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
         userDocData.isSchoolCodeVerified = false;
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
-        // userDocData.schoolId will be set upon verification
       } else if (role === 'Parent') {
         userDocData.childIds = [];
-        // Parents don't have a direct schoolId on their profile; linked via children
+        if (parentSchoolCode.trim()) {
+          userDocData.enteredSchoolCode = parentSchoolCode.trim();
+        }
       }
-      // Students are typically added by Admins, who will set their schoolId.
 
       await setDoc(doc(db, 'users', user.uid), userDocData);
 
@@ -269,6 +271,19 @@ export default function LoginPage() {
                     />
                   </div>
                 )}
+                {role === 'Parent' && ( // New field for Parent School Code
+                  <div className="space-y-2">
+                    <Label htmlFor="parent-school-code">{translate("parentSchoolCodeLabel")}</Label>
+                    <Input
+                      id="parent-school-code"
+                      type="text"
+                      placeholder={translate("enterSchoolCodePlaceholderParentOptional")}
+                      value={parentSchoolCode}
+                      onChange={(e) => setParentSchoolCode(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">{translate("passwordLabel")}</Label>
                   <Input
@@ -303,3 +318,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

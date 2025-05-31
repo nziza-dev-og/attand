@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Weka nambari ya siri",
   "teacherSchoolCodeLabel": "Nambari ya Utambulisho wa Shule",
   "enterSchoolCodePlaceholderTeacher": "Weka nambari kutoka kwa msimamizi wa shule yako",
+  "parentSchoolCodeLabel": "Nambari ya Shule (Si lazima)",
+  "enterSchoolCodePlaceholderParentOptional": "Weka nambari kutoka shuleni (si lazima)",
   "confirmPasswordLabel": "Thibitisha Nenosiri",
   "signUpButton": "Jisajili",
   "teacherMissingSchoolCodeError": "Akaunti yako haihusishwi na nambari ya shule. Tafadhali wasiliana na msimamizi wako.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "Akaunti ya mwalimu ID {{teacherId}} imefunguliwa.",
   "errorUnblockingAccount": "Imeshindwa kufungua akaunti."
 }
+
+    

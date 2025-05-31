@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Andika kode y'ibanga",
   "teacherSchoolCodeLabel": "Kode yo Kumenyekanisha Ishuri",
   "enterSchoolCodePlaceholderTeacher": "Andika kode wavanye ku muyobozi w'ishuri ryawe",
+  "parentSchoolCodeLabel": "Kode y'Ishuri (Si ngombwa)",
+  "enterSchoolCodePlaceholderParentOptional": "Andika kode y'ishuri (si ngombwa)",
   "confirmPasswordLabel": "Emeza Ijambobanga",
   "signUpButton": "Kwiyandikisha",
   "teacherMissingSchoolCodeError": "Konti yawe ntihujwe na kode y'ishuri. Hamagara umuyobozi wawe.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "Konti y'umwarimu ID {{teacherId}} yafunguwe.",
   "errorUnblockingAccount": "Kunanirwa gufungura konti."
 }
+
+    

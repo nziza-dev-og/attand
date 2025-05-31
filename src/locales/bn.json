@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "গোপন কোড প্রবেশ করান",
   "teacherSchoolCodeLabel": "স্কুল শনাক্তকারী কোড",
   "enterSchoolCodePlaceholderTeacher": "আপনার স্কুল অ্যাডমিন থেকে কোড প্রবেশ করান",
+  "parentSchoolCodeLabel": "স্কুল কোড (ঐচ্ছিক)",
+  "enterSchoolCodePlaceholderParentOptional": "স্কুল থেকে কোড প্রবেশ করান (ঐচ্ছিক)",
   "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
   "signUpButton": "সাইন আপ করুন",
   "teacherMissingSchoolCodeError": "আপনার অ্যাকাউন্ট কোনো স্কুল কোডের সাথে যুক্ত নয়। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন।",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "শিক্ষক আইডি {{teacherId}} এর জন্য অ্যাকাউন্ট আনব্লক করা হয়েছে।",
   "errorUnblockingAccount": "অ্যাকাউন্ট আনব্লক করতে ব্যর্থ।"
 }
+
+    

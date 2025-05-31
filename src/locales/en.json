@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "Enter secret code",
   "teacherSchoolCodeLabel": "School Identifier Code",
   "enterSchoolCodePlaceholderTeacher": "Enter code from your school admin",
+  "parentSchoolCodeLabel": "School Code (Optional)",
+  "enterSchoolCodePlaceholderParentOptional": "Enter code from the school (optional)",
   "confirmPasswordLabel": "Confirm Password",
   "signUpButton": "Sign Up",
   "teacherMissingSchoolCodeError": "Your account is not associated with a school code. Please contact your administrator.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "The account for teacher ID {{teacherId}} has been unblocked.",
   "errorUnblockingAccount": "Failed to unblock the account."
 }
+
+    

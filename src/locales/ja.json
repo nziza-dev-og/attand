@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "秘密コードを入力してください",
   "teacherSchoolCodeLabel": "学校識別コード",
   "enterSchoolCodePlaceholderTeacher": "学校の管理者からのコードを入力してください",
+  "parentSchoolCodeLabel": "学校コード（任意）",
+  "enterSchoolCodePlaceholderParentOptional": "学校からのコードを入力してください（任意）",
   "confirmPasswordLabel": "パスワードを確認",
   "signUpButton": "サインアップ",
   "teacherMissingSchoolCodeError": "あなたのアカウントは学校コードに関連付けられていません。管理者に連絡してください。",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "教師ID {{teacherId}} のアカウントがブロック解除されました。",
   "errorUnblockingAccount": "アカウントのブロック解除に失敗しました。"
 }
+
+    

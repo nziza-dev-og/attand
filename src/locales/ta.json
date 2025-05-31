@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "ரகசிய குறியீட்டை உள்ளிடவும்",
   "teacherSchoolCodeLabel": "பள்ளி அடையாளக் குறியீடு",
   "enterSchoolCodePlaceholderTeacher": "உங்கள் பள்ளி நிர்வாகியிடமிருந்து குறியீட்டை உள்ளிடவும்",
+  "parentSchoolCodeLabel": "பள்ளி குறியீடு (விருப்பத்தேர்வு)",
+  "enterSchoolCodePlaceholderParentOptional": "பள்ளியிலிருந்து குறியீட்டை உள்ளிடவும் (விருப்பத்தேர்வு)",
   "confirmPasswordLabel": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
   "signUpButton": "பதிவுசெய்",
   "teacherMissingSchoolCodeError": "உங்கள் கணக்கு எந்த பள்ளி குறியீட்டுடனும் இணைக்கப்படவில்லை. தயவுசெய்து உங்கள் நிர்வாகியைத் தொடர்பு கொள்ளவும்.",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "ஆசிரியர் ID {{teacherId}} இன் கணக்கு தடையை நீக்கப்பட்டுள்ளது.",
   "errorUnblockingAccount": "கணக்கு தடையை நீக்குவதில் தோல்வி."
 }
+
+    

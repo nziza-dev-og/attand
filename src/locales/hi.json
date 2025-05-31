@@ -167,6 +167,8 @@
   "enterAdminSecretCodePlaceholder": "गुप्त कोड दर्ज करें",
   "teacherSchoolCodeLabel": "स्कूल पहचान कोड",
   "enterSchoolCodePlaceholderTeacher": "अपने स्कूल व्यवस्थापक से कोड दर्ज करें",
+  "parentSchoolCodeLabel": "स्कूल कोड (वैकल्पिक)",
+  "enterSchoolCodePlaceholderParentOptional": "स्कूल से कोड दर्ज करें (वैकल्पिक)",
   "confirmPasswordLabel": "पासवर्ड की पुष्टि करें",
   "signUpButton": "साइन अप करें",
   "teacherMissingSchoolCodeError": "आपका खाता किसी स्कूल कोड से संबद्ध नहीं है। कृपया अपने व्यवस्थापक से संपर्क करें।",
@@ -205,3 +207,5 @@
   "accountUnblockedDesc": "शिक्षक आईडी {{teacherId}} के लिए खाता अनलॉक कर दिया गया है।",
   "errorUnblockingAccount": "खाता अनलॉक करने में विफल।"
 }
+
+    
