@@ -101,12 +101,12 @@
   "errorLoadingChildren": "Kò lè gba àwọn àlàyé ọmọ.",
   "loadingChildrenDetails": "Ń gba àwọn àlàyé ọmọ...",
   "myProfileTitle": "Àpamọ́ Mi",
-  "myProfileDesc": "Wo àti ṣe àtúnṣe àwọn ìwífún ara ẹni rẹ.",
+  "myProfileDesc": "Ṣe àtúnṣe orúkọ ìfihàn rẹ àti àwòrán àpamọ́ rẹ.",
   "saveChanges": "Fi Àwọn Àtúnṣe Pamọ́",
   "nameLabel": "Orúkọ",
   "emailLabel": "Ímeèlì",
-  "avatarUrlLabel": "Àwòrán",
-  "avatarUrlHint": "Tẹ URL àwòrán tó tọ̀nà (f.a., tó parí pẹ̀lú .png, .jpg). Fi sílẹ̀ ní òfo láti yọ kúrò.",
+  "avatarUrlLabel": "URL Àwòrán Tuntun",
+  "avatarUrlHint": "Tẹ URL àwòrán tó tọ̀nà (f.a., tó parí pẹ̀lú .png, .jpg).",
   "profileUpdateSuccessTitle": "Àpamọ́ Ti Di Tuntun",
   "profileUpdateSuccessDesc": "Àpamọ́ rẹ ti di tuntun pẹ̀lú àṣeyọrí.",
   "profileUpdateFailed": "Kò lè ṣe àtúnṣe àpamọ́. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "Kò sí ID Ilé-ìwé",
   "globalAccessPlaceholder": "Wíwọlé Gbogbogbò",
   "platformStatisticsTitle": "Àwọn Iṣiro Pẹpẹ",
-  "platformStatisticsDesc": "Àkópọ̀ àwọn ìwọ̀n pàtàkì fún pẹpẹ AttendEase."
+  "platformStatisticsDesc": "Àkópọ̀ àwọn ìwọ̀n pàtàkì fún pẹpẹ AttendEase.",
+  "saveProfilePictureButton": "Fi Àwòrán Àpamọ́ Pamọ́",
+  "schoolSettingsTitle": "Ètò Ilé-ìwé",
+  "adminSchoolSettingsDesc": "Ṣakoso orúkọ ilé-ìwé rẹ àti kóòdù ìdánimọ̀ àkànṣe fún ìforúkọsílẹ̀ olùkọ́."
 }
+

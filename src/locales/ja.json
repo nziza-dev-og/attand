@@ -101,12 +101,12 @@
   "errorLoadingChildren": "子供の詳細情報の読み込みに失敗しました。",
   "loadingChildrenDetails": "子供の詳細情報を読み込み中...",
   "myProfileTitle": "マイプロフィール",
-  "myProfileDesc": "個人情報を表示・更新します。",
+  "myProfileDesc": "表示名とプロフィール写真を更新します。",
   "saveChanges": "変更を保存",
   "nameLabel": "名前",
   "emailLabel": "メールアドレス",
-  "avatarUrlLabel": "アバター",
-  "avatarUrlHint": "有効な画像URLを入力してください（例：.png、.jpgで終わる）。削除する場合は空欄にしてください。",
+  "avatarUrlLabel": "新しいアバターURL",
+  "avatarUrlHint": "有効な画像URLを入力してください（例：.png、.jpgで終わる）。",
   "profileUpdateSuccessTitle": "プロフィール更新完了",
   "profileUpdateSuccessDesc": "プロフィールが正常に更新されました。",
   "profileUpdateFailed": "プロフィールの更新に失敗しました。もう一度お試しください。",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "学校IDなし",
   "globalAccessPlaceholder": "グローバルアクセス",
   "platformStatisticsTitle": "プラットフォーム統計",
-  "platformStatisticsDesc": "AttendEase プラットフォームの主要メトリクスの概要。"
+  "platformStatisticsDesc": "AttendEase プラットフォームの主要メトリクスの概要。",
+  "saveProfilePictureButton": "プロフィール写真を保存",
+  "schoolSettingsTitle": "学校設定",
+  "adminSchoolSettingsDesc": "学校名と教師登録用の一意の識別コードを管理します。"
 }
+

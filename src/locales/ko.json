@@ -101,12 +101,12 @@
   "errorLoadingChildren": "자녀 세부 정보 로드 실패.",
   "loadingChildrenDetails": "자녀 세부 정보 로드 중...",
   "myProfileTitle": "내 프로필",
-  "myProfileDesc": "개인 정보를 보고 업데이트합니다.",
+  "myProfileDesc": "표시 이름과 프로필 사진을 업데이트하세요.",
   "saveChanges": "변경 사항 저장",
   "nameLabel": "이름",
   "emailLabel": "이메일",
-  "avatarUrlLabel": "아바타",
-  "avatarUrlHint": "유효한 이미지 URL을 입력하세요 (예: .png, .jpg로 끝남). 제거하려면 비워 두세요.",
+  "avatarUrlLabel": "새 아바타 URL",
+  "avatarUrlHint": "유효한 이미지 URL을 입력하세요 (예: .png, .jpg로 끝남).",
   "profileUpdateSuccessTitle": "프로필 업데이트됨",
   "profileUpdateSuccessDesc": "프로필이 성공적으로 업데이트되었습니다.",
   "profileUpdateFailed": "프로필 업데이트에 실패했습니다. 다시 시도해주세요.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "학교 ID 없음",
   "globalAccessPlaceholder": "글로벌 액세스",
   "platformStatisticsTitle": "플랫폼 통계",
-  "platformStatisticsDesc": "AttendEase 플랫폼의 주요 지표 개요."
+  "platformStatisticsDesc": "AttendEase 플랫폼의 주요 지표 개요.",
+  "saveProfilePictureButton": "프로필 사진 저장",
+  "schoolSettingsTitle": "학교 설정",
+  "adminSchoolSettingsDesc": "학교 이름과 교사 등록을 위한 고유 식별 코드를 관리합니다."
 }
+

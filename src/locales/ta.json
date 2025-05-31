@@ -101,12 +101,12 @@
   "errorLoadingChildren": "குழந்தைகளின் விவரங்களை ஏற்றுவதில் தோல்வி.",
   "loadingChildrenDetails": "குழந்தைகளின் விவரங்கள் ஏற்றப்படுகின்றன...",
   "myProfileTitle": "என் சுயவிவரம்",
-  "myProfileDesc": "உங்கள் தனிப்பட்ட தகவலைப் பார்த்து புதுப்பிக்கவும்.",
+  "myProfileDesc": "உங்கள் காட்சிப் பெயரையும் சுயவிவரப் படத்தையும் புதுப்பிக்கவும்.",
   "saveChanges": "மாற்றங்களைச் சேமி",
   "nameLabel": "பெயர்",
   "emailLabel": "மின்னஞ்சல்",
-  "avatarUrlLabel": "சுயவிவரப் படம்",
-  "avatarUrlHint": "சரியான பட URL ஐ உள்ளிடவும் (எ.கா., .png, .jpg இல் முடிவடையும்). அகற்ற ખાલી விடவும்.",
+  "avatarUrlLabel": "புதிய சுயவிவரப் பட URL",
+  "avatarUrlHint": "சரியான பட URL ஐ உள்ளிடவும் (எ.கா., .png, .jpg இல் முடிவடையும்).",
   "profileUpdateSuccessTitle": "சுயவிவரம் புதுப்பிக்கப்பட்டது",
   "profileUpdateSuccessDesc": "உங்கள் சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது.",
   "profileUpdateFailed": "சுயவிவரத்தைப் புதுப்பிப்பதில் தோல்வி. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "பள்ளி ID இல்லை",
   "globalAccessPlaceholder": "உலகளாவிய அணுகல்",
   "platformStatisticsTitle": "தளத்தின் புள்ளிவிவரங்கள்",
-  "platformStatisticsDesc": "AttendEase தளத்திற்கான முக்கிய அளவீடுகளின் கண்ணோட்டம்."
+  "platformStatisticsDesc": "AttendEase தளத்திற்கான முக்கிய அளவீடுகளின் கண்ணோட்டம்.",
+  "saveProfilePictureButton": "சுயவிவரப் படத்தை சேமி",
+  "schoolSettingsTitle": "பள்ளி அமைப்புகள்",
+  "adminSchoolSettingsDesc": "உங்கள் பள்ளியின் பெயர் மற்றும் ஆசிரியர் பதிவிற்கான தனிப்பட்ட அடையாளக் குறியீட்டை நிர்வகிக்கவும்."
 }
+

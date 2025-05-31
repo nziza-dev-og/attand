@@ -101,12 +101,12 @@
   "errorLoadingChildren": "Imeshindwa kupakia maelezo ya watoto.",
   "loadingChildrenDetails": "Inapakia maelezo ya watoto...",
   "myProfileTitle": "Wasifu Wangu",
-  "myProfileDesc": "Tazama na sasisha taarifa zako za kibinafsi.",
+  "myProfileDesc": "Sasisha jina lako la kuonyesha na picha ya wasifu.",
   "saveChanges": "Hifadhi Mabadiliko",
   "nameLabel": "Jina",
   "emailLabel": "Barua Pepe",
-  "avatarUrlLabel": "Picha ya Wasifu",
-  "avatarUrlHint": "Weka URL halali ya picha (k.m., inayoishia na .png, .jpg). Acha tupu ili kuondoa.",
+  "avatarUrlLabel": "URL Mpya ya Picha ya Wasifu",
+  "avatarUrlHint": "Weka URL halali ya picha (k.m., inayoishia na .png, .jpg).",
   "profileUpdateSuccessTitle": "Wasifu Umesasishwa",
   "profileUpdateSuccessDesc": "Wasifu wako umesasishwa kwa mafanikio.",
   "profileUpdateFailed": "Imeshindwa kusasisha wasifu. Tafadhali jaribu tena.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "Hakuna Kitambulisho cha Shule",
   "globalAccessPlaceholder": "Ufikiaji wa Kimataifa",
   "platformStatisticsTitle": "Takwimu za Mfumo",
-  "platformStatisticsDesc": "Muhtasari wa metriki muhimu za mfumo wa AttendEase."
+  "platformStatisticsDesc": "Muhtasari wa metriki muhimu za mfumo wa AttendEase.",
+  "saveProfilePictureButton": "Hifadhi Picha ya Wasifu",
+  "schoolSettingsTitle": "Mipangilio ya Shule",
+  "adminSchoolSettingsDesc": "Dhibiti jina la shule yako na nambari ya kipekee ya utambulisho kwa usajili wa walimu."
 }
+

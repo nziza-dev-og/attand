@@ -101,12 +101,12 @@
   "errorLoadingChildren": "Échec du chargement des détails des enfants.",
   "loadingChildrenDetails": "Chargement des détails des enfants...",
   "myProfileTitle": "Mon Profil",
-  "myProfileDesc": "Affichez et mettez à jour vos informations personnelles.",
+  "myProfileDesc": "Mettez à jour votre nom d'affichage et votre photo de profil.",
   "saveChanges": "Enregistrer les modifications",
   "nameLabel": "Nom",
   "emailLabel": "E-mail",
-  "avatarUrlLabel": "Avatar",
-  "avatarUrlHint": "Entrez une URL d'image valide (par exemple, se terminant par .png, .jpg). Laissez vide pour supprimer.",
+  "avatarUrlLabel": "Nouvelle URL d'Avatar",
+  "avatarUrlHint": "Entrez une URL d'image valide (par exemple, se terminant par .png, .jpg).",
   "profileUpdateSuccessTitle": "Profil Mis à Jour",
   "profileUpdateSuccessDesc": "Votre profil a été mis à jour avec succès.",
   "profileUpdateFailed": "Échec de la mise à jour du profil. Veuillez réessayer.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "Aucun ID d'École",
   "globalAccessPlaceholder": "Accès Global",
   "platformStatisticsTitle": "Statistiques de la Plateforme",
-  "platformStatisticsDesc": "Un aperçu des indicateurs clés pour la plateforme AttendEase."
+  "platformStatisticsDesc": "Un aperçu des indicateurs clés pour la plateforme AttendEase.",
+  "saveProfilePictureButton": "Enregistrer la Photo de Profil",
+  "schoolSettingsTitle": "Paramètres de l'École",
+  "adminSchoolSettingsDesc": "Gérez le nom de votre école et son code d'identification unique pour l'inscription des enseignants."
 }
+

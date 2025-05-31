@@ -101,12 +101,12 @@
   "errorLoadingChildren": "فشل تحميل تفاصيل الأطفال.",
   "loadingChildrenDetails": "جارٍ تحميل تفاصيل الأطفال...",
   "myProfileTitle": "ملفي الشخصي",
-  "myProfileDesc": "عرض وتحديث معلوماتك الشخصية.",
+  "myProfileDesc": "تحديث اسم العرض وصورة الملف الشخصي.",
   "saveChanges": "حفظ التغييرات",
   "nameLabel": "الاسم",
   "emailLabel": "البريد الإلكتروني",
-  "avatarUrlLabel": "الصورة الرمزية",
-  "avatarUrlHint": "أدخل رابط صورة صالح (مثلًا، ينتهي بـ .png، .jpg). اتركه فارغًا للإزالة.",
+  "avatarUrlLabel": "رابط الصورة الرمزية الجديدة",
+  "avatarUrlHint": "أدخل رابط صورة صالح (مثلًا، ينتهي بـ .png، .jpg).",
   "profileUpdateSuccessTitle": "تم تحديث الملف الشخصي",
   "profileUpdateSuccessDesc": "تم تحديث ملفك الشخصي بنجاح.",
   "profileUpdateFailed": "فشل تحديث الملف الشخصي. يرجى المحاولة مرة أخرى.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "لا يوجد معرف مدرسة",
   "globalAccessPlaceholder": "وصول عالمي",
   "platformStatisticsTitle": "إحصائيات المنصة",
-  "platformStatisticsDesc": "نظرة عامة على المقاييس الرئيسية لمنصة AttendEase."
+  "platformStatisticsDesc": "نظرة عامة على المقاييس الرئيسية لمنصة AttendEase.",
+  "saveProfilePictureButton": "حفظ صورة الملف الشخصي",
+  "schoolSettingsTitle": "إعدادات المدرسة",
+  "adminSchoolSettingsDesc": "إدارة اسم مدرستك ورمز التعريف الفريد لتسجيل المعلمين."
 }
+

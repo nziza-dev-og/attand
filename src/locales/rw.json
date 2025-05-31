@@ -101,12 +101,12 @@
   "errorLoadingChildren": "Kutabasha gutwara amakuru y'abana.",
   "loadingChildrenDetails": "Gutwara amakuru y'abana...",
   "myProfileTitle": "Porofayili Yanjye",
-  "myProfileDesc": "Reba kandi uvugurure amakuru yawe bwite.",
+  "myProfileDesc": "Hindura izina ryawe n'ifoto ya porofayili.",
   "saveChanges": "Bika Impinduka",
   "nameLabel": "Izina",
   "emailLabel": "Email",
-  "avatarUrlLabel": "Ifoto",
-  "avatarUrlHint": "Shyiramo URL y'ifoto yemewe (urugero: irangirana na .png, .jpg). Siga ubusa kugira ngo uyikureho.",
+  "avatarUrlLabel": "URL Nshya y'Ifoto",
+  "avatarUrlHint": "Andika URL yemewe y'ifoto (urugero: irangirana na .png, .jpg).",
   "profileUpdateSuccessTitle": "Porofayili Yavuguruwe",
   "profileUpdateSuccessDesc": "Porofayili yawe yavuguruwe neza.",
   "profileUpdateFailed": "Kuvugurura porofayili byanze. Gerageza nanone.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "Nta ID y'Ishuri",
   "globalAccessPlaceholder": "Uburyo bwo Kugera Hose",
   "platformStatisticsTitle": "Imibare ya Sisitemu",
-  "platformStatisticsDesc": "Incāmunshuro y'imibare y'ingenzi ya sisitemu ya AttendEase."
+  "platformStatisticsDesc": "Incāmunshuro y'imibare y'ingenzi ya sisitemu ya AttendEase.",
+  "saveProfilePictureButton": "Bika Ifoto ya Porofayili",
+  "schoolSettingsTitle": "Ibikoresho by'Ishuri",
+  "adminSchoolSettingsDesc": "Cunga izina ry'ishuri ryawe na kode idasanzwe yo kumenyekanisha abarimu."
 }
+

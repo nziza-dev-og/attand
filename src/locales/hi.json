@@ -101,12 +101,12 @@
   "errorLoadingChildren": "बच्चों का विवरण लोड करने में विफल।",
   "loadingChildrenDetails": "बच्चों का विवरण लोड हो रहा है...",
   "myProfileTitle": "मेरी प्रोफ़ाइल",
-  "myProfileDesc": "अपनी व्यक्तिगत जानकारी देखें और अपडेट करें।",
+  "myProfileDesc": "अपना प्रदर्शन नाम और प्रोफ़ाइल चित्र अपडेट करें।",
   "saveChanges": "परिवर्तन सहेजें",
   "nameLabel": "नाम",
   "emailLabel": "ईमेल",
-  "avatarUrlLabel": "अवतार",
-  "avatarUrlHint": "एक मान्य छवि URL दर्ज करें (उदा., .png, .jpg में समाप्त)। हटाने के लिए खाली छोड़ दें।",
+  "avatarUrlLabel": "नया अवतार URL",
+  "avatarUrlHint": "एक मान्य छवि URL दर्ज करें (उदा., .png, .jpg में समाप्त)।",
   "profileUpdateSuccessTitle": "प्रोफ़ाइल अपडेट की गई",
   "profileUpdateSuccessDesc": "आपकी प्रोफ़ाइल सफलतापूर्वक अपडेट हो गई है।",
   "profileUpdateFailed": "प्रोफ़ाइल अपडेट करने में विफल। कृपया पुनः प्रयास करें।",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "कोई स्कूल आईडी नहीं",
   "globalAccessPlaceholder": "वैश्विक पहुँच",
   "platformStatisticsTitle": "प्लेटफ़ॉर्म आँकड़े",
-  "platformStatisticsDesc": "AttendEase प्लेटफ़ॉर्म के प्रमुख मैट्रिक्स का अवलोकन।"
+  "platformStatisticsDesc": "AttendEase प्लेटफ़ॉर्म के प्रमुख मैट्रिक्स का अवलोकन।",
+  "saveProfilePictureButton": "प्रोफ़ाइल चित्र सहेजें",
+  "schoolSettingsTitle": "स्कूल सेटिंग्स",
+  "adminSchoolSettingsDesc": "अपने स्कूल का नाम और शिक्षक पंजीकरण के लिए अद्वितीय पहचान कोड प्रबंधित करें।"
 }
+

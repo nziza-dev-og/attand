@@ -101,12 +101,12 @@
   "errorLoadingChildren": "An kasa loda cikakkun bayanai na yara.",
   "loadingChildrenDetails": "Ana loda cikakkun bayanai na yara...",
   "myProfileTitle": "Bayanaina",
-  "myProfileDesc": "Duba kuma sabunta bayananka.",
+  "myProfileDesc": "Sabunta sunan nuninka da hoton bayanan ka.",
   "saveChanges": "Adana Canje-canje",
   "nameLabel": "Suna",
   "emailLabel": "Imel",
-  "avatarUrlLabel": "Hoto",
-  "avatarUrlHint": "Shigar da ingantacciyar URL na hoto (misali, mai ƙarewa da .png, .jpg). Bar fanko don cirewa.",
+  "avatarUrlLabel": "Sabon URL na Hoto",
+  "avatarUrlHint": "Shigar da ingantacciyar URL na hoto (misali, mai ƙarewa da .png, .jpg).",
   "profileUpdateSuccessTitle": "An Sabunta Bayanai",
   "profileUpdateSuccessDesc": "An sabunta bayananka cikin nasara.",
   "profileUpdateFailed": "An kasa sabunta bayanai. Da fatan za a sake gwadawa.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "Babu ID na Makaranta",
   "globalAccessPlaceholder": "Samun Dama na Duniya",
   "platformStatisticsTitle": "Kididdigar Dandalin",
-  "platformStatisticsDesc": "Takaitaccen mahimman bayanai na dandalin AttendEase."
+  "platformStatisticsDesc": "Takaitaccen mahimman bayanai na dandalin AttendEase.",
+  "saveProfilePictureButton": "Adana Hoton Bayanai",
+  "schoolSettingsTitle": "Saitunan Makaranta",
+  "adminSchoolSettingsDesc": "Sarrafa sunan makarantar ka da lambar ganewa ta musamman don rajistar malamai."
 }
+

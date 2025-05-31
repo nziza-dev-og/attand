@@ -2,7 +2,7 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building } from "lucide-react"; 
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings } from "lucide-react"; 
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -255,14 +255,15 @@ export default function AdminDashboard() {
   if (authLoading || loadingStats || loadingProfile) {
     return (
       <div className="flex flex-col space-y-4 p-4">
-        <Skeleton className="h-32 w-full rounded-lg" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-24 w-full rounded-lg" />
-          <Skeleton className="h-24 w-full rounded-lg" />
-          <Skeleton className="h-24 w-full rounded-lg" />
-          <Skeleton className="h-24 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
         </div>
-        <Skeleton className="h-40 w-full rounded-lg md:col-span-2 lg:col-span-4" />
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-60 w-full rounded-lg" />
+        <Skeleton className="h-52 w-full rounded-lg" />
       </div>
     );
   }
@@ -283,6 +284,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="grid auto-rows-min gap-6">
+      {/* Statistics Row */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -326,7 +328,8 @@ export default function AdminDashboard() {
         </Card>
       </div>
       
-      <Card className="md:col-span-2 lg:col-span-4">
+      {/* Welcome and School Info Card */}
+      <Card>
          <CardHeader>
              <CardTitle>{translate('welcomeAdminTitle') || 'Welcome, Admin!'}{adminSchoolName ? ` - ${adminSchoolName}` : ''}</CardTitle>
              <CardDescription>{translate('adminDashboardDescription') || "Use the sidebar to manage classes, students, teachers, parents, assignments, and view reports."}</CardDescription>
@@ -336,36 +339,32 @@ export default function AdminDashboard() {
          </CardContent>
       </Card>
 
+      {/* School Settings Card */}
        <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Building className="h-5 w-5" /> {translate('schoolNameTitle')}</CardTitle>
-          <CardDescription>{translate('adminSchoolNameDesc')}</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" /> {translate('schoolSettingsTitle') || 'School Settings'}</CardTitle>
+          <CardDescription>{translate('adminSchoolSettingsDesc') || "Manage your school's name and unique identifier code for teacher registration."}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
-           <Label htmlFor="schoolNameInput" className="text-sm font-medium">{translate('setSchoolNameLabel')}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="schoolNameInput"
-                value={schoolNameInput}
-                onChange={(e) => setSchoolNameInput(e.target.value)}
-                placeholder={translate('enterSchoolNamePlaceholder')}
-                className="flex-1"
-              />
-              <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !authUser}>
-                {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                {translate('saveSchoolNameButton')}
-              </Button>
-            </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{translate('schoolIdentifierCodeTitle')}</CardTitle>
-          <CardDescription>{translate('adminSchoolCodeDesc')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
+        <CardContent className="space-y-6">
+          {/* School Name Setting */}
+          <div className="space-y-2">
+             <Label htmlFor="schoolNameInput" className="text-sm font-medium">{translate('setSchoolNameLabel')}</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="schoolNameInput"
+                  value={schoolNameInput}
+                  onChange={(e) => setSchoolNameInput(e.target.value)}
+                  placeholder={translate('enterSchoolNamePlaceholder')}
+                  className="flex-1"
+                />
+                <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !authUser}>
+                  {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  {translate('saveSchoolNameButton')}
+                </Button>
+              </div>
+          </div>
+          {/* School Identifier Code Setting */}
+          <div className="space-y-2">
             <Label htmlFor="schoolCodeInput" className="text-sm font-medium">{translate('setSchoolCodeLabel')}</Label>
             <div className="flex items-center gap-2 mt-1">
               <Input
@@ -395,10 +394,11 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
 
+      {/* Admin Profile Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> Your Profile</CardTitle>
-          <CardDescription>Update your display name and profile picture.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> {translate('myProfileTitle') || 'Your Profile'}</CardTitle>
+          <CardDescription>{translate('myProfileDesc') || 'Update your display name and profile picture.'}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
@@ -412,7 +412,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
             <div className="space-y-2">
-                <Label htmlFor="avatarUrlInput" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> New Avatar URL</Label>
+                <Label htmlFor="avatarUrlInput" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> {translate('avatarUrlLabel') || 'New Avatar URL'}</Label>
                 <Input
                     id="avatarUrlInput"
                     type="url"
@@ -420,16 +420,17 @@ export default function AdminDashboard() {
                     onChange={(e) => setNewAvatarUrlInput(e.target.value)}
                     placeholder="https://example.com/your-avatar.png"
                 />
-                 <p className="text-xs text-muted-foreground">Enter a valid image URL (e.g., ending in .png, .jpg).</p>
+                 <p className="text-xs text-muted-foreground">{translate('avatarUrlHint') || 'Enter a valid image URL (e.g., ending in .png, .jpg).'}</p>
             </div>
         </CardContent>
         <CardFooter>
             <Button onClick={handleUpdateAdminAvatar} disabled={isUpdatingAvatar || authLoading}>
                 {isUpdatingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <Save className="mr-2 h-4 w-4" /> Save Profile Picture
+                <Save className="mr-2 h-4 w-4" /> {translate('saveProfilePictureButton') || 'Save Profile Picture'}
             </Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
+

@@ -101,12 +101,12 @@
   "errorLoadingChildren": "Failed to load children details.",
   "loadingChildrenDetails": "Loading children details...",
   "myProfileTitle": "My Profile",
-  "myProfileDesc": "View and update your personal information.",
+  "myProfileDesc": "Update your display name and profile picture.",
   "saveChanges": "Save Changes",
   "nameLabel": "Name",
   "emailLabel": "Email",
-  "avatarUrlLabel": "Avatar",
-  "avatarUrlHint": "Enter a valid image URL (e.g., ending in .png, .jpg). Leave blank to remove.",
+  "avatarUrlLabel": "New Avatar URL",
+  "avatarUrlHint": "Enter a valid image URL (e.g., ending in .png, .jpg).",
   "profileUpdateSuccessTitle": "Profile Updated",
   "profileUpdateSuccessDesc": "Your profile has been updated successfully.",
   "profileUpdateFailed": "Failed to update profile. Please try again.",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "No School ID",
   "globalAccessPlaceholder": "Global Access",
   "platformStatisticsTitle": "Platform Statistics",
-  "platformStatisticsDesc": "An overview of key metrics for the AttendEase platform."
+  "platformStatisticsDesc": "An overview of key metrics for the AttendEase platform.",
+  "saveProfilePictureButton": "Save Profile Picture",
+  "schoolSettingsTitle": "School Settings",
+  "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration."
 }
+

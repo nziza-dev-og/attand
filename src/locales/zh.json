@@ -101,12 +101,12 @@
   "errorLoadingChildren": "加载孩子详细信息失败。",
   "loadingChildrenDetails": "正在加载孩子详细信息...",
   "myProfileTitle": "我的资料",
-  "myProfileDesc": "查看和更新您的个人信息。",
+  "myProfileDesc": "更新您的显示名称和头像。",
   "saveChanges": "保存更改",
   "nameLabel": "姓名",
   "emailLabel": "电子邮件",
-  "avatarUrlLabel": "头像",
-  "avatarUrlHint": "请输入有效的图片URL（例如，以.png, .jpg结尾）。留空则移除头像。",
+  "avatarUrlLabel": "新头像URL",
+  "avatarUrlHint": "请输入有效的图片URL（例如，以.png, .jpg结尾）。",
   "profileUpdateSuccessTitle": "资料已更新",
   "profileUpdateSuccessDesc": "您的个人资料已成功更新。",
   "profileUpdateFailed": "更新资料失败。请重试。",
@@ -260,5 +260,9 @@
   "noSchoolIdPlaceholder": "无学校ID",
   "globalAccessPlaceholder": "全局访问",
   "platformStatisticsTitle": "平台统计",
-  "platformStatisticsDesc": "AttendEase 平台关键指标概览。"
+  "platformStatisticsDesc": "AttendEase 平台关键指标概览。",
+  "saveProfilePictureButton": "保存头像",
+  "schoolSettingsTitle": "学校设置",
+  "adminSchoolSettingsDesc": "管理您的学校名称和用于教师注册的唯一识别码。"
 }
+
