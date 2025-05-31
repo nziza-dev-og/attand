@@ -28,7 +28,8 @@ const getRoleBadgeVariant = (role?: Role): 'default' | 'secondary' | 'outline' |
     case 'Admin': return 'default'; 
     case 'Teacher': return 'secondary';
     case 'Parent': return 'outline'; 
-    case 'Student': return 'outline'; 
+    // Student case removed from variants as they won't be displayed, but kept for type safety if needed elsewhere.
+    // case 'Student': return 'outline'; 
     default: return 'outline';
   }
 };
@@ -47,11 +48,15 @@ export default function SuperAdminManageUsersPage() {
       try {
         const q = query(collection(db, "users"), orderBy("createdAt", "desc")); 
         const querySnapshot = await getDocs(q);
-        const usersData = querySnapshot.docs.map(docSnapshot => ({ // Renamed doc to docSnapshot
+        const usersData = querySnapshot.docs.map(docSnapshot => ({
           id: docSnapshot.id,
           ...(docSnapshot.data() as UserProfile),
         })) as SystemUserDisplay[];
-        setAllUsers(usersData);
+        
+        // Filter out users with the role 'Student'
+        const filteredUsers = usersData.filter(user => user.role !== 'Student');
+        
+        setAllUsers(filteredUsers);
       } catch (err: any) {
         console.error("Error fetching all users:", err);
         setError(translate("errorLoadingAllUsers") || "Failed to load all users.");
@@ -130,9 +135,9 @@ export default function SuperAdminManageUsersPage() {
                     </TableCell>
                     <TableCell>
                       {user.role === 'Admin' && (user.schoolName || translate('schoolNameNotSet'))}
-                      {(user.role === 'Teacher' || user.role === 'Student' || (user.role === 'Parent' && user.schoolId)) && (user.schoolId || translate('noSchoolIdPlaceholder'))}
+                      {(user.role === 'Teacher' || (user.role === 'Parent' && user.schoolId)) && (user.schoolId || translate('noSchoolIdPlaceholder'))}
                       {user.role === 'SuperAdmin' && translate('globalAccessPlaceholder')}
-                      {(user.role === 'Parent' && !user.schoolId) && translate('parentNotLinkedToSchool') /* New key */}
+                      {(user.role === 'Parent' && !user.schoolId) && translate('parentNotLinkedToSchool')}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -144,5 +149,3 @@ export default function SuperAdminManageUsersPage() {
     </Card>
   );
 }
-
-    
