@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "تحذيرات الاستيراد",
   "studentImportWarningDesc": "تعذر استيراد {{count}} سجل طالب أو تم تخطيها. تحقق من وحدة التحكم للحصول على التفاصيل.",
   "studentImportErrorParsingFailed": "فشل تحليل ملف CSV:",
-  "studentImportErrorAllFailed": "فشل استيراد جميع سجلات الطلاب. تحقق من تنسيق الملف ووحدة التحكم بحثًا عن الأخطاء."
+  "studentImportErrorAllFailed": "فشل استيراد جميع سجلات الطلاب. تحقق من تنسيق الملف ووحدة التحكم بحثًا عن الأخطاء.",
+  "errorLoadingStats": "فشل تحميل إحصائيات المنصة.",
+  "errorLoadingChartData": "فشل تحميل بيانات توزيع أدوار المستخدمين.",
+  "errorAuthRequired": "المصادقة مطلوبة لعرض هذه البيانات.",
+  "parentNotLinkedToSchool": "لم يتم ربطه بمدرسة معينة بعد"
 }
+
+    

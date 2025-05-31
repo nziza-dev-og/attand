@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Import Warnings",
   "studentImportWarningDesc": "{{count}} student records could not be imported or were skipped. Check console for details.",
   "studentImportErrorParsingFailed": "Failed to parse CSV file:",
-  "studentImportErrorAllFailed": "All student records failed to import. Check file format and console for errors."
+  "studentImportErrorAllFailed": "All student records failed to import. Check file format and console for errors.",
+  "errorLoadingStats": "Failed to load platform statistics.",
+  "errorLoadingChartData": "Failed to load user role distribution data.",
+  "errorAuthRequired": "Authentication required to view this data.",
+  "parentNotLinkedToSchool": "Not yet linked to a specific school"
 }
+
+    

@@ -7,11 +7,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where, getDocs } from "firebase/firestore";
+import { collection, getCountFromServer, query, where, getDocs } from "firebase/firestore"; // Ensured query is imported
 import { db } from "@/lib/firebase";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegend, type ChartConfig } from "@/components/ui/chart";
-import type { Role } from "@/lib/types";
+import type { Role, UserProfile } from "@/lib/types";
 
 interface SuperAdminStats {
   totalSchools: number; // Number of Admin accounts
@@ -31,6 +31,7 @@ export default function SuperAdminDashboardPage() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [userRoleDistribution, setUserRoleDistribution] = useState<UserRoleDistributionData[]>([]);
   const [loadingUserRoleDistribution, setLoadingUserRoleDistribution] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const chartConfig = {
     admins: { label: translate('roleAdmin'), color: "hsl(var(--chart-1))" },
@@ -47,6 +48,7 @@ export default function SuperAdminDashboardPage() {
       
       setLoadingStats(true);
       setLoadingUserRoleDistribution(true);
+      setFetchError(null);
 
       try {
         // Fetch general stats
@@ -60,10 +62,17 @@ export default function SuperAdminDashboardPage() {
           totalSchools: adminSnapshot.data().count,
           totalUsers: allUsersSnapshot.data().count,
         });
+      } catch (error) {
+        console.error("Error fetching super admin stats:", error);
+        setFetchError(translate("errorLoadingStats") || "Failed to load platform statistics.");
+      } finally {
         setLoadingStats(false);
+      }
 
+      try {
         // Fetch user role distribution data
-        const usersDocsSnapshot = await getDocs(allUsersCollectionQuery);
+        const allUsersCollectionQueryForRoles = collection(db, "users");
+        const usersDocsSnapshot = await getDocs(allUsersCollectionQueryForRoles);
         const roleCounts: Record<string, number> = { 
             Admin: 0, Teacher: 0, Parent: 0, Student: 0, SuperAdmin: 0 
         };
@@ -72,12 +81,15 @@ export default function SuperAdminDashboardPage() {
           const userRole = doc.data().role as Role;
           if (userRole && roleCounts.hasOwnProperty(userRole)) {
             roleCounts[userRole]++;
+          } else if (userRole) {
+            // Handle unexpected roles if necessary, or log them
+            console.warn("Unexpected user role found:", userRole);
           }
         });
 
         const distributionData = Object.entries(roleCounts).map(([roleName, count]) => {
           let translatedRoleName = roleName;
-          let colorKey = roleName.toLowerCase() as keyof typeof chartConfig;
+          let colorKey: keyof typeof chartConfig | null = null;
 
           switch(roleName as Role) {
             case 'Admin': translatedRoleName = translate('roleAdmin'); colorKey = 'admins'; break;
@@ -85,20 +97,21 @@ export default function SuperAdminDashboardPage() {
             case 'Parent': translatedRoleName = translate('roleParent'); colorKey = 'parents'; break;
             case 'Student': translatedRoleName = translate('roleStudent'); colorKey = 'students'; break;
             case 'SuperAdmin': translatedRoleName = translate('roleSuperAdmin'); colorKey = 'superadmins'; break;
+            default: translatedRoleName = roleName;
           }
           
           return {
             name: translatedRoleName || roleName,
             value: count,
-            fill: chartConfig[colorKey]?.color || "hsl(var(--muted))",
+            fill: colorKey && chartConfig[colorKey] ? chartConfig[colorKey].color : "hsl(var(--muted))",
           };
         }).filter(item => item.value > 0); // Only include roles with users
         
         setUserRoleDistribution(distributionData);
 
       } catch (error) {
-        console.error("Error fetching super admin data:", error);
-        setLoadingStats(false); // Ensure loading stops on error
+        console.error("Error fetching user role distribution:", error);
+        setFetchError(prevError => prevError || (translate("errorLoadingChartData") || "Failed to load user role distribution data."));
       } finally {
         setLoadingUserRoleDistribution(false);
       }
@@ -109,8 +122,10 @@ export default function SuperAdminDashboardPage() {
     } else if (!authLoading && !user) {
         setLoadingStats(false);
         setLoadingUserRoleDistribution(false);
+        setFetchError(translate("errorAuthRequired") || "Authentication required to view this data.");
     }
-  }, [user, authLoading, translate]); // Added translate to dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading, translate]); // Removed chartConfig from deps as it uses translate
 
   const isLoading = authLoading || loadingStats || loadingUserRoleDistribution;
 
@@ -177,6 +192,17 @@ export default function SuperAdminDashboardPage() {
     );
   }
 
+  if (fetchError) {
+    return (
+        <Card className="border-destructive bg-destructive/10">
+            <CardHeader>
+                <CardTitle className="text-destructive">{translate("errorTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent><p className="text-destructive">{fetchError}</p></CardContent>
+        </Card>
+    );
+  }
+
   return (
     <div className="grid auto-rows-auto gap-6">
       <Card className="sm:col-span-2">
@@ -237,7 +263,7 @@ export default function SuperAdminDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+            <ChartContainer config={chartConfig} className="min-h-[300px] w-full aspect-video">
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Tooltip
@@ -251,7 +277,7 @@ export default function SuperAdminDashboardPage() {
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
-                    innerRadius={60} // For Donut chart
+                    innerRadius={60} 
                     labelLine={false}
                     // label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   >
@@ -280,3 +306,5 @@ export default function SuperAdminDashboardPage() {
     </div>
   );
 }
+
+    

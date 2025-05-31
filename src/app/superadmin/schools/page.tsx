@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, type Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -33,11 +33,11 @@ export default function SuperAdminManageSchoolsPage() {
       try {
         const q = query(collection(db, "users"), where("role", "==", "Admin"));
         const querySnapshot = await getDocs(q);
-        const admins = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() as UserProfile),
+        const adminsData = querySnapshot.docs.map(docSnapshot => ({ // Renamed doc to docSnapshot to avoid conflict
+          id: docSnapshot.id,
+          ...(docSnapshot.data() as UserProfile),
         })) as AdminUserDisplay[];
-        setAdminUsers(admins);
+        setAdminUsers(adminsData);
       } catch (err: any) {
         console.error("Error fetching admin users:", err);
         setError(translate("errorLoadingAdmins") || "Failed to load school administrators.");
@@ -121,3 +121,5 @@ export default function SuperAdminManageSchoolsPage() {
     </Card>
   );
 }
+
+    

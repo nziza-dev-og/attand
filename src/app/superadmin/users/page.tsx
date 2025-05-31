@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, type Timestamp } from "firebase/firestore"; // Added type Timestamp
 import { db } from "@/lib/firebase";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,7 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { UserProfile, Role } from "@/lib/types"; // Role might be needed for badge color
+import type { UserProfile, Role } from "@/lib/types"; 
 
 interface SystemUserDisplay extends UserProfile {
   id: string;
@@ -21,14 +21,14 @@ const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 };
 
-// Optional: Helper for role badge styling
-const getRoleBadgeVariant = (role: Role): 'default' | 'secondary' | 'outline' | 'destructive' => {
+const getRoleBadgeVariant = (role?: Role): 'default' | 'secondary' | 'outline' | 'destructive' => {
+  if (!role) return 'outline';
   switch (role) {
     case 'SuperAdmin': return 'destructive';
-    case 'Admin': return 'default';
+    case 'Admin': return 'default'; 
     case 'Teacher': return 'secondary';
-    case 'Parent': return 'outline';
-    case 'Student': return 'outline'; // Could use a different color, e.g., via custom variant
+    case 'Parent': return 'outline'; 
+    case 'Student': return 'outline'; 
     default: return 'outline';
   }
 };
@@ -45,15 +45,13 @@ export default function SuperAdminManageUsersPage() {
       setLoading(true);
       setError(null);
       try {
-        // Consider adding orderBy if needed, e.g., orderBy("createdAt", "desc")
-        // Also, for very large user bases, pagination would be necessary.
         const q = query(collection(db, "users"), orderBy("createdAt", "desc")); 
         const querySnapshot = await getDocs(q);
-        const users = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() as UserProfile),
+        const usersData = querySnapshot.docs.map(docSnapshot => ({ // Renamed doc to docSnapshot
+          id: docSnapshot.id,
+          ...(docSnapshot.data() as UserProfile),
         })) as SystemUserDisplay[];
-        setAllUsers(users);
+        setAllUsers(usersData);
       } catch (err: any) {
         console.error("Error fetching all users:", err);
         setError(translate("errorLoadingAllUsers") || "Failed to load all users.");
@@ -112,7 +110,6 @@ export default function SuperAdminManageUsersPage() {
                   <TableHead>{translate('columnEmail')}</TableHead>
                   <TableHead>{translate('roleLabel')}</TableHead>
                   <TableHead>{translate('schoolNameLabel')}/{translate('schoolIdLabel')}</TableHead>
-                  {/* Add more columns as needed, e.g., Created At, Actions */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -128,13 +125,14 @@ export default function SuperAdminManageUsersPage() {
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <Badge variant={getRoleBadgeVariant(user.role)}>
-                        {user.role || translate('unknownRolePlaceholder')}
+                        {user.role ? translate(`role${user.role}`) || user.role : translate('unknownRolePlaceholder')}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       {user.role === 'Admin' && (user.schoolName || translate('schoolNameNotSet'))}
-                      {(user.role === 'Teacher' || user.role === 'Student' || user.role === 'Parent') && (user.schoolId || translate('noSchoolIdPlaceholder'))}
+                      {(user.role === 'Teacher' || user.role === 'Student' || (user.role === 'Parent' && user.schoolId)) && (user.schoolId || translate('noSchoolIdPlaceholder'))}
                       {user.role === 'SuperAdmin' && translate('globalAccessPlaceholder')}
+                      {(user.role === 'Parent' && !user.schoolId) && translate('parentNotLinkedToSchool') /* New key */}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -146,3 +144,5 @@ export default function SuperAdminManageUsersPage() {
     </Card>
   );
 }
+
+    

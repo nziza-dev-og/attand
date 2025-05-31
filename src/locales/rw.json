@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Imiburo yo Gutora",
   "studentImportWarningDesc": "Amakuru y'abanyeshuri {{count}} ntiyashoboye gutorwa cyangwa yarenganyijwe. Reba muri console kugira ngo umenye ibisobanuro.",
   "studentImportErrorParsingFailed": "Kunanirwa gusoma dosiye ya CSV:",
-  "studentImportErrorAllFailed": "Amakuru y'abanyeshuri bose yananiwe gutorwa. Genzura imiterere ya dosiye na console kugira ngo umenye amakosa."
+  "studentImportErrorAllFailed": "Amakuru y'abanyeshuri bose yananiwe gutorwa. Genzura imiterere ya dosiye na console kugira ngo umenye amakosa.",
+  "errorLoadingStats": "Kunanirwa gutwara imibare ya sisitemu.",
+  "errorLoadingChartData": "Kunanirwa gutwara amakuru y'ikigabanyo cy'inshingano z'abakoresha.",
+  "errorAuthRequired": "Ukwemezwa birakenewe kugira ngo urebe aya makuru.",
+  "parentNotLinkedToSchool": "Ntaho ahuriye n'ishuri ryihariye"
 }
+
+    

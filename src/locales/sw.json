@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Maonyo ya Kuingiza",
   "studentImportWarningDesc": "Rekodi za wanafunzi {{count}} hazikuweza kuingizwa au zilirukwa. Angalia koni kwa maelezo.",
   "studentImportErrorParsingFailed": "Imeshindwa kuchanganua faili ya CSV:",
-  "studentImportErrorAllFailed": "Rekodi zote za wanafunzi zimeshindwa kuingizwa. Angalia muundo wa faili na koni kwa makosa."
+  "studentImportErrorAllFailed": "Rekodi zote za wanafunzi zimeshindwa kuingizwa. Angalia muundo wa faili na koni kwa makosa.",
+  "errorLoadingStats": "Imeshindwa kupakia takwimu za mfumo.",
+  "errorLoadingChartData": "Imeshindwa kupakia data ya mgawanyo wa majukumu ya watumiaji.",
+  "errorAuthRequired": "Uthibitishaji unahitajika ili kuona data hii.",
+  "parentNotLinkedToSchool": "Bado haijaunganishwa na shule maalum"
 }
+
+    

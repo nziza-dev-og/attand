@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Àwọn Ìkìlọ̀ Ìgbawọlé",
   "studentImportWarningDesc": "Àwọn àkọsílẹ̀ akẹ́kọ̀ọ́ {{count}} kò lè di gbígbà wọlé tàbí a fò wọ́n. Wo kọ̀nsólù fún àwọn àlàyé.",
   "studentImportErrorParsingFailed": "Kò lè túmọ̀ faili CSV:",
-  "studentImportErrorAllFailed": "Gbogbo àkọsílẹ̀ akẹ́kọ̀ọ́ kò lè di gbígbà wọlé. Ṣayẹ̀wò ìṣètò faili àti kọ̀nsólù fún àwọn aṣìṣe."
+  "studentImportErrorAllFailed": "Gbogbo àkọsílẹ̀ akẹ́kọ̀ọ́ kò lè di gbígbà wọlé. Ṣayẹ̀wò ìṣètò faili àti kọ̀nsólù fún àwọn aṣìṣe.",
+  "errorLoadingStats": "Kò lè gba àwọn iṣiro pẹpẹ.",
+  "errorLoadingChartData": "Kò lè gba dátà pínpín ipa olùṣe.",
+  "errorAuthRequired": "Ìfọwọ́sí jẹ́ dandan láti wo dátà yìí.",
+  "parentNotLinkedToSchool": "Kò tíì sopọ̀ mọ́ ilé-ìwé pàtó kan"
 }
+
+    

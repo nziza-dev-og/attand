@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Gargaɗin Shigowa",
   "studentImportWarningDesc": "Ba a iya shigo da bayanan ɗalibai {{count}} ba ko an tsallake su. Duba na'urar wasan bidiyo don cikakkun bayanai.",
   "studentImportErrorParsingFailed": "An kasa nazarin fayil na CSV:",
-  "studentImportErrorAllFailed": "Duk bayanan ɗalibai sun kasa shigowa. Duba tsarin fayil da na'urar wasan bidiyo don kurakurai."
+  "studentImportErrorAllFailed": "Duk bayanan ɗalibai sun kasa shigowa. Duba tsarin fayil da na'urar wasan bidiyo don kurakurai.",
+  "errorLoadingStats": "An kasa loda kididdigar dandalin.",
+  "errorLoadingChartData": "An kasa loda bayanan rarraba matsayin masu amfani.",
+  "errorAuthRequired": "Ana buƙatar tabbatarwa don duba wannan bayanan.",
+  "parentNotLinkedToSchool": "Ba a haɗa shi da takamaiman makaranta ba tukuna"
 }
+
+    

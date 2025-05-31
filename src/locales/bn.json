@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "আমদানি সতর্কতা",
   "studentImportWarningDesc": "{{count}} টি ছাত্র রেকর্ড আমদানি করা যায়নি বা এড়িয়ে যাওয়া হয়েছে। বিস্তারিত জানার জন্য কনসোল দেখুন।",
   "studentImportErrorParsingFailed": "CSV ফাইল পার্স করতে ব্যর্থ:",
-  "studentImportErrorAllFailed": "সমস্ত ছাত্র রেকর্ড আমদানি করতে ব্যর্থ হয়েছে। ফাইল ফরম্যাট এবং কনসোলে ত্রুটি পরীক্ষা করুন।"
+  "studentImportErrorAllFailed": "সমস্ত ছাত্র রেকর্ড আমদানি করতে ব্যর্থ হয়েছে। ফাইল ফরম্যাট এবং কনসোলে ত্রুটি পরীক্ষা করুন।",
+  "errorLoadingStats": "প্ল্যাটফর্ম পরিসংখ্যান লোড করতে ব্যর্থ।",
+  "errorLoadingChartData": "ব্যবহারকারীর ভূমিকা বিতরণ ডেটা লোড করতে ব্যর্থ।",
+  "errorAuthRequired": "এই ডেটা দেখতে প্রমাণীকরণ প্রয়োজন।",
+  "parentNotLinkedToSchool": "এখনও কোনো নির্দিষ্ট স্কুলের সাথে লিঙ্ক করা হয়নি"
 }
+
+    

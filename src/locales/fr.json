@@ -321,5 +321,11 @@
   "studentImportWarningTitle": "Avertissements d'Importation",
   "studentImportWarningDesc": "{{count}} enregistrements d'étudiants n'ont pas pu être importés ou ont été ignorés. Vérifiez la console pour plus de détails.",
   "studentImportErrorParsingFailed": "Échec de l'analyse du fichier CSV :",
-  "studentImportErrorAllFailed": "Tous les enregistrements d'étudiants ont échoué à l'importation. Vérifiez le format du fichier et la console pour les erreurs."
+  "studentImportErrorAllFailed": "Tous les enregistrements d'étudiants ont échoué à l'importation. Vérifiez le format du fichier et la console pour les erreurs.",
+  "errorLoadingStats": "Échec du chargement des statistiques de la plateforme.",
+  "errorLoadingChartData": "Échec du chargement des données de répartition des rôles utilisateurs.",
+  "errorAuthRequired": "Authentification requise pour afficher ces données.",
+  "parentNotLinkedToSchool": "Pas encore lié à une école spécifique"
 }
+
+    
