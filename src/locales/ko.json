@@ -224,5 +224,6 @@
   "superAdminResponsibilitiesTitle": "슈퍼 관리자 책임",
   "superAdminManageSchoolsDesc": "등록된 모든 학교 관리자 및 해당 학교를 관리하고 모니터링합니다.",
   "superAdminManageUsersDesc": "필요한 경우 조정 기능을 사용하여 플랫폼 전체의 모든 사용자 계정을 감독합니다.",
-  "superAdminSystemIntegrityDesc": "AttendEase 플랫폼의 전반적인 상태와 무결성을 보장합니다."
+  "superAdminSystemIntegrityDesc": "AttendEase 플랫폼의 전반적인 상태와 무결성을 보장합니다。"
 }
+

@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer } from "firebase/firestore";
+import { collection, getCountFromServer, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 interface SuperAdminStats {
@@ -26,39 +26,72 @@ export default function SuperAdminDashboardPage() {
       if (authLoading || !user) return;
       setLoadingStats(true);
       try {
-        const adminUsersQuery = collection(db, "users"); // query(collection(db, "users"), where("role", "==", "Admin"));
-        const allUsersQuery = collection(db, "users");
+        const adminUsersQuery = query(collection(db, "users"), where("role", "==", "Admin"));
+        const allUsersQuery = collection(db, "users"); // Query all users for total count
 
-        const adminSnapshot = await getCountFromServer(adminUsersQuery); // Replace with actual query later
+        const adminSnapshot = await getCountFromServer(adminUsersQuery);
         const allUsersSnapshot = await getCountFromServer(allUsersQuery);
         
-        // This is a simplification. "Total Schools" might be better represented by unique schoolIds or Admin count.
-        // For now, let's assume "Total Schools" is the count of Admin users.
-        const adminCountQuery = query(collection(db, "users"), where("role", "==", "Admin"));
-        const adminCountSnapshot = await getCountFromServer(adminCountQuery);
-
-
         setStats({
-          totalSchools: adminCountSnapshot.data().count,
+          totalSchools: adminSnapshot.data().count,
           totalUsers: allUsersSnapshot.data().count,
         });
       } catch (error) {
         console.error("Error fetching super admin stats:", error);
+        // Optionally, set an error state here to display to the user
       } finally {
         setLoadingStats(false);
       }
     };
-    fetchStats();
+    if (!authLoading && user) { // Fetch stats only when auth is done and user exists
+        fetchStats();
+    } else if (!authLoading && !user) { // If auth is done and no user, stop loading
+        setLoadingStats(false);
+    }
   }, [user, authLoading]);
 
   if (authLoading || loadingStats) {
     return (
-      <div className="grid gap-6">
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-32 w-full rounded-lg" />
-          <Skeleton className="h-32 w-full rounded-lg" />
+      <div className="grid auto-rows-min gap-6">
+        <Card className="sm:col-span-2">
+            <CardHeader className="pb-3">
+                <Skeleton className="h-8 w-3/4 rounded-md" />
+                <Skeleton className="h-4 w-full mt-2 rounded-md" />
+                <Skeleton className="h-4 w-5/6 mt-1 rounded-md" />
+            </CardHeader>
+        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-5 w-1/2 rounded-md" />
+                <School className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-8 w-1/4 rounded-md" />
+                <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-5 w-1/2 rounded-md" />
+                <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-8 w-1/4 rounded-md" />
+                <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
+            </CardContent>
+          </Card>
         </div>
+         <Card>
+            <CardHeader>
+                <Skeleton className="h-7 w-1/2 rounded-md" />
+            </CardHeader>
+            <CardContent className="space-y-2">
+                <Skeleton className="h-4 w-full rounded-md" />
+                <Skeleton className="h-4 w-full rounded-md" />
+                <Skeleton className="h-4 w-5/6 rounded-md" />
+            </CardContent>
+        </Card>
       </div>
     );
   }
@@ -113,3 +146,4 @@ export default function SuperAdminDashboardPage() {
     </div>
   );
 }
+
