@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Enter a new image URL for the student's avatar.",
   "studentManagementSaveAvatarButton": "Save Avatar",
   "studentImportTitle": "Import Students from CSV",
-  "studentImportDescCsvOnly": "Upload a CSV file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs. Excel: 'Save As' CSV.",
+  "studentImportDesc": "Upload a CSV file with student data. Required column: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Upload a CSV file with student data. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs. Excel users: Please 'Save As' CSV file.",
   "studentImportFileLabel": "CSV File",
   "studentImportSelectedFile": "Selected:",
   "studentImportProgress": "Import Progress:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "Failed to load platform statistics.",
   "errorLoadingChartData": "Failed to load user role distribution data.",
   "errorAuthRequired": "Authentication required to view this data.",
-  "parentNotLinkedToSchool": "Not yet linked to a specific school"
+  "parentNotLinkedToSchool": "Not yet linked to a specific school",
+  "studentDeleteConfirmTitle": "Delete Student?",
+  "studentDeleteConfirmDesc": "Are you sure you want to delete {{name}}?",
+  "studentDeleteConfirmActionUndone": "This action cannot be undone.",
+  "deleteButtonLabel": "Delete",
+  "studentDeleteSuccessTitle": "Student Deleted",
+  "studentDeleteSuccessDesc": "{{name}} has been successfully deleted.",
+  "studentDeleteFailedDesc": "Failed to delete the student. Please try again.",
+  "studentManagementErrorDeleteSchoolMismatch": "Cannot delete a student who does not belong to your school."
 }
+

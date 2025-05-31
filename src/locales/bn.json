@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "ছাত্রের অবতারের জন্য একটি নতুন ছবির URL লিখুন।",
   "studentManagementSaveAvatarButton": "অবতার সংরক্ষণ করুন",
   "studentImportTitle": "CSV থেকে ছাত্র আমদানি করুন",
-  "studentImportDescCsvOnly": "একটি CSV ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক: 'Email', 'StudentInfo'। প্রোফাইল ছবির জন্য, ছবির URL সহ একটি 'AvatarURL' কলাম অন্তর্ভুক্ত করুন। Excel: 'Save As' CSV.",
+  "studentImportDesc": "ছাত্র ডেটা সহ একটি CSV ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক কলাম: 'Email', 'StudentInfo', 'AvatarURL'।" ,
+  "studentImportDescCsvOnly": "ছাত্র ডেটা সহ একটি CSV ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক: 'Email', 'StudentInfo', 'AvatarURL'। এক্সেল ব্যবহারকারী: অনুগ্রহ করে CSV ফাইল হিসাবে 'Save As' করুন।",
   "studentImportFileLabel": "CSV ফাইল",
   "studentImportSelectedFile": "নির্বাচিত:",
   "studentImportProgress": "আমদানি অগ্রগতি:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "প্ল্যাটফর্ম পরিসংখ্যান লোড করতে ব্যর্থ।",
   "errorLoadingChartData": "ব্যবহারকারীর ভূমিকা বিতরণ ডেটা লোড করতে ব্যর্থ।",
   "errorAuthRequired": "এই ডেটা দেখতে প্রমাণীকরণ প্রয়োজন।",
-  "parentNotLinkedToSchool": "এখনও কোনো নির্দিষ্ট স্কুলের সাথে লিঙ্ক করা হয়নি"
+  "parentNotLinkedToSchool": "এখনও কোনো নির্দিষ্ট স্কুলের সাথে লিঙ্ক করা হয়নি",
+  "studentDeleteConfirmTitle": "ছাত্র মুছে ফেলবেন?",
+  "studentDeleteConfirmDesc": "আপনি কি নিশ্চিত যে আপনি {{name}} কে মুছে ফেলতে চান?",
+  "studentDeleteConfirmActionUndone": "এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "deleteButtonLabel": "মুছে ফেলুন",
+  "studentDeleteSuccessTitle": "ছাত্র মোছা হয়েছে",
+  "studentDeleteSuccessDesc": "{{name}} সফলভাবে মুছে ফেলা হয়েছে।",
+  "studentDeleteFailedDesc": "ছাত্র মুছতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "studentManagementErrorDeleteSchoolMismatch": "আপনার স্কুলে না থাকা ছাত্রকে মুছে ফেলা যাবে না।"
 }
+

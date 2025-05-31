@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Weka URL mpya ya picha ya mwanafunzi.",
   "studentManagementSaveAvatarButton": "Hifadhi Picha",
   "studentImportTitle": "Ingiza Wanafunzi kutoka CSV",
-  "studentImportDescCsvOnly": "Pakia faili ya CSV. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo'. Kwa picha za wasifu, jumuisha safu ya 'AvatarURL' yenye URL za picha. Excel: 'Hifadhi Kama' CSV.",
+  "studentImportDesc": "Pakia faili ya CSV yenye data ya wanafunzi. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Pakia faili ya CSV yenye data ya wanafunzi. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo'. Kwa picha za wasifu, jumuisha safu ya 'AvatarURL' yenye URL za picha. Watumiaji wa Excel: Tafadhali 'Hifadhi Kama' faili ya CSV.",
   "studentImportFileLabel": "Faili ya CSV",
   "studentImportSelectedFile": "Imechaguliwa:",
   "studentImportProgress": "Maendeleo ya Kuingiza:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "Imeshindwa kupakia takwimu za mfumo.",
   "errorLoadingChartData": "Imeshindwa kupakia data ya mgawanyo wa majukumu ya watumiaji.",
   "errorAuthRequired": "Uthibitishaji unahitajika ili kuona data hii.",
-  "parentNotLinkedToSchool": "Bado haijaunganishwa na shule maalum"
+  "parentNotLinkedToSchool": "Bado haijaunganishwa na shule maalum",
+  "studentDeleteConfirmTitle": "Futa Mwanafunzi?",
+  "studentDeleteConfirmDesc": "Una uhakika unataka kufuta {{name}}?",
+  "studentDeleteConfirmActionUndone": "Kitendo hiki hakiwezi kutenduliwa.",
+  "deleteButtonLabel": "Futa",
+  "studentDeleteSuccessTitle": "Mwanafunzi Amefutwa",
+  "studentDeleteSuccessDesc": "{{name}} amefutwa kwa mafanikio.",
+  "studentDeleteFailedDesc": "Imeshindwa kumfuta mwanafunzi. Tafadhali jaribu tena.",
+  "studentManagementErrorDeleteSchoolMismatch": "Haiwezi kumfuta mwanafunzi ambaye si wa shule yako."
 }
+

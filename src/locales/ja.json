@@ -324,5 +324,14 @@
   "errorLoadingStats": "プラットフォーム統計の読み込みに失敗しました。",
   "errorLoadingChartData": "ユーザー役割分布データの読み込みに失敗しました。",
   "errorAuthRequired": "このデータを表示するには認証が必要です。",
-  "parentNotLinkedToSchool": "まだ特定の学校にリンクされていません"
+  "parentNotLinkedToSchool": "まだ特定の学校にリンクされていません",
+  "studentDeleteConfirmTitle": "生徒を削除しますか？",
+  "studentDeleteConfirmDesc": "本当に{{name}}を削除しますか？",
+  "studentDeleteConfirmActionUndone": "この操作は元に戻せません。",
+  "deleteButtonLabel": "削除",
+  "studentDeleteSuccessTitle": "生徒が削除されました",
+  "studentDeleteSuccessDesc": "{{name}} は正常に削除されました。",
+  "studentDeleteFailedDesc": "生徒の削除に失敗しました。もう一度お試しください。",
+  "studentManagementErrorDeleteSchoolMismatch": "あなたの学校に属していない生徒を削除することはできません。"
 }
+

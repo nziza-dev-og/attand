@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Tẹ URL àwòrán tuntun fún àwòrán akẹ́kọ̀ọ́.",
   "studentManagementSaveAvatarButton": "Fi Àwòrán Pamọ́",
   "studentImportTitle": "Gba Àwọn Akẹ́kọ̀ọ́ Wọlé Láti inú CSV",
-  "studentImportDescCsvOnly": "Gbe faili CSV kan sókè. Ọ̀wọ́ tí ó pọndandan: 'Name'. Àṣàyàn: 'Email', 'StudentInfo'. Fún àwọn àwòrán àpamọ́, fi ọ̀wọ́ 'AvatarURL' kún un pẹ̀lú àwọn URL àwòrán. Excel: 'Fi Pamọ́ Bíi' CSV.",
+  "studentImportDesc": "Gbe faili CSV kan sókè pẹ̀lú dátà akẹ́kọ̀ọ́. Ọ̀wọ́ tí ó pọndandan: 'Name'. Àṣàyàn: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Gbe faili CSV kan sókè pẹ̀lú dátà akẹ́kọ̀ọ́. Ọ̀wọ́ tí ó pọndandan: 'Name'. Àṣàyàn: 'Email', 'StudentInfo'. Fún àwọn àwòrán àpamọ́, fi ọ̀wọ́ 'AvatarURL' kún un pẹ̀lú àwọn URL àwòrán. Excel: 'Fi Pamọ́ Bíi' CSV.",
   "studentImportFileLabel": "Faili CSV",
   "studentImportSelectedFile": "Tí A Yàn:",
   "studentImportProgress": "Ìtẹ̀síwájú Ìgbawọlé:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "Kò lè gba àwọn iṣiro pẹpẹ.",
   "errorLoadingChartData": "Kò lè gba dátà pínpín ipa olùṣe.",
   "errorAuthRequired": "Ìfọwọ́sí jẹ́ dandan láti wo dátà yìí.",
-  "parentNotLinkedToSchool": "Kò tíì sopọ̀ mọ́ ilé-ìwé pàtó kan"
+  "parentNotLinkedToSchool": "Kò tíì sopọ̀ mọ́ ilé-ìwé pàtó kan",
+  "studentDeleteConfirmTitle": "Pa Akẹ́kọ̀ọ́ Rẹ́?",
+  "studentDeleteConfirmDesc": "Ǹjẹ́ o fẹ́ pa {{name}} rẹ́ nítòótọ́?",
+  "studentDeleteConfirmActionUndone": "Iṣẹ́ yìí kò ṣeé yí padà.",
+  "deleteButtonLabel": "Pa Rẹ́",
+  "studentDeleteSuccessTitle": "Akẹ́kọ̀ọ́ Ti Di Pípa Rẹ́",
+  "studentDeleteSuccessDesc": "{{name}} ti di pípa rẹ́ pẹ̀lú àṣeyọrí.",
+  "studentDeleteFailedDesc": "Kò lè pa akẹ́kọ̀ọ́ rẹ́. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.",
+  "studentManagementErrorDeleteSchoolMismatch": "Kò lè pa akẹ́kọ̀ọ́ tí kò sí ní ilé-ìwé rẹ rẹ́."
 }
+

@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Entrez une nouvelle URL d'image pour l'avatar de l'étudiant.",
   "studentManagementSaveAvatarButton": "Enregistrer l'Avatar",
   "studentImportTitle": "Importer des Étudiants depuis un CSV",
-  "studentImportDescCsvOnly": "Téléchargez un fichier CSV. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo'. Pour les photos de profil, incluez une colonne 'AvatarURL' avec les URL des images. Excel : 'Enregistrer sous' CSV.",
+  "studentImportDesc": "Téléchargez un fichier CSV avec les données des étudiants. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Téléchargez un fichier CSV avec les données des étudiants. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo'. Pour les photos de profil, incluez une colonne 'AvatarURL' avec les URL des images. Utilisateurs Excel : Veuillez 'Enregistrer sous' en tant que fichier CSV.",
   "studentImportFileLabel": "Fichier CSV",
   "studentImportSelectedFile": "Sélectionné :",
   "studentImportProgress": "Progression de l'importation :",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "Échec du chargement des statistiques de la plateforme.",
   "errorLoadingChartData": "Échec du chargement des données de répartition des rôles utilisateurs.",
   "errorAuthRequired": "Authentification requise pour afficher ces données.",
-  "parentNotLinkedToSchool": "Pas encore lié à une école spécifique"
+  "parentNotLinkedToSchool": "Pas encore lié à une école spécifique",
+  "studentDeleteConfirmTitle": "Supprimer l'Étudiant ?",
+  "studentDeleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer {{name}} ?",
+  "studentDeleteConfirmActionUndone": "Cette action ne peut pas être annulée.",
+  "deleteButtonLabel": "Supprimer",
+  "studentDeleteSuccessTitle": "Étudiant Supprimé",
+  "studentDeleteSuccessDesc": "{{name}} a été supprimé avec succès.",
+  "studentDeleteFailedDesc": "Échec de la suppression de l'étudiant. Veuillez réessayer.",
+  "studentManagementErrorDeleteSchoolMismatch": "Impossible de supprimer un étudiant qui n'appartient pas à votre école."
 }
+

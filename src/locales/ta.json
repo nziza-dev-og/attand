@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "மாணவரின் சுயவிவரப் படத்திற்கான புதிய பட URL ஐ உள்ளிடவும்.",
   "studentManagementSaveAvatarButton": "சுயவிவரப் படத்தை சேமி",
   "studentImportTitle": "CSV இலிருந்து மாணவர்களை இறக்குமதி செய்",
-  "studentImportDescCsvOnly": "ஒரு CSV கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு: 'Email', 'StudentInfo'. சுயவிவரப் படங்களுக்கு, பட URL களுடன் 'AvatarURL' என்ற நெடுவரிசையைச் சேர்க்கவும். Excel: 'Save As' CSV.",
+  "studentImportDesc": "மாணவர் தரவுகளுடன் ஒரு CSV கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு நெடுவரிசைகள்: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "மாணவர் தரவுகளுடன் ஒரு CSV கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு: 'Email', 'StudentInfo'. சுயவிவரப் படங்களுக்கு, பட URL களுடன் 'AvatarURL' என்ற நெடுவரிசையைச் சேர்க்கவும். Excel பயனர்கள்: தயவுசெய்து CSV கோப்பாக 'Save As' செய்யவும்.",
   "studentImportFileLabel": "CSV கோப்பு",
   "studentImportSelectedFile": "தேர்ந்தெடுக்கப்பட்டது:",
   "studentImportProgress": "இறக்குமதி முன்னேற்றம்:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "தளத்தின் புள்ளிவிவரங்களை ஏற்றுவதில் தோல்வி.",
   "errorLoadingChartData": "பயனர் பாத்திரப் பகிர்வு தரவை ஏற்றுவதில் தோல்வி.",
   "errorAuthRequired": "இந்தத் தரவைக் காண அங்கீகாரம் தேவை.",
-  "parentNotLinkedToSchool": "இன்னும் குறிப்பிட்ட பள்ளியுடன் இணைக்கப்படவில்லை"
+  "parentNotLinkedToSchool": "இன்னும் குறிப்பிட்ட பள்ளியுடன் இணைக்கப்படவில்லை",
+  "studentDeleteConfirmTitle": "மாணவரை நீக்கவா?",
+  "studentDeleteConfirmDesc": "நீங்கள் {{name}} ஐ நீக்க விரும்புகிறீர்களா?",
+  "studentDeleteConfirmActionUndone": "இந்தச் செயலை செயல்தவிர்க்க முடியாது.",
+  "deleteButtonLabel": "நீக்கு",
+  "studentDeleteSuccessTitle": "மாணவர் நீக்கப்பட்டார்",
+  "studentDeleteSuccessDesc": "{{name}} வெற்றிகரமாக நீக்கப்பட்டார்.",
+  "studentDeleteFailedDesc": "மாணவரை நீக்குவதில் தோல்வி. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+  "studentManagementErrorDeleteSchoolMismatch": "உங்கள் பள்ளிக்குச் சொந்தமில்லாத மாணவரை நீக்க முடியாது."
 }
+

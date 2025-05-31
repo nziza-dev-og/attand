@@ -4,13 +4,14 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion, getDoc, deleteDoc, arrayRemove, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,10 +19,10 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload } from "lucide-react";
-import type { Student, UserProfile, Class } from "@/lib/types";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2 } from "lucide-react";
+import type { Student, UserProfile, Class, Parent } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StudentImportDialog } from "./_components/StudentImportDialog"; // Import the new component
+import { StudentImportDialog } from "./_components/StudentImportDialog"; 
 import { useLanguage } from "@/contexts/LanguageContext";
 
 
@@ -59,9 +60,11 @@ export default function ManageStudentsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditAvatarDialogOpen, setIsEditAvatarDialogOpen] = useState(false);
   const [currentEditingStudent, setCurrentEditingStudent] = useState<StudentDisplay | null>(null);
+  const [studentToDelete, setStudentToDelete] = useState<StudentDisplay | null>(null);
+  const [isDeletingStudent, setIsDeletingStudent] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); // State for import dialog
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); 
 
 
   const { toast } = useToast();
@@ -219,6 +222,62 @@ export default function ManageStudentsPage() {
     }
   };
 
+  const handleDeleteStudent = async () => {
+    if (!studentToDelete || !adminSchoolId) return;
+    if (studentToDelete.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentManagementErrorDeleteSchoolMismatch") });
+        setStudentToDelete(null);
+        return;
+    }
+
+    setIsDeletingStudent(true);
+    try {
+        const studentDocRef = doc(db, "users", studentToDelete.id);
+        const studentDocSnap = await getDoc(studentDocRef); // Re-fetch to get latest classIds/parentIds
+        if (!studentDocSnap.exists()) {
+            throw new Error("Student document not found.");
+        }
+        const studentData = studentDocSnap.data() as Student;
+
+        const batch = writeBatch(db);
+        batch.delete(studentDocRef);
+
+        // Remove student from classes
+        if (studentData.classIds && studentData.classIds.length > 0) {
+            for (const classId of studentData.classIds) {
+                const classRef = doc(db, "classes", classId);
+                // Ensure class belongs to the same school before updating
+                const classSnap = await getDoc(classRef);
+                if (classSnap.exists() && classSnap.data()?.schoolId === adminSchoolId) {
+                    batch.update(classRef, { studentIds: arrayRemove(studentToDelete.id) });
+                }
+            }
+        }
+
+        // Remove student from parents' childIds
+        if (studentData.parentIds && studentData.parentIds.length > 0) {
+            for (const parentId of studentData.parentIds) {
+                const parentRef = doc(db, "users", parentId);
+                // No schoolId check needed for parents here, just remove child link
+                batch.update(parentRef, { childIds: arrayRemove(studentToDelete.id) });
+            }
+        }
+        
+        await batch.commit();
+
+        toast({ title: translate("studentDeleteSuccessTitle"), description: translate("studentDeleteSuccessDesc", { name: studentToDelete.name }) });
+        fetchStudents();
+    } catch (err: any)
+     {
+        console.error("Error deleting student:", err);
+        toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentDeleteFailedDesc") });
+    } finally {
+        setIsDeletingStudent(false);
+        setStudentToDelete(null);
+    }
+  };
+
+
   if (authLoading) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
@@ -366,7 +425,30 @@ export default function ManageStudentsPage() {
                          <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                             <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton") || "Edit Avatar"}
                          </Button>
-                         {/* <Button variant="ghost" size="sm" disabled>Edit Details</Button> */}
+                         <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm" onClick={() => setStudentToDelete(student)} className="gap-1">
+                                    <Trash2 className="h-3 w-3" /> {translate("deleteButtonLabel") || "Delete"}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>{translate("studentDeleteConfirmTitle")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {translate("studentDeleteConfirmDesc", { name: studentToDelete?.name || "this student"})}
+                                    {" "}
+                                    {translate("studentDeleteConfirmActionUndone")}
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translate("cancelButton")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeletingStudent}>
+                                    {isDeletingStudent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {translate("deleteButtonLabel")}
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </TableRow>
                   ))
@@ -389,12 +471,11 @@ export default function ManageStudentsPage() {
         onOpenChange={setIsImportDialogOpen}
         adminSchoolId={adminSchoolId}
         onImportSuccess={() => {
-            fetchStudents(); // Refresh student list after import
+            fetchStudents(); 
             setIsImportDialogOpen(false);
         }}
     />
 
-    {/* Edit Avatar Dialog */}
     <Dialog open={isEditAvatarDialogOpen} onOpenChange={(open) => {
         setIsEditAvatarDialogOpen(open);
         if (!open) {
@@ -440,3 +521,4 @@ export default function ManageStudentsPage() {
     </>
   );
 }
+

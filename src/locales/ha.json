@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Shigar da sabon URL na hoto don hoton ɗalibi.",
   "studentManagementSaveAvatarButton": "Adana Hoto",
   "studentImportTitle": "Shigo da Dalibai daga CSV",
-  "studentImportDescCsvOnly": "Loda fayil na CSV. Ginshiƙin da ake buƙata: 'Name'. Zaɓi: 'Email', 'StudentInfo'. Don hotunan bayanan mutum, haɗa da ginshiƙin 'AvatarURL' tare da URL na hotuna. Excel: 'Adana A Matsayin' CSV.",
+  "studentImportDesc": "Loda fayil na CSV tare da bayanan ɗalibai. Ginshiƙin da ake buƙata: 'Name'. Zaɓi: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Loda fayil na CSV tare da bayanan ɗalibai. Ginshiƙin da ake buƙata: 'Name'. Zaɓi: 'Email', 'StudentInfo'. Don hotunan bayanan mutum, haɗa da ginshiƙin 'AvatarURL' tare da URL na hotuna. Masu amfani da Excel: Da fatan za a 'Adana A Matsayin' fayil na CSV.",
   "studentImportFileLabel": "Fayil na CSV",
   "studentImportSelectedFile": "An Zaɓa:",
   "studentImportProgress": "Ci Gaban Shigowa:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "An kasa loda kididdigar dandalin.",
   "errorLoadingChartData": "An kasa loda bayanan rarraba matsayin masu amfani.",
   "errorAuthRequired": "Ana buƙatar tabbatarwa don duba wannan bayanan.",
-  "parentNotLinkedToSchool": "Ba a haɗa shi da takamaiman makaranta ba tukuna"
+  "parentNotLinkedToSchool": "Ba a haɗa shi da takamaiman makaranta ba tukuna",
+  "studentDeleteConfirmTitle": "Goge Dalibi?",
+  "studentDeleteConfirmDesc": "Shin ka tabbata kana son goge {{name}}?",
+  "studentDeleteConfirmActionUndone": "Ba za a iya mayar da wannan aikin baya ba.",
+  "deleteButtonLabel": "Goge",
+  "studentDeleteSuccessTitle": "An Goge Dalibi",
+  "studentDeleteSuccessDesc": "An goge {{name}} cikin nasara.",
+  "studentDeleteFailedDesc": "An kasa goge ɗalibi. Da fatan za a sake gwadawa.",
+  "studentManagementErrorDeleteSchoolMismatch": "Ba za a iya goge ɗalibin da baya cikin makarantar ka ba."
 }
+

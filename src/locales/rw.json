@@ -302,7 +302,8 @@
   "studentManagementEditAvatarDialogDesc": "Andika URL nshya y'ifoto y'umunyeshuri.",
   "studentManagementSaveAvatarButton": "Bika Ifoto",
   "studentImportTitle": "Tora Abanyeshuri muri CSV",
-  "studentImportDescCsvOnly": "Tora dosiye ya CSV. Inkingi ikenewe: 'Name'. Izindi zishobora kongerwaho: 'Email', 'StudentInfo'. Ku mafoto ya porofayili, shyiramo inkingi ya 'AvatarURL' irimo URL z'amafoto. Excel: 'Bika Nka' CSV.",
+  "studentImportDesc": "Tora dosiye ya CSV irimo amakuru y'abanyeshuri. Inkingi ikenewe: 'Name'. Izindi zishobora kongerwaho: 'Email', 'StudentInfo', 'AvatarURL'.",
+  "studentImportDescCsvOnly": "Tora dosiye ya CSV irimo amakuru y'abanyeshuri. Inkingi ikenewe: 'Name'. Izindi zishobora kongerwaho: 'Email', 'StudentInfo'. Ku mafoto ya porofayili, shyiramo inkingi ya 'AvatarURL' irimo URL z'amafoto. Excel: 'Bika Nka' CSV.",
   "studentImportFileLabel": "Dosiye ya CSV",
   "studentImportSelectedFile": "Yahiswemo:",
   "studentImportProgress": "Iterambere ryo Gutora:",
@@ -323,5 +324,14 @@
   "errorLoadingStats": "Kunanirwa gutwara imibare ya sisitemu.",
   "errorLoadingChartData": "Kunanirwa gutwara amakuru y'ikigabanyo cy'inshingano z'abakoresha.",
   "errorAuthRequired": "Ukwemezwa birakenewe kugira ngo urebe aya makuru.",
-  "parentNotLinkedToSchool": "Ntaho ahuriye n'ishuri ryihariye"
+  "parentNotLinkedToSchool": "Ntaho ahuriye n'ishuri ryihariye",
+  "studentDeleteConfirmTitle": "Gusiba Umunyeshuri?",
+  "studentDeleteConfirmDesc": "Uremeza ko ushaka gusiba {{name}}?",
+  "studentDeleteConfirmActionUndone": "Iki gikorwa ntigishobora guhindurwa.",
+  "deleteButtonLabel": "Siba",
+  "studentDeleteSuccessTitle": "Umunyeshuri Yasibwe",
+  "studentDeleteSuccessDesc": "{{name}} yasibwe neza.",
+  "studentDeleteFailedDesc": "Kunanirwa gusiba umunyeshuri. Nyamuneka gerageza nanone.",
+  "studentManagementErrorDeleteSchoolMismatch": "Ntushobora gusiba umunyeshuri utari mu ishuri ryawe."
 }
+

@@ -324,5 +324,14 @@
   "errorLoadingStats": "加载平台统计数据失败。",
   "errorLoadingChartData": "加载用户角色分布数据失败。",
   "errorAuthRequired": "查看此数据需要身份验证。",
-  "parentNotLinkedToSchool": "尚未链接到特定学校"
+  "parentNotLinkedToSchool": "尚未链接到特定学校",
+  "studentDeleteConfirmTitle": "删除学生？",
+  "studentDeleteConfirmDesc": "您确定要删除 {{name}} 吗？",
+  "studentDeleteConfirmActionUndone": "此操作无法撤销。",
+  "deleteButtonLabel": "删除",
+  "studentDeleteSuccessTitle": "学生已删除",
+  "studentDeleteSuccessDesc": "{{name}} 已成功删除。",
+  "studentDeleteFailedDesc": "删除学生失败。请重试。",
+  "studentManagementErrorDeleteSchoolMismatch": "不能删除不属于您学校的学生。"
 }
+

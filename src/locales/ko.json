@@ -324,5 +324,14 @@
   "errorLoadingStats": "플랫폼 통계 로드 실패.",
   "errorLoadingChartData": "사용자 역할 분포 데이터 로드 실패.",
   "errorAuthRequired": "이 데이터를 보려면 인증이 필요합니다.",
-  "parentNotLinkedToSchool": "아직 특정 학교에 연결되지 않았습니다"
+  "parentNotLinkedToSchool": "아직 특정 학교에 연결되지 않았습니다",
+  "studentDeleteConfirmTitle": "학생을 삭제하시겠습니까?",
+  "studentDeleteConfirmDesc": "{{name}} 학생을 정말로 삭제하시겠습니까?",
+  "studentDeleteConfirmActionUndone": "이 작업은 되돌릴 수 없습니다.",
+  "deleteButtonLabel": "삭제",
+  "studentDeleteSuccessTitle": "학생 삭제됨",
+  "studentDeleteSuccessDesc": "{{name}} 학생이 성공적으로 삭제되었습니다.",
+  "studentDeleteFailedDesc": "학생 삭제에 실패했습니다. 다시 시도하십시오.",
+  "studentManagementErrorDeleteSchoolMismatch": "학교에 속하지 않은 학생은 삭제할 수 없습니다."
 }
+
