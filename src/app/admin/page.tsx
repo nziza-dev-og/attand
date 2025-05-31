@@ -2,7 +2,7 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit } from "lucide-react"; 
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building } from "lucide-react"; 
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -32,8 +32,6 @@ async function getCollectionCountForSchool(collectionName: string, schoolId: str
        if (collectionName === 'users') {
             conditions.push(where("role", "==", role));
        } else {
-            // For collections like 'classes', role filtering is not standard unless 'role' exists there.
-            // If 'role' exists on 'classes', this would work. Otherwise, this role filter is ignored for non-'users' collections.
             console.warn(`Role filtering on non-'users' collection '${collectionName}'. Ensure 'role' field exists or remove filter.`);
             conditions.push(where("role", "==", role));
        }
@@ -93,6 +91,10 @@ export default function AdminDashboard() {
   const [schoolCodeInput, setSchoolCodeInput] = useState<string>("");
   const [isSavingCode, setIsSavingCode] = useState(false);
 
+  const [adminSchoolName, setAdminSchoolName] = useState<string>("");
+  const [schoolNameInput, setSchoolNameInput] = useState<string>("");
+  const [isSavingSchoolName, setIsSavingSchoolName] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,12 +118,12 @@ export default function AdminDashboard() {
     if (!authLoading && adminSchoolId) {
         fetchData();
     } else if (!authLoading && !adminSchoolId) {
-        setLoadingStats(false); // No schoolId, stop loading stats
+        setLoadingStats(false); 
     }
   }, [authLoading, adminSchoolId]);
 
   useEffect(() => {
-    const fetchAdminProfileAndCode = async () => {
+    const fetchAdminProfileAndSettings = async () => {
       if (authUser) {
         setLoadingProfile(true);
         try {
@@ -134,11 +136,12 @@ export default function AdminDashboard() {
             setNewAvatarUrlInput(userData.avatarUrl || authUser.photoURL || "");
             setSchoolIdentifierCode(userData.schoolIdentifierCode || "");
             setSchoolCodeInput(userData.schoolIdentifierCode || "");
+            setAdminSchoolName(userData.schoolName || "");
+            setSchoolNameInput(userData.schoolName || "");
           } else {
              setAdminName(authUser.displayName || "Admin");
              setAdminAvatarUrl(authUser.photoURL || "");
              setNewAvatarUrlInput(authUser.photoURL || "");
-             // If admin doc doesn't exist, create it
              await setDoc(doc(db, 'users', authUser.uid), { 
                name: authUser.displayName || "Admin",
                email: authUser.email,
@@ -146,13 +149,16 @@ export default function AdminDashboard() {
                createdAt: Timestamp.now(),
                avatarUrl: authUser.photoURL || "",
                schoolIdentifierCode: "", 
-               schoolId: authUser.uid, // Set schoolId to admin's own UID
+               schoolName: "",
+               schoolId: authUser.uid, 
              }, { merge: true });
              setSchoolIdentifierCode("");
              setSchoolCodeInput("");
+             setAdminSchoolName("");
+             setSchoolNameInput("");
           }
         } catch (error) {
-          console.error("Error fetching admin profile/code:", error);
+          console.error("Error fetching admin profile/settings:", error);
           toast({ variant: "destructive", title: translate('errorTitle'), description: translate('profileLoadFailed') });
         } finally {
           setLoadingProfile(false);
@@ -161,7 +167,7 @@ export default function AdminDashboard() {
         setLoadingProfile(false);
       }
     };
-    fetchAdminProfileAndCode();
+    fetchAdminProfileAndSettings();
   }, [authUser, authLoading, toast, translate]);
 
   const handleUpdateAdminAvatar = async () => {
@@ -216,6 +222,27 @@ export default function AdminDashboard() {
       setIsSavingCode(false);
     }
   };
+
+  const handleSaveSchoolName = async () => {
+    if (!authUser) return;
+    if (!schoolNameInput.trim()) {
+      toast({ variant: "destructive", title: translate('schoolNameEmptyTitle'), description: translate('schoolNameEmptyDesc') });
+      return;
+    }
+    setIsSavingSchoolName(true);
+    try {
+      const userDocRef = doc(db, 'users', authUser.uid);
+      await updateDoc(userDocRef, { schoolName: schoolNameInput.trim() });
+      setAdminSchoolName(schoolNameInput.trim());
+      toast({ title: translate('schoolNameSavedTitle'), description: translate('schoolNameSavedDesc') });
+    } catch (error) {
+      console.error("Error saving school name:", error);
+      toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolNameSaveFailed') });
+    } finally {
+      setIsSavingSchoolName(false);
+    }
+  };
+
 
   const handleCopyCode = () => {
     if (schoolIdentifierCode) {
@@ -301,12 +328,35 @@ export default function AdminDashboard() {
       
       <Card className="md:col-span-2 lg:col-span-4">
          <CardHeader>
-             <CardTitle>{translate('welcomeAdminTitle') || 'Welcome, Admin!'}</CardTitle>
+             <CardTitle>{translate('welcomeAdminTitle') || 'Welcome, Admin!'}{adminSchoolName ? ` - ${adminSchoolName}` : ''}</CardTitle>
              <CardDescription>{translate('adminDashboardDescription') || "Use the sidebar to manage classes, students, teachers, parents, assignments, and view reports."}</CardDescription>
          </CardHeader>
          <CardContent>
              <p>{translate('adminDashboardHubMessage') || "This is your central hub for managing AttendEase."}</p>
          </CardContent>
+      </Card>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Building className="h-5 w-5" /> {translate('schoolNameTitle')}</CardTitle>
+          <CardDescription>{translate('adminSchoolNameDesc')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+           <Label htmlFor="schoolNameInput" className="text-sm font-medium">{translate('setSchoolNameLabel')}</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="schoolNameInput"
+                value={schoolNameInput}
+                onChange={(e) => setSchoolNameInput(e.target.value)}
+                placeholder={translate('enterSchoolNamePlaceholder')}
+                className="flex-1"
+              />
+              <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !authUser}>
+                {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {translate('saveSchoolNameButton')}
+              </Button>
+            </div>
+        </CardContent>
       </Card>
 
       <Card>
@@ -345,7 +395,6 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Admin Profile Picture Update Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> Your Profile</CardTitle>

@@ -10,6 +10,7 @@ export interface UserProfile {
   email: string;
   role: Role;
   name?: string; // Optional: User's display name
+  schoolName?: string; // Optional: For Admins to name their school
   createdAt: Timestamp;
   avatarUrl?: string;
   schoolIdentifierCode?: string; // For Admins to set their school's code
