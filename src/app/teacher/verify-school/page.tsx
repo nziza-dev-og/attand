@@ -100,8 +100,6 @@ export default function VerifySchoolPage() {
           setIsAccountLocked(true);
           setError(translate('accountLockedError'));
           toast({ variant: "destructive", title: translate('accountLockedTitle'), description: translate('accountLockedError') });
-          // Conceptual: Notify admin about locked account
-          // console.log("Backend Task: Notify admin that teacher", user.email, "locked their account trying to verify school code:", schoolCode.trim());
         } else {
           setError(translate('invalidSchoolCodeAttemptsError', { attempts: newAttemptsLeft.toString() }));
           toast({ variant: "destructive", title: translate('verificationFailedTitle'), description: translate('invalidSchoolCodeAttemptsError', { attempts: newAttemptsLeft.toString() }) });
@@ -111,11 +109,13 @@ export default function VerifySchoolPage() {
       }
 
       // Code is correct
+      const matchingAdmin = adminSnap.docs[0]; // There should ideally be only one admin with this code
       await updateDoc(teacherDocRef, {
         enteredSchoolCode: schoolCode.trim(),
         isSchoolCodeVerified: true,
-        isSchoolCodeLocked: false, // Unlock if it was locked
-        schoolCodeVerificationAttempts: MAX_VERIFICATION_ATTEMPTS // Reset attempts
+        isSchoolCodeLocked: false, 
+        schoolCodeVerificationAttempts: MAX_VERIFICATION_ATTEMPTS,
+        schoolId: matchingAdmin.id, // Store the Admin's UID as the teacher's schoolId
       });
 
       toast({ title: translate('schoolCodeVerifiedTitle'), description: translate('redirectingToDashboardDesc') });

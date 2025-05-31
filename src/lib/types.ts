@@ -15,9 +15,12 @@ export interface UserProfile {
   schoolIdentifierCode?: string; // For Admins to set their school's code
   enteredSchoolCode?: string; // For Teachers to enter when signing up
   isSchoolCodeVerified?: boolean; // Tracks if teacher's school code is validated
-  assignedClassIds?: string[];
+  assignedClassIds?: string[]; // For Teachers: IDs of classes they are assigned to
   schoolCodeVerificationAttempts?: number; // Number of attempts left for school code verification
   isSchoolCodeLocked?: boolean; // If true, teacher's school code verification is locked
+  schoolId?: string; // UID of the Admin whose school this user belongs to (Admin's own UID for Admins)
+  // For Students, this is the schoolId they are enrolled in.
+  // For Teachers, this is the schoolId they are verified with.
 }
 
 export interface Class {
@@ -28,21 +31,21 @@ export interface Class {
   schedule?: string; // e.g., "Mon, Wed 9:00 AM - 10:30 AM"
   teacherId?: string; // UID of the assigned teacher
   studentIds?: string[]; // Array of UIDs of students in the class
+  schoolId: string; // UID of the Admin/School this class belongs to
+  createdAt: Timestamp; // When the class was created
 }
 
-export interface Student {
-  id: string; // Firestore document ID (usually same as user UID if students log in)
-  name: string;
+export interface Student extends UserProfile {
+  role: 'Student';
   studentInfo?: string; // e.g., Roll number, Admission ID
   classIds?: string[]; // IDs of classes the student is enrolled in
   parentIds?: string[]; // UIDs of linked parents
-  avatarUrl?: string; // Optional profile picture URL
+  // schoolId is inherited from UserProfile
 }
 
 export interface Teacher extends UserProfile {
     role: 'Teacher';
-    // `enteredSchoolCode` and `isSchoolCodeVerified` are inherited from UserProfile
-    // `schoolCodeVerificationAttempts` and `isSchoolCodeLocked` are inherited
+    // schoolId, enteredSchoolCode, isSchoolCodeVerified, schoolCodeVerificationAttempts, isSchoolCodeLocked are inherited
 }
 
 export interface ParentNotificationPreferences {
@@ -55,6 +58,7 @@ export interface Parent extends UserProfile {
     role: 'Parent';
     childIds?: string[];
     notificationPreferences?: ParentNotificationPreferences;
+    // schoolId is not directly on Parent, linkage is through children's schoolId
 }
 
 
@@ -69,6 +73,7 @@ export interface AttendanceRecord {
   markedBy: string; // Teacher's UID
   timestamp: Timestamp; // Firestore timestamp when marked
   notes?: string; // Optional notes from the teacher
+  schoolId: string; // schoolId of the school this record belongs to
 }
 
 export type BehaviorReportSeverity = 'Minor' | 'Moderate' | 'Severe';
@@ -96,4 +101,5 @@ export interface BehaviorReport {
   parentNotifiedAt?: Timestamp; // Optional: When parent was "notified"
   seenByParentIds?: string[]; // Optional: if tracking individual parent views
   parentResponses?: ParentResponse[];
+  schoolId: string; // schoolId of the school this report belongs to
 }

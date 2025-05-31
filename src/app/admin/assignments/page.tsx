@@ -1,3 +1,4 @@
+
 // src/app/admin/assignments/page.tsx
 "use client";
 
@@ -5,6 +6,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { collection, getDocs, query, where, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,6 +21,7 @@ import type { Teacher, Parent, Student, Class } from "@/lib/types";
 type SelectItemType = { id: string; name: string; };
 
 export default function AssignmentsPage() {
+  const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const [teachers, setTeachers] = useState<SelectItemType[]>([]);
   const [parents, setParents] = useState<SelectItemType[]>([]);
   const [students, setStudents] = useState<SelectItemType[]>([]);
@@ -31,26 +34,37 @@ export default function AssignmentsPage() {
   const [selectedParent, setSelectedParent] = useState<string>('');
   const [selectedStudentForParent, setSelectedStudentForParent] = useState<string>('');
   
-  // For multi-student assignment
   const [selectedStudentsForClass, setSelectedStudentsForClass] = useState<string[]>([]);
   const [selectedClassForStudent, setSelectedClassForStudent] = useState<string>('');
-
 
   const [isSubmittingTeacher, setIsSubmittingTeacher] = useState(false);
   const [isSubmittingParent, setIsSubmittingParent] = useState(false);
   const [isSubmittingStudentToClass, setIsSubmittingStudentToClass] = useState(false);
 
-
   const { toast } = useToast();
 
-  const fetchData = async (collectionName: string, role: 'Teacher' | 'Parent' | 'Student' | null, setData: React.Dispatch<React.SetStateAction<SelectItemType[]>>, loadingKey: keyof typeof loading) => {
+  const fetchData = async (
+    collectionName: string, 
+    role: 'Teacher' | 'Parent' | 'Student' | null, 
+    setData: React.Dispatch<React.SetStateAction<SelectItemType[]>>, 
+    loadingKey: keyof typeof loading
+  ) => {
+    if (!adminSchoolId && collectionName !== 'users' && role !== 'Parent') { // Parents are global for now
+        setLoading(prev => ({ ...prev, [loadingKey]: false }));
+        setError(`Admin school ID missing, cannot load ${collectionName}.`);
+        return;
+    }
     setLoading(prev => ({ ...prev, [loadingKey]: true }));
     try {
       let q;
-      if (role) {
-        q = query(collection(db, "users"), where("role", "==", role));
-      } else {
-        q = query(collection(db, collectionName));
+      if (role) { // Teachers and Students are school-specific
+        if (role === 'Parent') { // Parents are currently fetched globally
+            q = query(collection(db, "users"), where("role", "==", role));
+        } else {
+            q = query(collection(db, "users"), where("role", "==", role), where("schoolId", "==", adminSchoolId));
+        }
+      } else { // Classes are school-specific
+        q = query(collection(db, collectionName), where("schoolId", "==", adminSchoolId));
       }
       const querySnapshot = await getDocs(q);
       const items = querySnapshot.docs.map(doc => ({
@@ -68,19 +82,33 @@ export default function AssignmentsPage() {
   };
 
   useEffect(() => {
-    fetchData("users", "Teacher", setTeachers, 'teachers');
-    fetchData("users", "Parent", setParents, 'parents');
-    fetchData("users", "Student", setStudents, 'students');
-    fetchData("classes", null, setClasses, 'classes');
-  }, []);
+    if (authLoading || (!adminSchoolId && !authUser) ) return; // Wait for auth and schoolId
+    
+    // Only fetch if adminSchoolId is present for school-specific data
+    if (adminSchoolId) {
+        fetchData("users", "Teacher", setTeachers, 'teachers');
+        fetchData("users", "Student", setStudents, 'students');
+        fetchData("classes", null, setClasses, 'classes');
+    }
+    fetchData("users", "Parent", setParents, 'parents'); // Parents are global for now
+  }, [adminSchoolId, authLoading, authUser]);
 
   const handleAssignTeacherToClass = async () => {
-    if (!selectedTeacher || !selectedClassForTeacher) {
-      toast({ variant: "destructive", title: "Error", description: "Please select both a teacher and a class." });
+    if (!selectedTeacher || !selectedClassForTeacher || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select teacher, class, and ensure admin context." });
       return;
     }
     setIsSubmittingTeacher(true);
     try {
+      // Verify teacher and class belong to the admin's school
+      const teacherDoc = await getDoc(doc(db, "users", selectedTeacher));
+      const classDoc = await getDoc(doc(db, "classes", selectedClassForTeacher));
+      if (!teacherDoc.exists() || teacherDoc.data()?.schoolId !== adminSchoolId || !classDoc.exists() || classDoc.data()?.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Teacher or class not found or does not belong to your school." });
+        setIsSubmittingTeacher(false);
+        return;
+      }
+
       const classRef = doc(db, "classes", selectedClassForTeacher);
       await updateDoc(classRef, { teacherId: selectedTeacher });
       const teacherRef = doc(db, "users", selectedTeacher);
@@ -95,12 +123,20 @@ export default function AssignmentsPage() {
   };
 
   const handleUnassignTeacherFromClass = async () => {
-    if (!selectedTeacher || !selectedClassForTeacher) {
-      toast({ variant: "destructive", title: "Error", description: "Please select both a teacher and a class to unassign." });
+     if (!selectedTeacher || !selectedClassForTeacher || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select teacher, class, and ensure admin context." });
       return;
     }
     setIsSubmittingTeacher(true);
     try {
+      const teacherDoc = await getDoc(doc(db, "users", selectedTeacher));
+      const classDoc = await getDoc(doc(db, "classes", selectedClassForTeacher));
+      if (!teacherDoc.exists() || teacherDoc.data()?.schoolId !== adminSchoolId || !classDoc.exists() || classDoc.data()?.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Teacher or class not found or does not belong to your school." });
+        setIsSubmittingTeacher(false);
+        return;
+      }
+
       const classRef = doc(db, "classes", selectedClassForTeacher);
       await updateDoc(classRef, { teacherId: null });
       const teacherRef = doc(db, "users", selectedTeacher);
@@ -115,12 +151,20 @@ export default function AssignmentsPage() {
   };
 
   const handleLinkParentToStudent = async () => {
-    if (!selectedParent || !selectedStudentForParent) {
-      toast({ variant: "destructive", title: "Error", description: "Please select both a parent and a student." });
+    if (!selectedParent || !selectedStudentForParent || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select parent, student, and ensure admin context." });
       return;
     }
     setIsSubmittingParent(true);
     try {
+      // Verify student belongs to the admin's school
+      const studentDoc = await getDoc(doc(db, "users", selectedStudentForParent));
+      if (!studentDoc.exists() || studentDoc.data()?.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Student not found or does not belong to your school." });
+        setIsSubmittingParent(false);
+        return;
+      }
+
       const parentRef = doc(db, "users", selectedParent);
       await updateDoc(parentRef, { childIds: arrayUnion(selectedStudentForParent) });
       const studentRef = doc(db, "users", selectedStudentForParent);
@@ -135,12 +179,19 @@ export default function AssignmentsPage() {
   };
 
   const handleUnlinkParentFromStudent = async () => {
-    if (!selectedParent || !selectedStudentForParent) {
-      toast({ variant: "destructive", title: "Error", description: "Please select both a parent and a student to unlink." });
+    if (!selectedParent || !selectedStudentForParent || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select parent, student, and ensure admin context." });
       return;
     }
     setIsSubmittingParent(true);
     try {
+       const studentDoc = await getDoc(doc(db, "users", selectedStudentForParent));
+       if (!studentDoc.exists() || studentDoc.data()?.schoolId !== adminSchoolId) {
+         toast({ variant: "destructive", title: "Error", description: "Student not found or does not belong to your school." });
+         setIsSubmittingParent(false);
+         return;
+       }
+
       const parentRef = doc(db, "users", selectedParent);
       await updateDoc(parentRef, { childIds: arrayRemove(selectedStudentForParent) });
       const studentRef = doc(db, "users", selectedStudentForParent);
@@ -155,12 +206,30 @@ export default function AssignmentsPage() {
   };
 
   const handleAssignStudentToClass = async () => {
-    if (selectedStudentsForClass.length === 0 || !selectedClassForStudent) {
-      toast({ variant: "destructive", title: "Error", description: "Please select at least one student and a class." });
+    if (selectedStudentsForClass.length === 0 || !selectedClassForStudent || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select student(s), class, and ensure admin context." });
       return;
     }
     setIsSubmittingStudentToClass(true);
     try {
+      // Verify class belongs to the admin's school
+      const classDoc = await getDoc(doc(db, "classes", selectedClassForStudent));
+      if (!classDoc.exists() || classDoc.data()?.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Class not found or does not belong to your school." });
+        setIsSubmittingStudentToClass(false);
+        return;
+      }
+      
+      // Verify all students belong to the admin's school
+      for (const studentId of selectedStudentsForClass) {
+        const studentDoc = await getDoc(doc(db, "users", studentId));
+        if (!studentDoc.exists() || studentDoc.data()?.schoolId !== adminSchoolId) {
+          toast({ variant: "destructive", title: "Error", description: `Student ${studentId} not found or does not belong to your school.` });
+          setIsSubmittingStudentToClass(false);
+          return;
+        }
+      }
+
       const classRef = doc(db, "classes", selectedClassForStudent);
       await updateDoc(classRef, { studentIds: arrayUnion(...selectedStudentsForClass) });
 
@@ -171,7 +240,7 @@ export default function AssignmentsPage() {
       await Promise.all(studentUpdatePromises);
 
       toast({ title: "Success", description: "Selected students assigned to class successfully." });
-      setSelectedStudentsForClass([]); // Reset selection
+      setSelectedStudentsForClass([]); 
     } catch (err) {
       console.error("Error assigning student to class:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to assign student(s) to class." });
@@ -181,12 +250,27 @@ export default function AssignmentsPage() {
   };
 
   const handleUnassignStudentFromClass = async () => {
-    if (selectedStudentsForClass.length === 0 || !selectedClassForStudent) {
-      toast({ variant: "destructive", title: "Error", description: "Please select at least one student and a class to unassign." });
+    if (selectedStudentsForClass.length === 0 || !selectedClassForStudent || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Please select student(s), class, and ensure admin context." });
       return;
     }
     setIsSubmittingStudentToClass(true);
     try {
+      const classDoc = await getDoc(doc(db, "classes", selectedClassForStudent));
+      if (!classDoc.exists() || classDoc.data()?.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Class not found or does not belong to your school." });
+        setIsSubmittingStudentToClass(false);
+        return;
+      }
+       for (const studentId of selectedStudentsForClass) {
+        const studentDoc = await getDoc(doc(db, "users", studentId));
+        if (!studentDoc.exists() || studentDoc.data()?.schoolId !== adminSchoolId) {
+          toast({ variant: "destructive", title: "Error", description: `Student ${studentId} not found or does not belong to your school.` });
+          setIsSubmittingStudentToClass(false);
+          return;
+        }
+      }
+
       const classRef = doc(db, "classes", selectedClassForStudent);
       await updateDoc(classRef, { studentIds: arrayRemove(...selectedStudentsForClass) });
 
@@ -197,7 +281,7 @@ export default function AssignmentsPage() {
       await Promise.all(studentUpdatePromises);
 
       toast({ title: "Success", description: "Selected students unassigned from class successfully." });
-      setSelectedStudentsForClass([]); // Reset selection
+      setSelectedStudentsForClass([]); 
     } catch (err) {
       console.error("Error unassigning student from class:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to unassign student(s) from class." });
@@ -214,15 +298,22 @@ export default function AssignmentsPage() {
     );
   };
 
-  const isLoading = loading.teachers || loading.parents || loading.students || loading.classes;
+  const isLoading = loading.teachers || loading.parents || loading.students || loading.classes || authLoading;
+  if (!adminSchoolId && !authLoading) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>Assignments Unavailable</CardTitle></CardHeader>
+        <CardContent><p>Admin school context is missing. Cannot manage assignments.</p></CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-      {/* Teacher to Class Assignment Card */}
       <Card>
         <CardHeader>
           <CardTitle>Assign Teacher to Class</CardTitle>
-          <CardDescription>Select a teacher and the class they will manage.</CardDescription>
+          <CardDescription>Select a teacher and the class they will manage within your school.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-2 gap-4">
@@ -266,11 +357,10 @@ export default function AssignmentsPage() {
         </CardFooter>
       </Card>
 
-      {/* Parent to Student Linking Card */}
       <Card>
         <CardHeader>
           <CardTitle>Link Parent to Student</CardTitle>
-          <CardDescription>Connect a parent account to their child's student record.</CardDescription>
+          <CardDescription>Connect a parent account to their child's student record (student must be in your school).</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
            <div className="grid grid-cols-2 gap-4">
@@ -288,7 +378,7 @@ export default function AssignmentsPage() {
               </Select>
             </div>
              <div className="space-y-2">
-              <Label htmlFor="student-select-parent">Student</Label>
+              <Label htmlFor="student-select-parent">Student (Your School)</Label>
               <Select value={selectedStudentForParent} onValueChange={setSelectedStudentForParent} disabled={loading.students}>
                 <SelectTrigger id="student-select-parent">
                   <SelectValue placeholder={loading.students ? "Loading..." : "Select Student"} />
@@ -314,16 +404,15 @@ export default function AssignmentsPage() {
         </CardFooter>
       </Card>
 
-      {/* Student to Class Assignment Card */}
       <Card>
         <CardHeader>
           <CardTitle>Assign Students to Class</CardTitle>
-          <CardDescription>Add one or more students to a class roster.</CardDescription>
+          <CardDescription>Add one or more students from your school to a class roster.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="student-multi-select-class">Students</Label>
+              <Label htmlFor="student-multi-select-class">Students (Your School)</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -352,13 +441,13 @@ export default function AssignmentsPage() {
                         </Label>
                       </div>
                     ))}
-                    {students.length === 0 && !loading.students && <p className="p-2 text-sm text-muted-foreground">No students available.</p>}
+                    {students.length === 0 && !loading.students && <p className="p-2 text-sm text-muted-foreground">No students available in your school.</p>}
                   </ScrollArea>
                 </PopoverContent>
               </Popover>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="class-select-student">Class</Label>
+              <Label htmlFor="class-select-student">Class (Your School)</Label>
               <Select value={selectedClassForStudent} onValueChange={setSelectedClassForStudent} disabled={loading.classes}>
                 <SelectTrigger id="class-select-student">
                   <SelectValue placeholder={loading.classes ? "Loading..." : "Select Class"} />

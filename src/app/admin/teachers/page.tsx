@@ -1,3 +1,4 @@
+
 // src/app/admin/teachers/page.tsx
 "use client";
 
@@ -5,47 +6,52 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, BookOpenCheck } from "lucide-react"; // Using BookOpenCheck for assignments
-import type { Teacher, UserProfile } from "@/lib/types"; // Import Teacher type
+import { Loader2, BookOpenCheck } from "lucide-react"; 
+import type { Teacher, UserProfile } from "@/lib/types"; 
 import { useRouter } from "next/navigation";
 
-
-// Display type combining UserProfile and Teacher specifics
-interface TeacherDisplay extends Omit<UserProfile, 'role'>, Omit<Teacher, 'id' | 'email' | 'name'>{
+interface TeacherDisplay extends Omit<UserProfile, 'role' | 'uid' | 'createdAt' | 'schoolId'>, Omit<Teacher, 'id' | 'email' | 'name'>{
     id: string;
     role: 'Teacher';
-    // Inherits assignedClassIds? from Teacher
+    schoolId: string; // Ensure schoolId is part of the display type
 }
 
 
 export default function ManageTeachersPage() {
+  const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const [teachers, setTeachers] = useState<TeacherDisplay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
-  // Fetch teachers from Firestore (users with role 'Teacher')
   const fetchTeachers = async () => {
+    if (!adminSchoolId) {
+        setError("School ID not found for admin.");
+        setLoading(false);
+        return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const q = query(collection(db, "users"), where("role", "==", "Teacher"));
+      const q = query(collection(db, "users"), where("role", "==", "Teacher"), where("schoolId", "==", adminSchoolId));
       const querySnapshot = await getDocs(q);
       const teacherList = querySnapshot.docs.map(doc => {
          const data = doc.data();
          return {
              id: doc.id,
-             uid: doc.id, // Assuming uid is the doc id
+             uid: doc.id, 
              name: data.name || 'Unnamed Teacher',
              email: data.email,
              role: 'Teacher',
              assignedClassIds: data.assignedClassIds || [],
-             createdAt: data.createdAt as Timestamp, // Cast Firestore Timestamp
+             createdAt: data.createdAt as Timestamp,
+             schoolId: data.schoolId, // Include schoolId
          } as TeacherDisplay;
       });
       setTeachers(teacherList);
@@ -59,24 +65,30 @@ export default function ManageTeachersPage() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!authUser || !adminSchoolId) {
+      setError("User not authenticated or school ID missing.");
+      setLoading(false);
+      return;
+    }
     fetchTeachers();
-  }, []); // Fetch on component mount
+  }, [authUser, authLoading, adminSchoolId]); 
 
-  // Placeholder function for handling class assignments
   const handleAssignClasses = (teacherId: string) => {
-    // Navigate to the assignments page, pre-selecting the teacher
     router.push(`/admin/assignments?teacherId=${teacherId}`);
   };
+
+  if (authLoading) {
+    return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
          <div>
             <CardTitle>Manage Teachers</CardTitle>
-            <CardDescription>View teacher accounts and manage their class assignments.</CardDescription>
+            <CardDescription>View teacher accounts for your school and manage their class assignments.</CardDescription>
         </div>
-         {/* Optional: Add Teacher button if admins manually create teacher accounts */}
-         {/* <Button size="sm" disabled>Add Teacher</Button> */}
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -86,6 +98,8 @@ export default function ManageTeachersPage() {
            </div>
          ) : error ? (
             <p className="text-center text-destructive">{error}</p>
+         ) : !adminSchoolId ? (
+            <p className="text-center text-destructive">Admin school ID not found. Cannot load teachers.</p>
          ) : (
            <div className="border rounded-md">
             <Table>
@@ -109,14 +123,13 @@ export default function ManageTeachersPage() {
                            <BookOpenCheck className="h-4 w-4" />
                            Manage Assignments
                         </Button>
-                         {/* Add other actions like Edit/View Details if needed */}
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} className="h-24 text-center">
-                      No teachers found. Teachers sign up themselves via the login page.
+                      No teachers found for your school.
                     </TableCell>
                   </TableRow>
                 )}

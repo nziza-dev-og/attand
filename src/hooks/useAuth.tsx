@@ -16,6 +16,7 @@ interface AuthContextType {
   enteredSchoolCode?: string | null;
   schoolCodeVerificationAttempts?: number | null;
   isSchoolCodeLocked?: boolean | null;
+  schoolId?: string | null; // Added schoolId
 }
 
 const defaultAuthContextValue: AuthContextType = {
@@ -26,6 +27,7 @@ const defaultAuthContextValue: AuthContextType = {
   enteredSchoolCode: null,
   schoolCodeVerificationAttempts: null,
   isSchoolCodeLocked: null,
+  schoolId: null, // Initialize schoolId
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContextValue);
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [enteredSchoolCode, setEnteredSchoolCode] = useState<string | null>(null);
   const [schoolCodeVerificationAttempts, setSchoolCodeVerificationAttempts] = useState<number | null>(null);
   const [isSchoolCodeLocked, setIsSchoolCodeLocked] = useState<boolean | null>(null);
+  const [schoolId, setSchoolId] = useState<string | null>(null); // State for schoolId
 
 
   useEffect(() => {
@@ -52,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const userData = userDocSnap.data();
             if (userData.role === 'Admin' || userData.role === 'Teacher' || userData.role === 'Parent') {
               setRole(userData.role);
+              setSchoolId(userData.schoolId || null); // Set schoolId
               setIsSchoolCodeVerified(userData.isSchoolCodeVerified === undefined ? null : userData.isSchoolCodeVerified);
               setEnteredSchoolCode(userData.enteredSchoolCode || null);
               setSchoolCodeVerificationAttempts(userData.schoolCodeVerificationAttempts === undefined ? null : userData.schoolCodeVerificationAttempts);
@@ -60,11 +64,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
               if (userData.role === 'Admin') {
                 setIsSchoolCodeVerified(true); // Admins are implicitly "verified" for their own school code
+                // For Admins, their schoolId is their own uid, set during signup.
               }
 
             } else {
               console.warn("User document found, but role is invalid or missing:", userData.role);
               setRole(null);
+              setSchoolId(null);
               setIsSchoolCodeVerified(null);
               setEnteredSchoolCode(null);
               setSchoolCodeVerificationAttempts(null);
@@ -73,6 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } else {
             console.warn("User document not found for UID:", currentUser.uid);
             setRole(null);
+            setSchoolId(null);
             setIsSchoolCodeVerified(null);
             setEnteredSchoolCode(null);
             setSchoolCodeVerificationAttempts(null);
@@ -81,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
           console.error("Error fetching user role/details:", error);
           setRole(null);
+          setSchoolId(null);
           setIsSchoolCodeVerified(null);
           setEnteredSchoolCode(null);
           setSchoolCodeVerificationAttempts(null);
@@ -89,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(null);
         setRole(null);
+        setSchoolId(null);
         setIsSchoolCodeVerified(null);
         setEnteredSchoolCode(null);
         setSchoolCodeVerificationAttempts(null);
@@ -101,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, isSchoolCodeVerified, enteredSchoolCode, schoolCodeVerificationAttempts, isSchoolCodeLocked }}>
+    <AuthContext.Provider value={{ user, role, loading, isSchoolCodeVerified, enteredSchoolCode, schoolCodeVerificationAttempts, isSchoolCodeLocked, schoolId }}>
       {children}
     </AuthContext.Provider>
   );

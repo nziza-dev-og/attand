@@ -6,6 +6,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,28 +18,26 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon } from "lucide-react"; // Added ImageIcon
+import { Loader2, PlusCircle, Edit, Image as ImageIcon } from "lucide-react";
 import type { Student, UserProfile, Class } from "@/lib/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Added Avatar components
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// Helper function to get initials from name
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 };
 
-// Define Zod schema for student form validation
 const studentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal('')),
   studentInfo: z.string().optional(),
   avatarUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  classId: z.string().optional(), // Optional: class to assign student to
+  classId: z.string().optional(), 
 });
 
 type StudentFormData = z.infer<typeof studentSchema>;
 
 interface StudentDisplay extends Student {
-    // Ensure 'id' is available
+    // id is already in Student -> UserProfile
 }
 
 interface ClassSelectItem {
@@ -47,6 +46,7 @@ interface ClassSelectItem {
 }
 
 export default function ManageStudentsPage() {
+  const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const [students, setStudents] = useState<StudentDisplay[]>([]);
   const [classes, setClasses] = useState<ClassSelectItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,20 +62,19 @@ export default function ManageStudentsPage() {
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: {
-        name: '',
-        email: '',
-        studentInfo: '',
-        avatarUrl: '',
-        classId: undefined,
-    }
+    defaultValues: { name: '', email: '', studentInfo: '', avatarUrl: '', classId: undefined }
   });
 
   const fetchStudents = async () => {
+    if (!adminSchoolId) {
+      setError("School ID not found for admin.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const q = query(collection(db, "users"), where("role", "==", "Student"));
+      const q = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
       const querySnapshot = await getDocs(q);
       const studentList = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -87,6 +86,7 @@ export default function ManageStudentsPage() {
         parentIds: doc.data().parentIds || [],
         studentInfo: doc.data().studentInfo || '',
         avatarUrl: doc.data().avatarUrl,
+        schoolId: doc.data().schoolId, // ensure schoolId is part of StudentDisplay
       })) as StudentDisplay[];
       setStudents(studentList);
     } catch (err: any) {
@@ -99,9 +99,11 @@ export default function ManageStudentsPage() {
   };
 
   const fetchClassesForDropdown = async () => {
+    if (!adminSchoolId) return;
     setLoadingClasses(true);
     try {
-        const querySnapshot = await getDocs(collection(db, "classes"));
+        const q = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
+        const querySnapshot = await getDocs(q);
         const classList = querySnapshot.docs.map(doc => ({
             id: doc.id,
             name: doc.data().name || `Class (${doc.id.substring(0,4)})`,
@@ -116,11 +118,22 @@ export default function ManageStudentsPage() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!authUser || !adminSchoolId) {
+      setError("User not authenticated or school ID missing.");
+      setLoading(false);
+      setLoadingClasses(false);
+      return;
+    }
     fetchStudents();
     fetchClassesForDropdown();
-  }, []); // toast removed from dependency array
+  }, [authUser, authLoading, adminSchoolId]);
 
   const onAddSubmit: SubmitHandler<StudentFormData> = async (data) => {
+    if (!adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Admin school ID is missing." });
+      return;
+    }
     try {
       const studentData: any = {
         name: data.name,
@@ -131,15 +144,22 @@ export default function ManageStudentsPage() {
         createdAt: Timestamp.now(),
         classIds: data.classId ? [data.classId] : [],
         parentIds: [],
+        schoolId: adminSchoolId, // Add schoolId
       };
 
       const docRef = await addDoc(collection(db, "users"), studentData);
       
       if (data.classId) {
         const classRef = doc(db, "classes", data.classId);
-        await updateDoc(classRef, {
-          studentIds: arrayUnion(docRef.id)
-        });
+        // Ensure class belongs to the same school before updating
+        const classSnap = await getDoc(classRef);
+        if(classSnap.exists() && classSnap.data().schoolId === adminSchoolId) {
+            await updateDoc(classRef, {
+              studentIds: arrayUnion(docRef.id)
+            });
+        } else {
+            toast({ variant: "warning", title: "Class Mismatch", description: "Student added, but selected class does not belong to your school." });
+        }
       }
 
       toast({ title: "Success", description: "Student added successfully." });
@@ -159,24 +179,22 @@ export default function ManageStudentsPage() {
   };
 
   const handleUpdateAvatar = async () => {
-    if (!currentEditingStudent || !newAvatarUrl.trim()) {
-      if (!newAvatarUrl.trim() && currentEditingStudent?.avatarUrl) { // Allow clearing avatar
-         // proceed to update with null/empty string
-      } else if (!newAvatarUrl.trim()) {
-        toast({ variant: "destructive", title: "Error", description: "Avatar URL cannot be empty unless clearing an existing one." });
+    if (!currentEditingStudent || !adminSchoolId) return;
+    if (currentEditingStudent.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Cannot edit avatar for student not in your school." });
         return;
-      }
-    }
-    // Basic URL validation (more robust validation could be added)
-    try {
-        new URL(newAvatarUrl.trim());
-    } catch (_) {
-        if(newAvatarUrl.trim() !== "") { // Allow empty string to clear
-            toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid image URL." });
-            return;
-        }
     }
 
+    if (newAvatarUrl.trim() !== "" ) {
+      try {
+          new URL(newAvatarUrl.trim());
+      } catch (_) {
+          if(newAvatarUrl.trim() !== "") { 
+              toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid image URL." });
+              return;
+          }
+      }
+    }
 
     setIsSubmittingAvatar(true);
     try {
@@ -187,7 +205,7 @@ export default function ManageStudentsPage() {
       toast({ title: "Success", description: "Student avatar updated successfully." });
       setIsEditAvatarDialogOpen(false);
       setCurrentEditingStudent(null);
-      fetchStudents(); // Refresh the list
+      fetchStudents(); 
     } catch (err: any) {
       console.error("Error updating avatar:", err);
       toast({ variant: "destructive", title: "Error", description: "Failed to update avatar." });
@@ -196,6 +214,9 @@ export default function ManageStudentsPage() {
     }
   };
 
+  if (authLoading) {
+    return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <>
@@ -203,7 +224,7 @@ export default function ManageStudentsPage() {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
             <CardTitle>Manage Students</CardTitle>
-            <CardDescription>Add, view, or edit student records.</CardDescription>
+            <CardDescription>Add, view, or edit student records for your school.</CardDescription>
         </div>
          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
              setIsAddDialogOpen(open);
@@ -211,7 +232,7 @@ export default function ManageStudentsPage() {
              else if (classes.length === 0 && !loadingClasses) fetchClassesForDropdown();
          }}>
             <DialogTrigger asChild>
-              <Button size="sm" className="gap-1">
+              <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
                 <PlusCircle className="h-4 w-4" />
                 Add Student
               </Button>
@@ -272,7 +293,7 @@ export default function ManageStudentsPage() {
                                             </SelectItem>
                                         ))}
                                         {!loadingClasses && classes.length === 0 && (
-                                            <SelectItem value="no_classes_available" disabled>No classes available</SelectItem>
+                                            <SelectItem value="no_classes_available" disabled>No classes available for this school</SelectItem>
                                         )}
                                     </SelectContent>
                                 </Select>
@@ -301,6 +322,8 @@ export default function ManageStudentsPage() {
            </div>
          ) : error ? (
             <p className="text-center text-destructive">{error}</p>
+         ) : !adminSchoolId ? (
+            <p className="text-center text-destructive">Admin school ID not found. Cannot load students.</p>
          ) : (
           <div className="border rounded-md">
             <Table>
@@ -332,14 +355,14 @@ export default function ManageStudentsPage() {
                          <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                             <ImageIcon className="h-3 w-3" /> Edit Avatar
                          </Button>
-                         <Button variant="ghost" size="sm" disabled>Edit Details</Button>
+                         {/* <Button variant="ghost" size="sm" disabled>Edit Details</Button> */}
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                      No students found. Add one using the button above.
+                      No students found for your school. Add one using the button above.
                     </TableCell>
                   </TableRow>
                 )}

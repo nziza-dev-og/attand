@@ -18,33 +18,37 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
 
-// Helper function to get initials from name
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 };
 
-async function getCollectionCount(collectionName: string, role?: 'Student' | 'Teacher' | 'Parent' | 'Admin'): Promise<number> {
+async function getCollectionCountForSchool(collectionName: string, schoolId: string, role?: 'Student' | 'Teacher' | 'Parent' | 'Admin'): Promise<number> {
   try {
     let q;
+    const baseCollection = collection(db, collectionName);
+    let conditions = [where("schoolId", "==", schoolId)];
+
     if (role) {
-       if (collectionName !== 'users') {
-           console.warn(`Filtering by role is typically done on the 'users' collection, but requested for '${collectionName}'. Adjust if needed.`);
-           q = query(collection(db, collectionName), where("role", "==", role));
+       if (collectionName === 'users') {
+            conditions.push(where("role", "==", role));
        } else {
-            q = query(collection(db, collectionName), where("role", "==", role));
+            // For collections like 'classes', role filtering is not standard unless 'role' exists there.
+            // If 'role' exists on 'classes', this would work. Otherwise, this role filter is ignored for non-'users' collections.
+            console.warn(`Role filtering on non-'users' collection '${collectionName}'. Ensure 'role' field exists or remove filter.`);
+            conditions.push(where("role", "==", role));
        }
-    } else {
-      q = collection(db, collectionName);
     }
+    
+    q = query(baseCollection, ...conditions);
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count;
   } catch (error) {
-    console.error(`Error fetching count for ${collectionName}${role ? ` with role ${role}` : ''}:`, error);
+    console.error(`Error fetching count for ${collectionName} in school ${schoolId}${role ? ` with role ${role}` : ''}:`, error);
     return 0;
   }
 }
 
-async function getAttendanceMarkedTodayCount(): Promise<number> {
+async function getAttendanceMarkedTodayCountForSchool(schoolId: string): Promise<number> {
     try {
         const todayStr = format(new Date(), 'yyyy-MM-dd');
         const startOfDay = Timestamp.fromDate(new Date(todayStr + 'T00:00:00'));
@@ -52,13 +56,14 @@ async function getAttendanceMarkedTodayCount(): Promise<number> {
 
         const q = query(
             collection(db, "attendanceRecords"),
+            where("schoolId", "==", schoolId),
             where("timestamp", ">=", startOfDay),
             where("timestamp", "<=", endOfDay)
         );
         const snapshot = await getCountFromServer(q);
         return snapshot.data().count;
     } catch (error) {
-        console.error("Error fetching attendance marked today:", error);
+        console.error("Error fetching attendance marked today for school " + schoolId + ":", error);
         return 0;
     }
 }
@@ -73,7 +78,7 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
   const { translate } = useLanguage();
-  const { user: authUser, loading: authLoading } = useAuth(); 
+  const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth(); 
   const { toast } = useToast();
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -91,11 +96,15 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!adminSchoolId) {
+        setLoadingStats(false);
+        return;
+      }
       setLoadingStats(true);
-      const classesCount = await getCollectionCount('classes');
-      const studentsCount = await getCollectionCount('users', 'Student');
-      const teachersCount = await getCollectionCount('users', 'Teacher');
-      const attendanceToday = await getAttendanceMarkedTodayCount();
+      const classesCount = await getCollectionCountForSchool('classes', adminSchoolId);
+      const studentsCount = await getCollectionCountForSchool('users', adminSchoolId, 'Student');
+      const teachersCount = await getCollectionCountForSchool('users', adminSchoolId, 'Teacher');
+      const attendanceToday = await getAttendanceMarkedTodayCountForSchool(adminSchoolId);
       setStats({
         totalClasses: classesCount,
         totalStudents: studentsCount,
@@ -104,8 +113,12 @@ export default function AdminDashboard() {
       });
       setLoadingStats(false);
     };
-    fetchData();
-  }, []);
+    if (!authLoading && adminSchoolId) {
+        fetchData();
+    } else if (!authLoading && !adminSchoolId) {
+        setLoadingStats(false); // No schoolId, stop loading stats
+    }
+  }, [authLoading, adminSchoolId]);
 
   useEffect(() => {
     const fetchAdminProfileAndCode = async () => {
@@ -125,14 +138,15 @@ export default function AdminDashboard() {
              setAdminName(authUser.displayName || "Admin");
              setAdminAvatarUrl(authUser.photoURL || "");
              setNewAvatarUrlInput(authUser.photoURL || "");
-             // If admin doc doesn't exist, create it with default values
+             // If admin doc doesn't exist, create it
              await setDoc(doc(db, 'users', authUser.uid), { 
                name: authUser.displayName || "Admin",
                email: authUser.email,
                role: 'Admin',
                createdAt: Timestamp.now(),
                avatarUrl: authUser.photoURL || "",
-               schoolIdentifierCode: "" // Initialize as empty
+               schoolIdentifierCode: "", 
+               schoolId: authUser.uid, // Set schoolId to admin's own UID
              }, { merge: true });
              setSchoolIdentifierCode("");
              setSchoolCodeInput("");
@@ -226,6 +240,19 @@ export default function AdminDashboard() {
     );
   }
 
+  if (!adminSchoolId && !authLoading) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-destructive">School Configuration Missing</CardTitle>
+                <CardDescription>
+                    Your admin account is not fully configured. Please contact support or ensure your school ID is set.
+                </CardDescription>
+            </CardHeader>
+        </Card>
+    );
+  }
+
 
   return (
     <div className="grid auto-rows-min gap-6">
@@ -236,7 +263,7 @@ export default function AdminDashboard() {
             <School className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalClasses}</div>
+            <div className="text-2xl font-bold">{stats?.totalClasses ?? 0}</div>
             <p className="text-xs text-muted-foreground">{translate('managedClasses')}</p>
           </CardContent>
         </Card>
@@ -246,7 +273,7 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalStudents}</div>
+            <div className="text-2xl font-bold">{stats?.totalStudents ?? 0}</div>
             <p className="text-xs text-muted-foreground">{translate('enrolledStudents') || 'Enrolled students'}</p>
           </CardContent>
         </Card>
@@ -256,7 +283,7 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalTeachers}</div>
+            <div className="text-2xl font-bold">{stats?.totalTeachers ?? 0}</div>
             <p className="text-xs text-muted-foreground">{translate('registeredTeachers') || 'Registered teachers'}</p>
           </CardContent>
         </Card>
@@ -266,7 +293,7 @@ export default function AdminDashboard() {
             <ClipboardList className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.attendanceMarkedTodayCount}</div>
+            <div className="text-2xl font-bold">{stats?.attendanceMarkedTodayCount ?? 0}</div>
             <p className="text-xs text-muted-foreground">{translate('recordsMarkedToday') || 'Records marked today'}</p>
           </CardContent>
         </Card>
@@ -327,7 +354,7 @@ export default function AdminDashboard() {
         <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={adminAvatarUrl} alt={adminName} />
+                    <AvatarImage src={adminAvatarUrl} />
                     <AvatarFallback>{getInitials(adminName)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">
@@ -357,4 +384,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

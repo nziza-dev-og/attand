@@ -1,3 +1,4 @@
+
 // src/app/admin/classes/page.tsx
 "use client";
 
@@ -5,6 +6,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, PlusCircle, Edit } from "lucide-react";
 import type { Class } from "@/lib/types";
 
-// Define Zod schema for class form validation
 const classSchema = z.object({
   name: z.string().min(3, { message: "Class name must be at least 3 characters." }),
   gradeLevel: z.string().optional(),
@@ -29,7 +30,7 @@ const classSchema = z.object({
 type ClassFormData = z.infer<typeof classSchema>;
 
 interface ClassDisplay extends Class {
-  // Ensure 'id' is available after fetching
+  // id is already in Class
 }
 
 interface TeacherSelectItem {
@@ -39,6 +40,7 @@ interface TeacherSelectItem {
 
 
 export default function ManageClassesPage() {
+  const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const [classes, setClasses] = useState<ClassDisplay[]>([]);
   const [teachers, setTeachers] = useState<TeacherSelectItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,10 +61,16 @@ export default function ManageClassesPage() {
   });
 
   const fetchClasses = async () => {
+    if (!adminSchoolId) {
+      setError("School ID not found for admin.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const querySnapshot = await getDocs(collection(db, "classes"));
+      const q = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
+      const querySnapshot = await getDocs(q);
       const classList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...(doc.data() as Omit<Class, 'id'>),
@@ -78,9 +86,10 @@ export default function ManageClassesPage() {
   };
 
    const fetchTeachers = async () => {
+       if (!adminSchoolId) return;
        setLoadingTeachers(true);
        try {
-           const q = query(collection(db, "users"), where("role", "==", "Teacher"));
+           const q = query(collection(db, "users"), where("role", "==", "Teacher"), where("schoolId", "==", adminSchoolId));
            const querySnapshot = await getDocs(q);
            const teacherList = querySnapshot.docs.map(doc => ({
                id: doc.id,
@@ -97,11 +106,22 @@ export default function ManageClassesPage() {
 
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!authUser || !adminSchoolId) {
+      setError("User not authenticated or school ID missing.");
+      setLoading(false);
+      setLoadingTeachers(false);
+      return;
+    }
     fetchClasses();
     fetchTeachers();
-  }, []); // toast removed from dependency array as it's stable
+  }, [authUser, authLoading, adminSchoolId]);
 
   const onAddSubmit: SubmitHandler<ClassFormData> = async (data) => {
+    if (!adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Admin school ID is missing." });
+      return;
+    }
     try {
       await addDoc(collection(db, "classes"), {
         name: data.name,
@@ -109,6 +129,7 @@ export default function ManageClassesPage() {
         teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
         createdAt: Timestamp.now(),
         studentIds: [],
+        schoolId: adminSchoolId, // Add schoolId
       });
       toast({ title: "Success", description: "Class added successfully." });
       reset({ name: '', gradeLevel: '', teacherId: undefined });
@@ -132,13 +153,18 @@ export default function ManageClassesPage() {
 
   const onEditSubmit: SubmitHandler<ClassFormData> = async (data) => {
     if (!currentEditingClass) return;
+    // Ensure schoolId cannot be changed through this edit form
+    if (currentEditingClass.schoolId !== adminSchoolId) {
+        toast({ variant: "destructive", title: "Error", description: "Cannot edit class belonging to another school." });
+        return;
+    }
     try {
       const classRef = doc(db, "classes", currentEditingClass.id);
       await updateDoc(classRef, {
         name: data.name,
         gradeLevel: data.gradeLevel || null,
         teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
-        // Note: studentIds and createdAt are not updated here
+        // schoolId remains unchanged
       });
       toast({ title: "Success", description: "Class updated successfully." });
       reset({ name: '', gradeLevel: '', teacherId: undefined });
@@ -152,13 +178,17 @@ export default function ManageClassesPage() {
   };
 
 
+  if (authLoading) {
+    return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
   return (
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Manage Classes</CardTitle>
-            <CardDescription>Add, view, or edit classes.</CardDescription>
+            <CardDescription>Add, view, or edit classes for your school.</CardDescription>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
               setIsAddDialogOpen(open);
@@ -166,7 +196,7 @@ export default function ManageClassesPage() {
               else if (teachers.length === 0 && !loadingTeachers) fetchTeachers();
               }}>
               <DialogTrigger asChild>
-                <Button size="sm" className="gap-1">
+                <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
                   <PlusCircle className="h-4 w-4" />
                   Add Class
                 </Button>
@@ -213,7 +243,7 @@ export default function ManageClassesPage() {
                                               </SelectItem>
                                           ))}
                                           {!loadingTeachers && teachers.length === 0 && (
-                                              <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
+                                              <SelectItem value="no_teachers_available" disabled>No teachers available for this school</SelectItem>
                                           )}
                                       </SelectContent>
                                   </Select>
@@ -242,6 +272,8 @@ export default function ManageClassesPage() {
             </div>
           ) : error ? (
               <p className="text-center text-destructive">{error}</p>
+          ) : !adminSchoolId ? (
+              <p className="text-center text-destructive">Admin school ID not found. Cannot load classes.</p>
           ) : (
             <div className="border rounded-md">
               <Table>
@@ -270,7 +302,7 @@ export default function ManageClassesPage() {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={4} className="h-24 text-center">
-                        No classes found. Add one using the button above.
+                        No classes found for your school. Add one using the button above.
                       </TableCell>
                     </TableRow>
                   )}
@@ -331,7 +363,7 @@ export default function ManageClassesPage() {
                                         </SelectItem>
                                     ))}
                                     {!loadingTeachers && teachers.length === 0 && (
-                                        <SelectItem value="no_teachers_available" disabled>No teachers available</SelectItem>
+                                        <SelectItem value="no_teachers_available" disabled>No teachers available for this school</SelectItem>
                                     )}
                                 </SelectContent>
                             </Select>

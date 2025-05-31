@@ -111,17 +111,22 @@ export default function LoginPage() {
         createdAt: Timestamp.now(),
         isSchoolCodeVerified: role === 'Admin', 
       };
-
-      if (role === 'Teacher') {
+      
+      if (role === 'Admin') {
+        userDocData.schoolId = user.uid; // Admin's schoolId is their own UID
+        userDocData.schoolIdentifierCode = ""; // Admin sets this on their dashboard
+      } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
-        userDocData.isSchoolCodeVerified = false; // Explicitly false for teachers on signup
+        userDocData.isSchoolCodeVerified = false;
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
+        // userDocData.schoolId will be set upon verification
       } else if (role === 'Parent') {
         userDocData.childIds = [];
+        // Parents don't have a direct schoolId on their profile; linked via children
       }
-      // For Admins, their schoolIdentifierCode is set on their dashboard.
+      // Students are typically added by Admins, who will set their schoolId.
 
       await setDoc(doc(db, 'users', user.uid), userDocData);
 
