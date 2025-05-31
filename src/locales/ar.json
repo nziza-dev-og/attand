@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "حفظ صورة الملف الشخصي",
   "schoolSettingsTitle": "إعدادات المدرسة",
   "adminSchoolSettingsDesc": "إدارة اسم مدرستك ورمز التعريف الفريد لتسجيل المعلمين.",
-  "userRoleDistributionTitle": "توزيع أدوار المستخدمين",
-  "userRoleDistributionDesc": "تفصيل المستخدمين حسب الأدوار المخصصة لهم.",
   "roleStudent": "طالب",
   "studentManagementErrorNoSchoolId": "لم يتم العثور على معرّف المدرسة للمسؤول.",
   "studentManagementErrorLoadFailed": "فشل تحميل الطلاب. يرجى المحاولة مرة أخرى.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "المصادقة مطلوبة لعرض هذه البيانات.",
   "parentNotLinkedToSchool": "لم يتم ربطه بمدرسة معينة بعد"
 }
-
-    

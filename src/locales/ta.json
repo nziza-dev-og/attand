@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "சுயவிவரப் படத்தை சேமி",
   "schoolSettingsTitle": "பள்ளி அமைப்புகள்",
   "adminSchoolSettingsDesc": "உங்கள் பள்ளியின் பெயர் மற்றும் ஆசிரியர் பதிவிற்கான தனிப்பட்ட அடையாளக் குறியீட்டை நிர்வகிக்கவும்.",
-  "userRoleDistributionTitle": "பயனர் பாத்திரப் பகிர்வு",
-  "userRoleDistributionDesc": "ஒதுக்கப்பட்ட பாத்திரங்களின்படி பயனர்களின் விவரம்.",
   "roleStudent": "மாணவர்",
   "studentManagementErrorNoSchoolId": "நிர்வாகிக்கான பள்ளி ஐடி கிடைக்கவில்லை.",
   "studentManagementErrorLoadFailed": "மாணவர்களை ஏற்றுவதில் தோல்வி. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
@@ -321,5 +319,9 @@
   "studentImportWarningTitle": "இறக்குமதி எச்சரிக்கைகள்",
   "studentImportWarningDesc": "{{count}} மாணவர் பதிவுகள் இறக்குமதி செய்ய முடியவில்லை அல்லது தவிர்க்கப்பட்டன. விவரங்களுக்கு கன்சோலைப் பார்க்கவும்.",
   "studentImportErrorParsingFailed": "CSV கோப்பை பாகுபடுத்துவதில் தோல்வி:",
-  "studentImportErrorAllFailed": "அனைத்து மாணவர் பதிவுகளையும் இறக்குமதி செய்வதில் தோல்வி. கோப்பு வடிவமைப்பு மற்றும் கன்சோலில் உள்ள பிழைகளைச் சரிபார்க்கவும்."
+  "studentImportErrorAllFailed": "அனைத்து மாணவர் பதிவுகளையும் இறக்குமதி செய்வதில் தோல்வி. கோப்பு வடிவமைப்பு மற்றும் கன்சோலில் உள்ள பிழைகளைச் சரிபார்க்கவும்.",
+  "errorLoadingStats": "தளத்தின் புள்ளிவிவரங்களை ஏற்றுவதில் தோல்வி.",
+  "errorLoadingChartData": "பயனர் பாத்திரப் பகிர்வு தரவை ஏற்றுவதில் தோல்வி.",
+  "errorAuthRequired": "இந்தத் தரவைக் காண அங்கீகாரம் தேவை.",
+  "parentNotLinkedToSchool": "இன்னும் குறிப்பிட்ட பள்ளியுடன் இணைக்கப்படவில்லை"
 }

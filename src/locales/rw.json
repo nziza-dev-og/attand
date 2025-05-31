@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Bika Ifoto ya Porofayili",
   "schoolSettingsTitle": "Ibikoresho by'Ishuri",
   "adminSchoolSettingsDesc": "Cunga izina ry'ishuri ryawe na kode idasanzwe yo kumenyekanisha abarimu.",
-  "userRoleDistributionTitle": "Ikigabanyo cy'Inshingano z'Abakoresha",
-  "userRoleDistributionDesc": "Ikigabanyo cy'abakoresha hashingiwe ku nshingano bahawe.",
   "roleStudent": "Umunyeshuri",
   "studentManagementErrorNoSchoolId": "ID y'ishuri ntiyabonetse ku muyobozi.",
   "studentManagementErrorLoadFailed": "Kunanirwa gutwara abanyeshuri. Nyamuneka gerageza nanone.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Ukwemezwa birakenewe kugira ngo urebe aya makuru.",
   "parentNotLinkedToSchool": "Ntaho ahuriye n'ishuri ryihariye"
 }
-
-    

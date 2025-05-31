@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Hifadhi Picha ya Wasifu",
   "schoolSettingsTitle": "Mipangilio ya Shule",
   "adminSchoolSettingsDesc": "Dhibiti jina la shule yako na nambari ya kipekee ya utambulisho kwa usajili wa walimu.",
-  "userRoleDistributionTitle": "Mgawanyo wa Majukumu ya Watumiaji",
-  "userRoleDistributionDesc": "Mgawanyo wa watumiaji kulingana na majukumu waliyopewa.",
   "roleStudent": "Mwanafunzi",
   "studentManagementErrorNoSchoolId": "Kitambulisho cha shule hakikupatikana kwa msimamizi.",
   "studentManagementErrorLoadFailed": "Imeshindwa kupakia wanafunzi. Tafadhali jaribu tena.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Uthibitishaji unahitajika ili kuona data hii.",
   "parentNotLinkedToSchool": "Bado haijaunganishwa na shule maalum"
 }
-
-    

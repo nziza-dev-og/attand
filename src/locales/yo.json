@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Fi Àwòrán Àpamọ́ Pamọ́",
   "schoolSettingsTitle": "Ètò Ilé-ìwé",
   "adminSchoolSettingsDesc": "Ṣakoso orúkọ ilé-ìwé rẹ àti kóòdù ìdánimọ̀ àkànṣe fún ìforúkọsílẹ̀ olùkọ́.",
-  "userRoleDistributionTitle": "Pínpín Ipa Olùṣe",
-  "userRoleDistributionDesc": "Pínpín àwọn olùṣe nípasẹ̀ àwọn ipa tí a yàn fún wọn.",
   "roleStudent": "Akẹ́kọ̀ọ́",
   "studentManagementErrorNoSchoolId": "ID ilé-ìwé kò rí fún alábòójútó.",
   "studentManagementErrorLoadFailed": "Kò lè gba àwọn akẹ́kọ̀ọ́. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Ìfọwọ́sí jẹ́ dandan láti wo dátà yìí.",
   "parentNotLinkedToSchool": "Kò tíì sopọ̀ mọ́ ilé-ìwé pàtó kan"
 }
-
-    

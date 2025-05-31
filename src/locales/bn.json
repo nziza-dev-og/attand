@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "প্রোফাইল ছবি সংরক্ষণ করুন",
   "schoolSettingsTitle": "স্কুল সেটিংস",
   "adminSchoolSettingsDesc": "শিক্ষক নিবন্ধনের জন্য আপনার স্কুলের নাম এবং অনন্য শনাক্তকারী কোড পরিচালনা করুন।",
-  "userRoleDistributionTitle": "ব্যবহারকারীর ভূমিকা বিতরণ",
-  "userRoleDistributionDesc": "নির্ধারিত ভূমিকা অনুযায়ী ব্যবহারকারীদের বিভাজন।",
   "roleStudent": "ছাত্র",
   "studentManagementErrorNoSchoolId": "অ্যাডমিনের জন্য স্কুল আইডি পাওয়া যায়নি।",
   "studentManagementErrorLoadFailed": "ছাত্র লোড করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "এই ডেটা দেখতে প্রমাণীকরণ প্রয়োজন।",
   "parentNotLinkedToSchool": "এখনও কোনো নির্দিষ্ট স্কুলের সাথে লিঙ্ক করা হয়নি"
 }
-
-    

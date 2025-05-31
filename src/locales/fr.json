@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Enregistrer la Photo de Profil",
   "schoolSettingsTitle": "Paramètres de l'École",
   "adminSchoolSettingsDesc": "Gérez le nom de votre école et son code d'identification unique pour l'inscription des enseignants.",
-  "userRoleDistributionTitle": "Répartition des Rôles Utilisateurs",
-  "userRoleDistributionDesc": "Répartition des utilisateurs par rôles attribués.",
   "roleStudent": "Étudiant",
   "studentManagementErrorNoSchoolId": "ID d'école introuvable pour l'administrateur.",
   "studentManagementErrorLoadFailed": "Échec du chargement des étudiants. Veuillez réessayer.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Authentification requise pour afficher ces données.",
   "parentNotLinkedToSchool": "Pas encore lié à une école spécifique"
 }
-
-    

@@ -2,26 +2,21 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Users, School, ShieldCheck, PieChart as PieChartIcon } from "lucide-react";
+import { Users, School, ShieldCheck } from "lucide-react"; // Removed PieChartIcon
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where, getDocs } from "firebase/firestore"; // Ensured query is imported
+import { collection, getCountFromServer, query, where } from "firebase/firestore"; 
 import { db } from "@/lib/firebase";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltipContent, ChartLegend, type ChartConfig } from "@/components/ui/chart";
-import type { Role, UserProfile } from "@/lib/types";
+// Removed Recharts and Chart component imports
+
+// Removed UserRoleDistributionData interface
+// Removed ChartConfig type
 
 interface SuperAdminStats {
   totalSchools: number; // Number of Admin accounts
   totalUsers: number;   // Total users
-}
-
-interface UserRoleDistributionData {
-  name: string;
-  value: number;
-  fill: string;
 }
 
 export default function SuperAdminDashboardPage() {
@@ -29,25 +24,17 @@ export default function SuperAdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<SuperAdminStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
-  const [userRoleDistribution, setUserRoleDistribution] = useState<UserRoleDistributionData[]>([]);
-  const [loadingUserRoleDistribution, setLoadingUserRoleDistribution] = useState(true);
+  // Removed userRoleDistribution and loadingUserRoleDistribution states
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const chartConfig = {
-    admins: { label: translate('roleAdmin'), color: "hsl(var(--chart-1))" },
-    teachers: { label: translate('roleTeacher'), color: "hsl(var(--chart-2))" },
-    parents: { label: translate('roleParent'), color: "hsl(var(--chart-3))" },
-    students: { label: translate('roleStudent'), color: "hsl(var(--chart-4))" },
-    superadmins: { label: translate('roleSuperAdmin'), color: "hsl(var(--chart-5))" },
-  } satisfies ChartConfig;
-
+  // Removed chartConfig
 
   useEffect(() => {
     const fetchAllData = async () => {
       if (authLoading || !user) return;
       
       setLoadingStats(true);
-      setLoadingUserRoleDistribution(true);
+      // setLoadingUserRoleDistribution(true); // Removed
       setFetchError(null);
 
       try {
@@ -69,65 +56,20 @@ export default function SuperAdminDashboardPage() {
         setLoadingStats(false);
       }
 
-      try {
-        // Fetch user role distribution data
-        const allUsersCollectionQueryForRoles = collection(db, "users");
-        const usersDocsSnapshot = await getDocs(allUsersCollectionQueryForRoles);
-        const roleCounts: Record<string, number> = { 
-            Admin: 0, Teacher: 0, Parent: 0, Student: 0, SuperAdmin: 0 
-        };
-        
-        usersDocsSnapshot.forEach(doc => {
-          const userRole = doc.data().role as Role;
-          if (userRole && roleCounts.hasOwnProperty(userRole)) {
-            roleCounts[userRole]++;
-          } else if (userRole) {
-            // Handle unexpected roles if necessary, or log them
-            console.warn("Unexpected user role found:", userRole);
-          }
-        });
-
-        const distributionData = Object.entries(roleCounts).map(([roleName, count]) => {
-          let translatedRoleName = roleName;
-          let colorKey: keyof typeof chartConfig | null = null;
-
-          switch(roleName as Role) {
-            case 'Admin': translatedRoleName = translate('roleAdmin'); colorKey = 'admins'; break;
-            case 'Teacher': translatedRoleName = translate('roleTeacher'); colorKey = 'teachers'; break;
-            case 'Parent': translatedRoleName = translate('roleParent'); colorKey = 'parents'; break;
-            case 'Student': translatedRoleName = translate('roleStudent'); colorKey = 'students'; break;
-            case 'SuperAdmin': translatedRoleName = translate('roleSuperAdmin'); colorKey = 'superadmins'; break;
-            default: translatedRoleName = roleName;
-          }
-          
-          return {
-            name: translatedRoleName || roleName,
-            value: count,
-            fill: colorKey && chartConfig[colorKey] ? chartConfig[colorKey].color : "hsl(var(--muted))",
-          };
-        }).filter(item => item.value > 0); // Only include roles with users
-        
-        setUserRoleDistribution(distributionData);
-
-      } catch (error) {
-        console.error("Error fetching user role distribution:", error);
-        setFetchError(prevError => prevError || (translate("errorLoadingChartData") || "Failed to load user role distribution data."));
-      } finally {
-        setLoadingUserRoleDistribution(false);
-      }
+      // Removed user role distribution data fetching logic
     };
 
     if (!authLoading && user) {
         fetchAllData();
     } else if (!authLoading && !user) {
         setLoadingStats(false);
-        setLoadingUserRoleDistribution(false);
+        // setLoadingUserRoleDistribution(false); // Removed
         setFetchError(translate("errorAuthRequired") || "Authentication required to view this data.");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading, translate]); // Removed chartConfig from deps as it uses translate
+  }, [user, authLoading, translate]);
 
-  const isLoading = authLoading || loadingStats || loadingUserRoleDistribution;
+  const isLoading = authLoading || loadingStats; // Removed loadingUserRoleDistribution
 
   if (isLoading) {
     return (
@@ -169,15 +111,7 @@ export default function SuperAdminDashboardPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-              <Skeleton className="h-7 w-1/2 rounded-md" />
-              <Skeleton className="h-4 w-3/4 mt-1 rounded-md" />
-          </CardHeader>
-          <CardContent className="flex justify-center items-center h-[300px]">
-              <Skeleton className="h-full w-full max-w-xs rounded-full" />
-          </CardContent>
-        </Card>
+        {/* Removed Skeleton for chart */}
          <Card>
             <CardHeader>
                 <Skeleton className="h-7 w-1/2 rounded-md" />
@@ -251,47 +185,7 @@ export default function SuperAdminDashboardPage() {
         </CardContent>
       </Card>
 
-      {userRoleDistribution.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChartIcon className="h-5 w-5" />
-              {translate('userRoleDistributionTitle') || "User Role Distribution"}
-            </CardTitle>
-            <CardDescription>
-              {translate('userRoleDistributionDesc') || "Breakdown of users by their assigned roles."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px] w-full aspect-video">
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Tooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Pie
-                    data={userRoleDistribution}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    innerRadius={60} 
-                    labelLine={false}
-                    // label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  >
-                    {userRoleDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <Legend content={<ChartLegend className="mt-4" />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      )}
+      {/* Removed User Role Distribution Chart Card */}
 
        <Card>
           <CardHeader>
@@ -306,5 +200,3 @@ export default function SuperAdminDashboardPage() {
     </div>
   );
 }
-
-    

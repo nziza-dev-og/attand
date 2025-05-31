@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Save Profile Picture",
   "schoolSettingsTitle": "School Settings",
   "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration.",
-  "userRoleDistributionTitle": "User Role Distribution",
-  "userRoleDistributionDesc": "Breakdown of users by their assigned roles.",
   "roleStudent": "Student",
   "studentManagementErrorNoSchoolId": "School ID not found for admin.",
   "studentManagementErrorLoadFailed": "Failed to load students. Please try again.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Authentication required to view this data.",
   "parentNotLinkedToSchool": "Not yet linked to a specific school"
 }
-
-    

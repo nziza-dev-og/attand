@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "प्रोफ़ाइल चित्र सहेजें",
   "schoolSettingsTitle": "स्कूल सेटिंग्स",
   "adminSchoolSettingsDesc": "अपने स्कूल का नाम और शिक्षक पंजीकरण के लिए अद्वितीय पहचान कोड प्रबंधित करें।",
-  "userRoleDistributionTitle": "उपयोगकर्ता भूमिका वितरण",
-  "userRoleDistributionDesc": "सौंपी गई भूमिकाओं के अनुसार उपयोगकर्ताओं का विवरण।",
   "roleStudent": "छात्र",
   "studentManagementErrorNoSchoolId": "व्यवस्थापक के लिए स्कूल आईडी नहीं मिला।",
   "studentManagementErrorLoadFailed": "छात्रों को लोड करने में विफल। कृपया पुनः प्रयास करें।",
@@ -321,5 +319,9 @@
   "studentImportWarningTitle": "आयात चेतावनियाँ",
   "studentImportWarningDesc": "{{count}} छात्र रिकॉर्ड आयात नहीं किए जा सके या छोड़ दिए गए। विवरण के लिए कंसोल देखें।",
   "studentImportErrorParsingFailed": "CSV फ़ाइल पार्स करने में विफल:",
-  "studentImportErrorAllFailed": "सभी छात्र रिकॉर्ड आयात करने में विफल रहे। फ़ाइल स्वरूप और कंसोल में त्रुटियों की जाँच करें।"
+  "studentImportErrorAllFailed": "सभी छात्र रिकॉर्ड आयात करने में विफल रहे। फ़ाइल स्वरूप और कंसोल में त्रुटियों की जाँच करें।",
+  "errorLoadingStats": "प्लेटफ़ॉर्म आँकड़े लोड करने में विफल।",
+  "errorLoadingChartData": "उपयोगकर्ता भूमिका वितरण डेटा लोड करने में विफल।",
+  "errorAuthRequired": "इस डेटा को देखने के लिए प्रमाणीकरण आवश्यक है।",
+  "parentNotLinkedToSchool": "अभी तक किसी विशिष्ट स्कूल से लिंक नहीं है"
 }

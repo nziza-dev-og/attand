@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "プロフィール写真を保存",
   "schoolSettingsTitle": "学校設定",
   "adminSchoolSettingsDesc": "学校名と教師登録用の一意の識別コードを管理します。",
-  "userRoleDistributionTitle": "ユーザー役割分布",
-  "userRoleDistributionDesc": "割り当てられた役割別のユーザーの内訳。",
   "roleStudent": "生徒",
   "studentManagementErrorNoSchoolId": "管理者の学校IDが見つかりません。",
   "studentManagementErrorLoadFailed": "生徒の読み込みに失敗しました。もう一度お試しください。",
@@ -321,5 +319,9 @@
   "studentImportWarningTitle": "インポート警告",
   "studentImportWarningDesc": "{{count}}件の生徒レコードをインポートできなかったか、スキップされました。詳細についてはコンソールを確認してください。",
   "studentImportErrorParsingFailed": "CSVファイルの解析に失敗しました：",
-  "studentImportErrorAllFailed": "すべての生徒レコードのインポートに失敗しました。ファイル形式とコンソールでエラーを確認してください。"
+  "studentImportErrorAllFailed": "すべての生徒レコードのインポートに失敗しました。ファイル形式とコンソールでエラーを確認してください。",
+  "errorLoadingStats": "プラットフォーム統計の読み込みに失敗しました。",
+  "errorLoadingChartData": "ユーザー役割分布データの読み込みに失敗しました。",
+  "errorAuthRequired": "このデータを表示するには認証が必要です。",
+  "parentNotLinkedToSchool": "まだ特定の学校にリンクされていません"
 }

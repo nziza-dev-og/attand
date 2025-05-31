@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "保存头像",
   "schoolSettingsTitle": "学校设置",
   "adminSchoolSettingsDesc": "管理您的学校名称和用于教师注册的唯一识别码。",
-  "userRoleDistributionTitle": "用户角色分布",
-  "userRoleDistributionDesc": "按分配的角色划分的用户细分。",
   "roleStudent": "学生",
   "studentManagementErrorNoSchoolId": "管理员学校ID未找到。",
   "studentManagementErrorLoadFailed": "加载学生失败。请重试。",
@@ -321,5 +319,9 @@
   "studentImportWarningTitle": "导入警告",
   "studentImportWarningDesc": "{{count}}条学生记录无法导入或被跳过。详情请查看控制台。",
   "studentImportErrorParsingFailed": "解析CSV文件失败：",
-  "studentImportErrorAllFailed": "所有学生记录导入失败。请检查文件格式和控制台中的错误。"
+  "studentImportErrorAllFailed": "所有学生记录导入失败。请检查文件格式和控制台中的错误。",
+  "errorLoadingStats": "加载平台统计数据失败。",
+  "errorLoadingChartData": "加载用户角色分布数据失败。",
+  "errorAuthRequired": "查看此数据需要身份验证。",
+  "parentNotLinkedToSchool": "尚未链接到特定学校"
 }

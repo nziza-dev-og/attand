@@ -264,8 +264,6 @@
   "saveProfilePictureButton": "Adana Hoton Bayanai",
   "schoolSettingsTitle": "Saitunan Makaranta",
   "adminSchoolSettingsDesc": "Sarrafa sunan makarantar ka da lambar ganewa ta musamman don rajistar malamai.",
-  "userRoleDistributionTitle": "Rarraba Matsayin Masu Amfani",
-  "userRoleDistributionDesc": "Rarraba masu amfani bisa ga matsayin da aka ba su.",
   "roleStudent": "Dalibi",
   "studentManagementErrorNoSchoolId": "Ba a sami ID na makaranta ba don mai gudanarwa.",
   "studentManagementErrorLoadFailed": "An kasa loda ɗalibai. Da fatan za a sake gwadawa.",
@@ -327,5 +325,3 @@
   "errorAuthRequired": "Ana buƙatar tabbatarwa don duba wannan bayanan.",
   "parentNotLinkedToSchool": "Ba a haɗa shi da takamaiman makaranta ba tukuna"
 }
-
-    
