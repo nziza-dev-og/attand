@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,12 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon } from "lucide-react";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload } from "lucide-react";
 import type { Student, UserProfile, Class } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StudentImportDialog } from "./_components/StudentImportDialog"; // Import the new component
+import { useLanguage } from "@/contexts/LanguageContext";
+
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -47,6 +50,7 @@ interface ClassSelectItem {
 
 export default function ManageStudentsPage() {
   const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
+  const { translate } = useLanguage();
   const [students, setStudents] = useState<StudentDisplay[]>([]);
   const [classes, setClasses] = useState<ClassSelectItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +61,8 @@ export default function ManageStudentsPage() {
   const [currentEditingStudent, setCurrentEditingStudent] = useState<StudentDisplay | null>(null);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); // State for import dialog
+
 
   const { toast } = useToast();
 
@@ -65,9 +71,9 @@ export default function ManageStudentsPage() {
     defaultValues: { name: '', email: '', studentInfo: '', avatarUrl: '', classId: undefined }
   });
 
-  const fetchStudents = async () => {
+  const fetchStudents = React.useCallback(async () => {
     if (!adminSchoolId) {
-      setError("School ID not found for admin.");
+      setError(translate("studentManagementErrorNoSchoolId") || "School ID not found for admin.");
       setLoading(false);
       return;
     }
@@ -86,19 +92,19 @@ export default function ManageStudentsPage() {
         parentIds: doc.data().parentIds || [],
         studentInfo: doc.data().studentInfo || '',
         avatarUrl: doc.data().avatarUrl,
-        schoolId: doc.data().schoolId, // ensure schoolId is part of StudentDisplay
+        schoolId: doc.data().schoolId, 
       })) as StudentDisplay[];
       setStudents(studentList);
     } catch (err: any) {
       console.error("Error fetching students:", err);
-      setError("Failed to load students. Please try again.");
-      toast({ variant: "destructive", title: "Error", description: "Failed to load students." });
+      setError(translate("studentManagementErrorLoadFailed") || "Failed to load students. Please try again.");
+      toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorLoadFailed") });
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminSchoolId, toast, translate]);
 
-  const fetchClassesForDropdown = async () => {
+  const fetchClassesForDropdown = React.useCallback(async () => {
     if (!adminSchoolId) return;
     setLoadingClasses(true);
     try {
@@ -111,27 +117,27 @@ export default function ManageStudentsPage() {
         setClasses(classList);
     } catch (err) {
         console.error("Error fetching classes for dropdown:", err);
-        toast({ variant: "destructive", title: "Error", description: "Failed to load classes for assignment." });
+        toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorLoadClassesFailed") });
     } finally {
         setLoadingClasses(false);
     }
-  };
+  }, [adminSchoolId, toast, translate]);
 
   useEffect(() => {
     if (authLoading) return;
     if (!authUser || !adminSchoolId) {
-      setError("User not authenticated or school ID missing.");
+      setError(translate("studentManagementErrorAuthFailed") || "User not authenticated or school ID missing.");
       setLoading(false);
       setLoadingClasses(false);
       return;
     }
     fetchStudents();
     fetchClassesForDropdown();
-  }, [authUser, authLoading, adminSchoolId]);
+  }, [authUser, authLoading, adminSchoolId, fetchStudents, fetchClassesForDropdown, translate]);
 
   const onAddSubmit: SubmitHandler<StudentFormData> = async (data) => {
     if (!adminSchoolId) {
-      toast({ variant: "destructive", title: "Error", description: "Admin school ID is missing." });
+      toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorNoSchoolIdSubmit") });
       return;
     }
     try {
@@ -144,31 +150,30 @@ export default function ManageStudentsPage() {
         createdAt: Timestamp.now(),
         classIds: data.classId ? [data.classId] : [],
         parentIds: [],
-        schoolId: adminSchoolId, // Add schoolId
+        schoolId: adminSchoolId, 
       };
 
       const docRef = await addDoc(collection(db, "users"), studentData);
       
       if (data.classId) {
         const classRef = doc(db, "classes", data.classId);
-        // Ensure class belongs to the same school before updating
         const classSnap = await getDoc(classRef);
         if(classSnap.exists() && classSnap.data().schoolId === adminSchoolId) {
             await updateDoc(classRef, {
               studentIds: arrayUnion(docRef.id)
             });
         } else {
-            toast({ variant: "warning", title: "Class Mismatch", description: "Student added, but selected class does not belong to your school." });
+            toast({ variant: "warning", title: translate("studentManagementWarningClassMismatchTitle"), description: translate("studentManagementWarningClassMismatchDesc") });
         }
       }
 
-      toast({ title: "Success", description: "Student added successfully." });
+      toast({ title: translate("studentManagementSuccessAddTitle"), description: translate("studentManagementSuccessAddDesc") });
       reset();
       setIsAddDialogOpen(false);
       fetchStudents();
     } catch (err: any) {
       console.error("Error adding student:", err);
-      toast({ variant: "destructive", title: "Error", description: "Failed to add student." });
+      toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAddFailed") });
     }
   };
 
@@ -181,7 +186,7 @@ export default function ManageStudentsPage() {
   const handleUpdateAvatar = async () => {
     if (!currentEditingStudent || !adminSchoolId) return;
     if (currentEditingStudent.schoolId !== adminSchoolId) {
-        toast({ variant: "destructive", title: "Error", description: "Cannot edit avatar for student not in your school." });
+        toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAvatarSchoolMismatch") });
         return;
     }
 
@@ -190,7 +195,7 @@ export default function ManageStudentsPage() {
           new URL(newAvatarUrl.trim());
       } catch (_) {
           if(newAvatarUrl.trim() !== "") { 
-              toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid image URL." });
+              toast({ variant: "destructive", title: "Invalid URL", description: translate("invalidUrlDesc") });
               return;
           }
       }
@@ -202,13 +207,13 @@ export default function ManageStudentsPage() {
       await updateDoc(studentRef, {
         avatarUrl: newAvatarUrl.trim() === "" ? null : newAvatarUrl.trim(),
       });
-      toast({ title: "Success", description: "Student avatar updated successfully." });
+      toast({ title: translate("studentManagementSuccessAvatarTitle"), description: translate("studentManagementSuccessAvatarDesc") });
       setIsEditAvatarDialogOpen(false);
       setCurrentEditingStudent(null);
       fetchStudents(); 
     } catch (err: any) {
       console.error("Error updating avatar:", err);
-      toast({ variant: "destructive", title: "Error", description: "Failed to update avatar." });
+      toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAvatarUpdateFailed") });
     } finally {
       setIsSubmittingAvatar(false);
     }
@@ -223,118 +228,124 @@ export default function ManageStudentsPage() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-            <CardTitle>Manage Students</CardTitle>
-            <CardDescription>Add, view, or edit student records for your school.</CardDescription>
+            <CardTitle>{translate("manageStudents")}</CardTitle>
+            <CardDescription>{translate("studentManagementPageDesc") || "Add, view, or edit student records for your school."}</CardDescription>
         </div>
-         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-             setIsAddDialogOpen(open);
-             if (!open) reset();
-             else if (classes.length === 0 && !loadingClasses) fetchClassesForDropdown();
-         }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
-                <PlusCircle className="h-4 w-4" />
-                Add Student
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Student</DialogTitle>
-                <DialogDescription>Fill in the details for the new student.</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">Name</Label>
-                    <div className="col-span-3">
-                        <Input id="name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
-                        {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="email" className="text-right">Email (Optional)</Label>
-                     <div className="col-span-3">
-                        <Input id="email" type="email" {...register("email")} className={errors.email ? 'border-destructive' : ''} placeholder="student@example.com"/>
-                        {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="studentInfo" className="text-right">Student Info</Label>
-                     <div className="col-span-3">
-                        <Input id="studentInfo" {...register("studentInfo")} placeholder="e.g., Roll No, Admission ID"/>
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="avatarUrl" className="text-right">Avatar URL</Label>
-                     <div className="col-span-3">
-                        <Input id="avatarUrl" {...register("avatarUrl")} className={errors.avatarUrl ? 'border-destructive' : ''} placeholder="https://example.com/avatar.png"/>
-                        {errors.avatarUrl && <p className="text-xs text-destructive mt-1">{errors.avatarUrl.message}</p>}
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="classId" className="text-right">Assign to Class</Label>
-                    <div className="col-span-3">
-                         <Controller
-                            control={control}
-                            name="classId"
-                            render={({ field }) => (
-                                <Select
-                                    onValueChange={field.onChange}
-                                    value={field.value || ''}
-                                    disabled={loadingClasses}
-                                >
-                                    <SelectTrigger id="classId">
-                                        <SelectValue placeholder={loadingClasses ? "Loading..." : "Select Class (Optional)"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none_class_option">None</SelectItem>
-                                        {classes.map(cls => (
-                                            <SelectItem key={cls.id} value={cls.id}>
-                                                {cls.name}
-                                            </SelectItem>
-                                        ))}
-                                        {!loadingClasses && classes.length === 0 && (
-                                            <SelectItem value="no_classes_available" disabled>No classes available for this school</SelectItem>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                             )}
-                         />
-                    </div>
-                 </div>
-                 <DialogFooter>
-                    <DialogClose asChild>
-                       <Button type="button" variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button type="submit" disabled={isSubmitting || loadingClasses}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Add Student
-                    </Button>
-                 </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+        <div className="flex gap-2">
+            <Button size="sm" className="gap-1" onClick={() => setIsImportDialogOpen(true)} disabled={!adminSchoolId}>
+                <Upload className="h-4 w-4" />
+                {translate("studentImportButtonTitle") || "Import Students"}
+            </Button>
+            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+                setIsAddDialogOpen(open);
+                if (!open) reset();
+                else if (classes.length === 0 && !loadingClasses) fetchClassesForDropdown();
+            }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
+                  <PlusCircle className="h-4 w-4" />
+                  {translate("studentManagementAddStudentButton") || "Add Student"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>{translate("studentManagementAddDialogTitle") || "Add New Student"}</DialogTitle>
+                  <DialogDescription>{translate("studentManagementAddDialogDesc") || "Fill in the details for the new student."}</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">{translate("nameLabel")}</Label>
+                      <div className="col-span-3">
+                          <Input id="name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
+                          {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+                      </div>
+                   </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="email" className="text-right">{translate("studentManagementEmailOptionalLabel") || "Email (Optional)"}</Label>
+                       <div className="col-span-3">
+                          <Input id="email" type="email" {...register("email")} className={errors.email ? 'border-destructive' : ''} placeholder="student@example.com"/>
+                          {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                      </div>
+                   </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="studentInfo" className="text-right">{translate("studentManagementStudentInfoLabel") || "Student Info"}</Label>
+                       <div className="col-span-3">
+                          <Input id="studentInfo" {...register("studentInfo")} placeholder={translate("studentManagementStudentInfoPlaceholder") || "e.g., Roll No, Admission ID"}/>
+                      </div>
+                   </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="avatarUrl" className="text-right">{translate("avatarUrlLabel")}</Label>
+                       <div className="col-span-3">
+                          <Input id="avatarUrl" {...register("avatarUrl")} className={errors.avatarUrl ? 'border-destructive' : ''} placeholder="https://example.com/avatar.png"/>
+                          {errors.avatarUrl && <p className="text-xs text-destructive mt-1">{errors.avatarUrl.message}</p>}
+                      </div>
+                   </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="classId" className="text-right">{translate("studentManagementAssignToClassLabel") || "Assign to Class"}</Label>
+                      <div className="col-span-3">
+                           <Controller
+                              control={control}
+                              name="classId"
+                              render={({ field }) => (
+                                  <Select
+                                      onValueChange={field.onChange}
+                                      value={field.value || ''}
+                                      disabled={loadingClasses}
+                                  >
+                                      <SelectTrigger id="classId">
+                                          <SelectValue placeholder={loadingClasses ? translate("loading") : translate("studentManagementSelectClassOptionalPlaceholder") || "Select Class (Optional)"} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          <SelectItem value="none_class_option">{translate("studentManagementNoneOption") || "None"}</SelectItem>
+                                          {classes.map(cls => (
+                                              <SelectItem key={cls.id} value={cls.id}>
+                                                  {cls.name}
+                                              </SelectItem>
+                                          ))}
+                                          {!loadingClasses && classes.length === 0 && (
+                                              <SelectItem value="no_classes_available" disabled>{translate("studentManagementNoClassesAvailable") || "No classes available for this school"}</SelectItem>
+                                          )}
+                                      </SelectContent>
+                                  </Select>
+                               )}
+                           />
+                      </div>
+                   </div>
+                   <DialogFooter>
+                      <DialogClose asChild>
+                         <Button type="button" variant="outline">{translate("cancelButton") || "Cancel"}</Button>
+                      </DialogClose>
+                      <Button type="submit" disabled={isSubmitting || loadingClasses}>
+                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {translate("studentManagementAddStudentButton") || "Add Student"}
+                      </Button>
+                   </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         {loading ? (
            <div className="flex justify-center items-center py-10">
              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-             <span className="ml-2">Loading students...</span>
+             <span className="ml-2">{translate("studentManagementLoadingStudents") || "Loading students..."}</span>
            </div>
          ) : error ? (
             <p className="text-center text-destructive">{error}</p>
          ) : !adminSchoolId ? (
-            <p className="text-center text-destructive">Admin school ID not found. Cannot load students.</p>
+            <p className="text-center text-destructive">{translate("studentManagementErrorNoSchoolId")}</p>
          ) : (
           <div className="border rounded-md">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">Avatar</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Student Info</TableHead>
-                   <TableHead>Classes</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
+                  <TableHead>{translate("nameLabel")}</TableHead>
+                  <TableHead>{translate("emailLabel")}</TableHead>
+                  <TableHead>{translate("studentManagementStudentInfoLabel")}</TableHead>
+                   <TableHead>{translate("studentManagementClassesLabel") || "Classes"}</TableHead>
+                  <TableHead className="text-right">{translate("actionsLabel") || "Actions"}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -353,7 +364,7 @@ export default function ManageStudentsPage() {
                        <TableCell>{student.classIds?.length || 0}</TableCell>
                       <TableCell className="text-right space-x-2">
                          <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
-                            <ImageIcon className="h-3 w-3" /> Edit Avatar
+                            <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton") || "Edit Avatar"}
                          </Button>
                          {/* <Button variant="ghost" size="sm" disabled>Edit Details</Button> */}
                       </TableCell>
@@ -362,7 +373,7 @@ export default function ManageStudentsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                      No students found for your school. Add one using the button above.
+                      {translate("studentManagementNoStudentsFound") || "No students found for your school. Add one using the button above."}
                     </TableCell>
                   </TableRow>
                 )}
@@ -372,6 +383,16 @@ export default function ManageStudentsPage() {
         )}
       </CardContent>
     </Card>
+
+    <StudentImportDialog 
+        isOpen={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        adminSchoolId={adminSchoolId}
+        onImportSuccess={() => {
+            fetchStudents(); // Refresh student list after import
+            setIsImportDialogOpen(false);
+        }}
+    />
 
     {/* Edit Avatar Dialog */}
     <Dialog open={isEditAvatarDialogOpen} onOpenChange={(open) => {
@@ -383,8 +404,8 @@ export default function ManageStudentsPage() {
     }}>
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-                <DialogTitle>Edit Avatar for {currentEditingStudent?.name}</DialogTitle>
-                <DialogDescription>Enter a new image URL for the student's avatar.</DialogDescription>
+                <DialogTitle>{translate("studentManagementEditAvatarDialogTitle", { name: currentEditingStudent?.name || ""}) || `Edit Avatar for ${currentEditingStudent?.name}`}</DialogTitle>
+                <DialogDescription>{translate("studentManagementEditAvatarDialogDesc") || "Enter a new image URL for the student's avatar."}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="flex justify-center mb-4">
@@ -394,7 +415,7 @@ export default function ManageStudentsPage() {
                     </Avatar>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-avatarUrl" className="text-right">Avatar URL</Label>
+                    <Label htmlFor="edit-avatarUrl" className="text-right">{translate("avatarUrlLabel")}</Label>
                     <div className="col-span-3">
                         <Input
                             id="edit-avatarUrl"
@@ -407,11 +428,11 @@ export default function ManageStudentsPage() {
             </div>
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button type="button" variant="outline">Cancel</Button>
+                    <Button type="button" variant="outline">{translate("cancelButton")}</Button>
                 </DialogClose>
                 <Button onClick={handleUpdateAvatar} disabled={isSubmittingAvatar}>
                     {isSubmittingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Avatar
+                    {translate("studentManagementSaveAvatarButton") || "Save Avatar"}
                 </Button>
             </DialogFooter>
         </DialogContent>
