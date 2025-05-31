@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "AttendEase 플랫폼의 주요 지표 개요.",
   "saveProfilePictureButton": "프로필 사진 저장",
   "schoolSettingsTitle": "학교 설정",
-  "adminSchoolSettingsDesc": "학교 이름과 교사 등록을 위한 고유 식별 코드를 관리합니다."
+  "adminSchoolSettingsDesc": "학교 이름과 교사 등록을 위한 고유 식별 코드를 관리합니다.",
+  "userRoleDistributionTitle": "사용자 역할 분포",
+  "userRoleDistributionDesc": "할당된 역할별 사용자 분류.",
+  "roleStudent": "학생"
 }
-

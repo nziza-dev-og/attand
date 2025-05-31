@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "Muhtasari wa metriki muhimu za mfumo wa AttendEase.",
   "saveProfilePictureButton": "Hifadhi Picha ya Wasifu",
   "schoolSettingsTitle": "Mipangilio ya Shule",
-  "adminSchoolSettingsDesc": "Dhibiti jina la shule yako na nambari ya kipekee ya utambulisho kwa usajili wa walimu."
+  "adminSchoolSettingsDesc": "Dhibiti jina la shule yako na nambari ya kipekee ya utambulisho kwa usajili wa walimu.",
+  "userRoleDistributionTitle": "Mgawanyo wa Majukumu ya Watumiaji",
+  "userRoleDistributionDesc": "Mgawanyo wa watumiaji kulingana na majukumu waliyopewa.",
+  "roleStudent": "Mwanafunzi"
 }
-

@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "AttendEase தளத்திற்கான முக்கிய அளவீடுகளின் கண்ணோட்டம்.",
   "saveProfilePictureButton": "சுயவிவரப் படத்தை சேமி",
   "schoolSettingsTitle": "பள்ளி அமைப்புகள்",
-  "adminSchoolSettingsDesc": "உங்கள் பள்ளியின் பெயர் மற்றும் ஆசிரியர் பதிவிற்கான தனிப்பட்ட அடையாளக் குறியீட்டை நிர்வகிக்கவும்."
+  "adminSchoolSettingsDesc": "உங்கள் பள்ளியின் பெயர் மற்றும் ஆசிரியர் பதிவிற்கான தனிப்பட்ட அடையாளக் குறியீட்டை நிர்வகிக்கவும்.",
+  "userRoleDistributionTitle": "பயனர் பாத்திரப் பகிர்வு",
+  "userRoleDistributionDesc": "ஒதுக்கப்பட்ட பாத்திரங்களின்படி பயனர்களின் விவரம்.",
+  "roleStudent": "மாணவர்"
 }
-

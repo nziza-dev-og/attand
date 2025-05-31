@@ -2,17 +2,26 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Users, School, ShieldCheck } from "lucide-react";
+import { Users, School, ShieldCheck, PieChart as PieChartIcon } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where } from "firebase/firestore";
+import { collection, getCountFromServer, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltipContent, ChartLegend, type ChartConfig } from "@/components/ui/chart";
+import type { Role } from "@/lib/types";
 
 interface SuperAdminStats {
   totalSchools: number; // Number of Admin accounts
   totalUsers: number;   // Total users
+}
+
+interface UserRoleDistributionData {
+  name: string;
+  value: number;
+  fill: string;
 }
 
 export default function SuperAdminDashboardPage() {
@@ -20,36 +29,92 @@ export default function SuperAdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<SuperAdminStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [userRoleDistribution, setUserRoleDistribution] = useState<UserRoleDistributionData[]>([]);
+  const [loadingUserRoleDistribution, setLoadingUserRoleDistribution] = useState(true);
+
+  const chartConfig = {
+    admins: { label: translate('roleAdmin'), color: "hsl(var(--chart-1))" },
+    teachers: { label: translate('roleTeacher'), color: "hsl(var(--chart-2))" },
+    parents: { label: translate('roleParent'), color: "hsl(var(--chart-3))" },
+    students: { label: translate('roleStudent'), color: "hsl(var(--chart-4))" },
+    superadmins: { label: translate('roleSuperAdmin'), color: "hsl(var(--chart-5))" },
+  } satisfies ChartConfig;
+
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchAllData = async () => {
       if (authLoading || !user) return;
+      
       setLoadingStats(true);
+      setLoadingUserRoleDistribution(true);
+
       try {
+        // Fetch general stats
         const adminUsersQuery = query(collection(db, "users"), where("role", "==", "Admin"));
-        const allUsersQuery = collection(db, "users");
+        const allUsersCollectionQuery = collection(db, "users");
 
         const adminSnapshot = await getCountFromServer(adminUsersQuery);
-        const allUsersSnapshot = await getCountFromServer(allUsersQuery);
+        const allUsersSnapshot = await getCountFromServer(allUsersCollectionQuery);
         
         setStats({
           totalSchools: adminSnapshot.data().count,
           totalUsers: allUsersSnapshot.data().count,
         });
-      } catch (error) {
-        console.error("Error fetching super admin stats:", error);
-      } finally {
         setLoadingStats(false);
+
+        // Fetch user role distribution data
+        const usersDocsSnapshot = await getDocs(allUsersCollectionQuery);
+        const roleCounts: Record<string, number> = { 
+            Admin: 0, Teacher: 0, Parent: 0, Student: 0, SuperAdmin: 0 
+        };
+        
+        usersDocsSnapshot.forEach(doc => {
+          const userRole = doc.data().role as Role;
+          if (userRole && roleCounts.hasOwnProperty(userRole)) {
+            roleCounts[userRole]++;
+          }
+        });
+
+        const distributionData = Object.entries(roleCounts).map(([roleName, count]) => {
+          let translatedRoleName = roleName;
+          let colorKey = roleName.toLowerCase() as keyof typeof chartConfig;
+
+          switch(roleName as Role) {
+            case 'Admin': translatedRoleName = translate('roleAdmin'); colorKey = 'admins'; break;
+            case 'Teacher': translatedRoleName = translate('roleTeacher'); colorKey = 'teachers'; break;
+            case 'Parent': translatedRoleName = translate('roleParent'); colorKey = 'parents'; break;
+            case 'Student': translatedRoleName = translate('roleStudent'); colorKey = 'students'; break;
+            case 'SuperAdmin': translatedRoleName = translate('roleSuperAdmin'); colorKey = 'superadmins'; break;
+          }
+          
+          return {
+            name: translatedRoleName || roleName,
+            value: count,
+            fill: chartConfig[colorKey]?.color || "hsl(var(--muted))",
+          };
+        }).filter(item => item.value > 0); // Only include roles with users
+        
+        setUserRoleDistribution(distributionData);
+
+      } catch (error) {
+        console.error("Error fetching super admin data:", error);
+        setLoadingStats(false); // Ensure loading stops on error
+      } finally {
+        setLoadingUserRoleDistribution(false);
       }
     };
+
     if (!authLoading && user) {
-        fetchStats();
+        fetchAllData();
     } else if (!authLoading && !user) {
         setLoadingStats(false);
+        setLoadingUserRoleDistribution(false);
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, translate]); // Added translate to dependencies
 
-  if (authLoading || loadingStats) {
+  const isLoading = authLoading || loadingStats || loadingUserRoleDistribution;
+
+  if (isLoading) {
     return (
       <div className="grid auto-rows-min gap-6">
         <Card className="sm:col-span-2">
@@ -87,6 +152,15 @@ export default function SuperAdminDashboardPage() {
                 </CardContent>
               </Card>
             </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+              <Skeleton className="h-7 w-1/2 rounded-md" />
+              <Skeleton className="h-4 w-3/4 mt-1 rounded-md" />
+          </CardHeader>
+          <CardContent className="flex justify-center items-center h-[300px]">
+              <Skeleton className="h-full w-full max-w-xs rounded-full" />
           </CardContent>
         </Card>
          <Card>
@@ -150,6 +224,48 @@ export default function SuperAdminDashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {userRoleDistribution.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChartIcon className="h-5 w-5" />
+              {translate('userRoleDistributionTitle') || "User Role Distribution"}
+            </CardTitle>
+            <CardDescription>
+              {translate('userRoleDistributionDesc') || "Breakdown of users by their assigned roles."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Tooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Pie
+                    data={userRoleDistribution}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    innerRadius={60} // For Donut chart
+                    labelLine={false}
+                    // label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  >
+                    {userRoleDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Legend content={<ChartLegend className="mt-4" />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
 
        <Card>
           <CardHeader>

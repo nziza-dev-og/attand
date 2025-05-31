@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "AttendEase 平台关键指标概览。",
   "saveProfilePictureButton": "保存头像",
   "schoolSettingsTitle": "学校设置",
-  "adminSchoolSettingsDesc": "管理您的学校名称和用于教师注册的唯一识别码。"
+  "adminSchoolSettingsDesc": "管理您的学校名称和用于教师注册的唯一识别码。",
+  "userRoleDistributionTitle": "用户角色分布",
+  "userRoleDistributionDesc": "按分配的角色划分的用户细分。",
+  "roleStudent": "学生"
 }
-

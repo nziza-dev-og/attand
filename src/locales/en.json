@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "An overview of key metrics for the AttendEase platform.",
   "saveProfilePictureButton": "Save Profile Picture",
   "schoolSettingsTitle": "School Settings",
-  "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration."
+  "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration.",
+  "userRoleDistributionTitle": "User Role Distribution",
+  "userRoleDistributionDesc": "Breakdown of users by their assigned roles.",
+  "roleStudent": "Student"
 }
-

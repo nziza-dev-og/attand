@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "نظرة عامة على المقاييس الرئيسية لمنصة AttendEase.",
   "saveProfilePictureButton": "حفظ صورة الملف الشخصي",
   "schoolSettingsTitle": "إعدادات المدرسة",
-  "adminSchoolSettingsDesc": "إدارة اسم مدرستك ورمز التعريف الفريد لتسجيل المعلمين."
+  "adminSchoolSettingsDesc": "إدارة اسم مدرستك ورمز التعريف الفريد لتسجيل المعلمين.",
+  "userRoleDistributionTitle": "توزيع أدوار المستخدمين",
+  "userRoleDistributionDesc": "تفصيل المستخدمين حسب الأدوار المخصصة لهم.",
+  "roleStudent": "طالب"
 }
-

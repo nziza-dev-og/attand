@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "Àkópọ̀ àwọn ìwọ̀n pàtàkì fún pẹpẹ AttendEase.",
   "saveProfilePictureButton": "Fi Àwòrán Àpamọ́ Pamọ́",
   "schoolSettingsTitle": "Ètò Ilé-ìwé",
-  "adminSchoolSettingsDesc": "Ṣakoso orúkọ ilé-ìwé rẹ àti kóòdù ìdánimọ̀ àkànṣe fún ìforúkọsílẹ̀ olùkọ́."
+  "adminSchoolSettingsDesc": "Ṣakoso orúkọ ilé-ìwé rẹ àti kóòdù ìdánimọ̀ àkànṣe fún ìforúkọsílẹ̀ olùkọ́.",
+  "userRoleDistributionTitle": "Pínpín Ipa Olùṣe",
+  "userRoleDistributionDesc": "Pínpín àwọn olùṣe nípasẹ̀ àwọn ipa tí a yàn fún wọn.",
+  "roleStudent": "Akẹ́kọ̀ọ́"
 }
-

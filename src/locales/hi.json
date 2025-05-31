@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "AttendEase प्लेटफ़ॉर्म के प्रमुख मैट्रिक्स का अवलोकन।",
   "saveProfilePictureButton": "प्रोफ़ाइल चित्र सहेजें",
   "schoolSettingsTitle": "स्कूल सेटिंग्स",
-  "adminSchoolSettingsDesc": "अपने स्कूल का नाम और शिक्षक पंजीकरण के लिए अद्वितीय पहचान कोड प्रबंधित करें।"
+  "adminSchoolSettingsDesc": "अपने स्कूल का नाम और शिक्षक पंजीकरण के लिए अद्वितीय पहचान कोड प्रबंधित करें।",
+  "userRoleDistributionTitle": "उपयोगकर्ता भूमिका वितरण",
+  "userRoleDistributionDesc": "सौंपी गई भूमिकाओं के अनुसार उपयोगकर्ताओं का विवरण।",
+  "roleStudent": "छात्र"
 }
-

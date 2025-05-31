@@ -263,6 +263,8 @@
   "platformStatisticsDesc": "Takaitaccen mahimman bayanai na dandalin AttendEase.",
   "saveProfilePictureButton": "Adana Hoton Bayanai",
   "schoolSettingsTitle": "Saitunan Makaranta",
-  "adminSchoolSettingsDesc": "Sarrafa sunan makarantar ka da lambar ganewa ta musamman don rajistar malamai."
+  "adminSchoolSettingsDesc": "Sarrafa sunan makarantar ka da lambar ganewa ta musamman don rajistar malamai.",
+  "userRoleDistributionTitle": "Rarraba Matsayin Masu Amfani",
+  "userRoleDistributionDesc": "Rarraba masu amfani bisa ga matsayin da aka ba su.",
+  "roleStudent": "Dalibi"
 }
-
