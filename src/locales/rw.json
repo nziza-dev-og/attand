@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "Uruhare Rutazwi",
   "schoolNameNotSet": "Izina ry'Ishuri Ntirishyiriweho",
   "noSchoolIdPlaceholder": "Nta ID y'Ishuri",
-  "globalAccessPlaceholder": "Uburyo bwo Kugera Hose"
+  "globalAccessPlaceholder": "Uburyo bwo Kugera Hose",
+  "platformStatisticsTitle": "Imibare ya Sisitemu",
+  "platformStatisticsDesc": "Incāmunshuro y'imibare y'ingenzi ya sisitemu ya AttendEase."
 }

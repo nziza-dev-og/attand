@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "دور غير معروف",
   "schoolNameNotSet": "اسم المدرسة غير محدد",
   "noSchoolIdPlaceholder": "لا يوجد معرف مدرسة",
-  "globalAccessPlaceholder": "وصول عالمي"
+  "globalAccessPlaceholder": "وصول عالمي",
+  "platformStatisticsTitle": "إحصائيات المنصة",
+  "platformStatisticsDesc": "نظرة عامة على المقاييس الرئيسية لمنصة AttendEase."
 }

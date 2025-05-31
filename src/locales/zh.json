@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "未知角色",
   "schoolNameNotSet": "学校名称未设置",
   "noSchoolIdPlaceholder": "无学校ID",
-  "globalAccessPlaceholder": "全局访问"
+  "globalAccessPlaceholder": "全局访问",
+  "platformStatisticsTitle": "平台统计",
+  "platformStatisticsDesc": "AttendEase 平台关键指标概览。"
 }

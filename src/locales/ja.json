@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "不明な役割",
   "schoolNameNotSet": "学校名未設定",
   "noSchoolIdPlaceholder": "学校IDなし",
-  "globalAccessPlaceholder": "グローバルアクセス"
+  "globalAccessPlaceholder": "グローバルアクセス",
+  "platformStatisticsTitle": "プラットフォーム統計",
+  "platformStatisticsDesc": "AttendEase プラットフォームの主要メトリクスの概要。"
 }

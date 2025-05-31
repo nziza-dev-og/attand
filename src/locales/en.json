@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "Unknown Role",
   "schoolNameNotSet": "School Name Not Set",
   "noSchoolIdPlaceholder": "No School ID",
-  "globalAccessPlaceholder": "Global Access"
+  "globalAccessPlaceholder": "Global Access",
+  "platformStatisticsTitle": "Platform Statistics",
+  "platformStatisticsDesc": "An overview of key metrics for the AttendEase platform."
 }

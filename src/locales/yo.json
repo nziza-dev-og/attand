@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "Ipa Tí A Kò Mọ̀",
   "schoolNameNotSet": "Orúkọ Ilé-ìwé Kò Sètò",
   "noSchoolIdPlaceholder": "Kò sí ID Ilé-ìwé",
-  "globalAccessPlaceholder": "Wíwọlé Gbogbogbò"
+  "globalAccessPlaceholder": "Wíwọlé Gbogbogbò",
+  "platformStatisticsTitle": "Àwọn Iṣiro Pẹpẹ",
+  "platformStatisticsDesc": "Àkópọ̀ àwọn ìwọ̀n pàtàkì fún pẹpẹ AttendEase."
 }

@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "Matsayi Wanda Ba a San Shi Ba",
   "schoolNameNotSet": "Ba a Saita Sunan Makaranta Ba",
   "noSchoolIdPlaceholder": "Babu ID na Makaranta",
-  "globalAccessPlaceholder": "Samun Dama na Duniya"
+  "globalAccessPlaceholder": "Samun Dama na Duniya",
+  "platformStatisticsTitle": "Kididdigar Dandalin",
+  "platformStatisticsDesc": "Takaitaccen mahimman bayanai na dandalin AttendEase."
 }

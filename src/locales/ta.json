@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "அறியப்படாத பங்கு",
   "schoolNameNotSet": "பள்ளி பெயர் அமைக்கப்படவில்லை",
   "noSchoolIdPlaceholder": "பள்ளி ID இல்லை",
-  "globalAccessPlaceholder": "உலகளாவிய அணுகல்"
+  "globalAccessPlaceholder": "உலகளாவிய அணுகல்",
+  "platformStatisticsTitle": "தளத்தின் புள்ளிவிவரங்கள்",
+  "platformStatisticsDesc": "AttendEase தளத்திற்கான முக்கிய அளவீடுகளின் கண்ணோட்டம்."
 }

@@ -258,5 +258,7 @@
   "unknownRolePlaceholder": "अज्ञात भूमिका",
   "schoolNameNotSet": "स्कूल का नाम सेट नहीं है",
   "noSchoolIdPlaceholder": "कोई स्कूल आईडी नहीं",
-  "globalAccessPlaceholder": "वैश्विक पहुँच"
+  "globalAccessPlaceholder": "वैश्विक पहुँच",
+  "platformStatisticsTitle": "प्लेटफ़ॉर्म आँकड़े",
+  "platformStatisticsDesc": "AttendEase प्लेटफ़ॉर्म के प्रमुख मैट्रिक्स का अवलोकन।"
 }

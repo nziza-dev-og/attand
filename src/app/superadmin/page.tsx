@@ -7,12 +7,12 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where } from "firebase/firestore"; // Ensure query is imported
+import { collection, getCountFromServer, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 interface SuperAdminStats {
   totalSchools: number; // Number of Admin accounts
-  totalUsers: number;   // Total users (excluding SuperAdmin itself perhaps)
+  totalUsers: number;   // Total users
 }
 
 export default function SuperAdminDashboardPage() {
@@ -27,7 +27,7 @@ export default function SuperAdminDashboardPage() {
       setLoadingStats(true);
       try {
         const adminUsersQuery = query(collection(db, "users"), where("role", "==", "Admin"));
-        const allUsersQuery = collection(db, "users"); // Query all users for total count
+        const allUsersQuery = collection(db, "users");
 
         const adminSnapshot = await getCountFromServer(adminUsersQuery);
         const allUsersSnapshot = await getCountFromServer(allUsersQuery);
@@ -38,14 +38,13 @@ export default function SuperAdminDashboardPage() {
         });
       } catch (error) {
         console.error("Error fetching super admin stats:", error);
-        // Optionally, set an error state here to display to the user
       } finally {
         setLoadingStats(false);
       }
     };
-    if (!authLoading && user) { // Fetch stats only when auth is done and user exists
+    if (!authLoading && user) {
         fetchStats();
-    } else if (!authLoading && !user) { // If auth is done and no user, stop loading
+    } else if (!authLoading && !user) {
         setLoadingStats(false);
     }
   }, [user, authLoading]);
@@ -60,28 +59,36 @@ export default function SuperAdminDashboardPage() {
                 <Skeleton className="h-4 w-5/6 mt-1 rounded-md" />
             </CardHeader>
         </Card>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-5 w-1/2 rounded-md" />
-                <School className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <Skeleton className="h-8 w-1/4 rounded-md" />
-                <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-5 w-1/2 rounded-md" />
-                <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <Skeleton className="h-8 w-1/4 rounded-md" />
-                <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-1/3 rounded-md" />
+            <Skeleton className="h-4 w-2/3 mt-1 rounded-md" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <Skeleton className="h-5 w-1/2 rounded-md" />
+                    <School className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-8 w-1/4 rounded-md" />
+                    <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <Skeleton className="h-5 w-1/2 rounded-md" />
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-8 w-1/4 rounded-md" />
+                    <Skeleton className="h-4 w-3/4 mt-2 rounded-md" />
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
          <Card>
             <CardHeader>
                 <Skeleton className="h-7 w-1/2 rounded-md" />
@@ -97,7 +104,7 @@ export default function SuperAdminDashboardPage() {
   }
 
   return (
-    <div className="grid auto-rows-min gap-6">
+    <div className="grid auto-rows-auto gap-6">
       <Card className="sm:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle>{translate('superAdminDashboardTitle')}</CardTitle>
@@ -107,32 +114,43 @@ export default function SuperAdminDashboardPage() {
         </CardHeader>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{translate('totalSchoolsManaged') || "Total Schools Managed"}</CardTitle>
-            <School className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalSchools ?? 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {translate('totalAdminAccounts') || "Represents number of Admin accounts"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{translate('totalUsersSystem') || "Total Users in System"}</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalUsers ?? 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {translate('allUserRolesCombined') || "Includes Admins, Teachers, Parents, Students"}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{translate('platformStatisticsTitle') || "Platform Statistics"}</CardTitle>
+          <CardDescription>
+            {translate('platformStatisticsDesc') || "An overview of key metrics for the AttendEase platform."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{translate('totalSchoolsManaged') || "Total Schools Managed"}</CardTitle>
+                <School className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalSchools ?? 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  {translate('totalAdminAccounts') || "Represents number of Admin accounts"}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{translate('totalUsersSystem') || "Total Users in System"}</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalUsers ?? 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  {translate('allUserRolesCombined') || "Includes Admins, Teachers, Parents, Students"}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+
        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"> <ShieldCheck className="h-6 w-6 text-primary"/> {translate('superAdminResponsibilitiesTitle') || "Super Admin Responsibilities"}</CardTitle>
