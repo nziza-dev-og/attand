@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, FileText, AlertCircle } from "lucide-react";
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx'; // Import xlsx library
 import type { Student, UserProfile } from "@/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -26,10 +27,10 @@ interface CsvStudent {
   Name?: string;
   Email?: string;
   StudentInfo?: string;
-  AvatarURL?: string; // Optional Avatar URL column
+  AvatarURL?: string;
 }
 
-const BATCH_SIZE = 100; // Firestore batch write limit is 500, but smaller batches are safer
+const BATCH_SIZE = 100;
 
 export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImportSuccess }: StudentImportDialogProps) {
   const { toast } = useToast();
@@ -43,11 +44,19 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-      if (selectedFile.type === "text/csv" || selectedFile.name.endsWith(".csv") || selectedFile.type === "application/vnd.ms-excel") {
+      const fileType = selectedFile.type;
+      const fileName = selectedFile.name.toLowerCase();
+
+      if (
+        fileType === "text/csv" || fileName.endsWith(".csv") || // CSV types
+        fileType === "application/vnd.ms-excel" || // Older Excel .xls
+        fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // Newer Excel .xlsx
+        fileName.endsWith(".xls") || fileName.endsWith(".xlsx")
+      ) {
         setFile(selectedFile);
         setError(null);
       } else {
-        setError(translate("studentImportErrorInvalidFileType") || "Invalid file type. Please upload a CSV file. If using Excel, please 'Save As' CSV.");
+        setError(translate("studentImportErrorInvalidFileTypeExcel") || "Invalid file type. Please upload a CSV, XLSX, or XLS file.");
         setFile(null);
       }
     }
@@ -61,104 +70,142 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     setError(null);
   };
 
-  const handleImport = async () => {
-    if (!file) {
-      setError(translate("studentImportErrorNoFile") || "Please select a CSV file to import.");
-      return;
-    }
+  const processImportData = async (dataToImport: CsvStudent[]) => {
     if (!adminSchoolId) {
-      setError(translate("studentImportErrorNoSchoolId") || "Admin school context is missing. Cannot import.");
-      toast({ variant: "destructive", title: "Error", description: translate("studentImportErrorNoSchoolId") });
+        setError(translate("studentImportErrorNoSchoolId") || "Admin school context is missing. Cannot import.");
+        toast({ variant: "destructive", title: "Error", description: translate("studentImportErrorNoSchoolId") });
+        setIsImporting(false);
+        return;
+    }
+
+    const studentsToImport = dataToImport.filter(row => row.Name && row.Name.trim() !== "");
+    setTotalToImport(studentsToImport.length);
+
+    if (studentsToImport.length === 0) {
+      setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
+      setIsImporting(false);
       return;
     }
 
+    let importedCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
+      const firestoreBatch = writeBatch(db); // Correctly create a batch
+      const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
+
+      chunk.forEach((csvStudent) => {
+        if (!csvStudent.Name || csvStudent.Name.trim() === "") {
+          console.warn("Skipping row due to missing Name:", csvStudent);
+          errorCount++;
+          return;
+        }
+
+        const studentDocRef = doc(collection(db, "users"));
+        const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' | 'classIds'> & Partial<Pick<Student, 'classIds'>> = {
+          name: csvStudent.Name.trim(),
+          email: csvStudent.Email?.trim() || null,
+          role: "Student",
+          studentInfo: csvStudent.StudentInfo?.trim() || null,
+          avatarUrl: csvStudent.AvatarURL?.trim() || null,
+          createdAt: Timestamp.now(),
+          schoolId: adminSchoolId,
+        };
+        firestoreBatch.set(studentDocRef, studentData);
+      });
+
+      try {
+        await firestoreBatch.commit();
+        importedCount += chunk.length - chunk.filter(s => !s.Name || s.Name.trim() === "").length;
+        setImportProgress(importedCount);
+      } catch (batchError) {
+        console.error("Error importing batch:", batchError);
+        errorCount += chunk.length;
+        toast({
+          variant: "destructive",
+          title: translate("studentImportErrorBatchFailedTitle") || "Batch Import Failed",
+          description: `${translate("studentImportErrorBatchFailedDesc") || "A batch of students could not be imported."} ${batchError instanceof Error ? batchError.message : ""}`,
+        });
+      }
+    }
+
+    setIsImporting(false);
+
+    if (importedCount > 0) {
+      toast({
+        title: translate("studentImportSuccessTitle") || "Import Successful",
+        description: translate("studentImportSuccessDesc", { count: importedCount.toString() }),
+      });
+      onImportSuccess();
+    }
+    if (errorCount > 0) {
+      toast({
+        variant: "warning",
+        title: translate("studentImportWarningTitle") || "Import Warnings",
+        description: translate("studentImportWarningDesc", { count: errorCount.toString() }),
+      });
+    }
+    if (importedCount === 0 && errorCount === 0 && studentsToImport.length > 0) {
+         setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
+    } else if (importedCount === 0 && errorCount > 0) {
+        setError(translate("studentImportErrorAllFailed") || "All student records failed to import. Check file format and console for errors.");
+    }
+  }
+
+
+  const handleImport = async () => {
+    if (!file) {
+      setError(translate("studentImportErrorNoFile") || "Please select a file to import.");
+      return;
+    }
+    
     setIsImporting(true);
     setError(null);
     setImportProgress(0);
 
-    Papa.parse<CsvStudent>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: async (results) => {
-        const studentsToImport = results.data.filter(row => row.Name && row.Name.trim() !== "");
-        setTotalToImport(studentsToImport.length);
+    const reader = new FileReader();
 
-        if (studentsToImport.length === 0) {
-          setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
+    if (file.name.endsWith('.csv') || file.type === 'text/csv') {
+      Papa.parse<CsvStudent>(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          processImportData(results.data);
+        },
+        error: (err) => {
+          console.error("CSV Parsing Error:", err);
+          setError(`${translate("studentImportErrorParsingFailed") || "Failed to parse CSV file:"} ${err.message}`);
           setIsImporting(false);
-          return;
         }
-
-        let importedCount = 0;
-        let errorCount = 0;
-
-        for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
-          const batch = writeBatch(db);
-          const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
-
-          chunk.forEach((csvStudent) => {
-            if (!csvStudent.Name || csvStudent.Name.trim() === "") {
-              console.warn("Skipping row due to missing Name:", csvStudent);
-              errorCount++;
-              return; 
-            }
-            
-            const studentDocRef = doc(collection(db, "users")); 
-            const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' | 'classIds'> & Partial<Pick<Student, 'classIds'>> = {
-              name: csvStudent.Name.trim(),
-              email: csvStudent.Email?.trim() || null,
-              role: "Student",
-              studentInfo: csvStudent.StudentInfo?.trim() || null,
-              avatarUrl: csvStudent.AvatarURL?.trim() || null,
-              createdAt: Timestamp.now(),
-              schoolId: adminSchoolId,
-            };
-            batch.set(studentDocRef, studentData);
-          });
-
-          try {
-            await batch.commit();
-            importedCount += chunk.length - chunk.filter(s => !s.Name || s.Name.trim() === "").length; 
-            setImportProgress(importedCount);
-          } catch (batchError) {
-            console.error("Error importing batch:", batchError);
-            errorCount += chunk.length; 
-            toast({
-              variant: "destructive",
-              title: translate("studentImportErrorBatchFailedTitle") || "Batch Import Failed",
-              description: `${translate("studentImportErrorBatchFailedDesc") || "A batch of students could not be imported."} ${batchError instanceof Error ? batchError.message : ""}`,
-            });
+      });
+    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+      reader.onload = (event) => {
+        try {
+          const data = event.target?.result;
+          if (!data) {
+            throw new Error("File data could not be read.");
           }
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json<CsvStudent>(worksheet, { defval: "" }); // Ensure empty cells become empty strings
+          processImportData(jsonData);
+        } catch (excelError) {
+          console.error("Excel Parsing Error:", excelError);
+          setError(`${translate("studentImportErrorParsingFailedExcel") || "Failed to parse Excel file:"} ${excelError instanceof Error ? excelError.message : "Unknown error"}`);
+          setIsImporting(false);
         }
-        
+      };
+      reader.onerror = (error) => {
+        console.error("File Reading Error:", error);
+        setError(translate("studentImportErrorReadingFile") || "Error reading file.");
         setIsImporting(false);
-
-        if (importedCount > 0) {
-          toast({
-            title: translate("studentImportSuccessTitle") || "Import Successful",
-            description: translate("studentImportSuccessDesc", { count: importedCount.toString() }),
-          });
-          onImportSuccess();
-        }
-        if (errorCount > 0) {
-          toast({
-            variant: "warning",
-            title: translate("studentImportWarningTitle") || "Import Warnings",
-            description: translate("studentImportWarningDesc", { count: errorCount.toString() }),
-          });
-        }
-        if (importedCount === 0 && errorCount === 0 && studentsToImport.length > 0) {
-             setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
-        } else if (importedCount === 0 && errorCount > 0) {
-            setError(translate("studentImportErrorAllFailed") || "All student records failed to import. Check file format and console for errors.");
-        }
-      },
-      error: (err) => {
-        console.error("CSV Parsing Error:", err);
-        setError(`${translate("studentImportErrorParsingFailed") || "Failed to parse CSV file:"} ${err.message}`);
-        setIsImporting(false);
-      }
-    });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      setError(translate("studentImportErrorInvalidFileTypeExcel") || "Unsupported file type. Please upload a CSV, XLSX, or XLS file.");
+      setIsImporting(false);
+    }
   };
 
   return (
@@ -169,21 +216,21 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students from CSV"}
+            <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDescCsvOnly") || "Upload a CSV file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs. Excel: 'Save As' CSV."}
+            {translate("studentImportDescExcelCsv") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="student-csv-file" className="flex items-center gap-1">
-                <FileText className="h-4 w-4" /> {translate("studentImportFileLabel") || "CSV File"}
+            <Label htmlFor="student-file-import" className="flex items-center gap-1">
+                <FileText className="h-4 w-4" /> {translate("studentImportFileLabelExcelCsv") || "CSV or Excel File"}
             </Label>
             <Input
-              id="student-csv-file"
+              id="student-file-import"
               type="file"
-              accept=".csv, text/csv" 
+              accept=".csv, text/csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xls, .xlsx"
               onChange={handleFileChange}
               disabled={isImporting}
               className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
@@ -225,3 +272,4 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     </Dialog>
   );
 }
+
