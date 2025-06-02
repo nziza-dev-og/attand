@@ -266,7 +266,7 @@
   "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration.",
   "roleStudent": "Student",
   "studentManagementErrorNoSchoolId": "School ID not found for admin.",
-  "studentManagementErrorLoadFailed": "Failed to load students. Please try again.",
+  "studentManagementErrorLoadFailed": "Failed to load students or classes. Please try again.",
   "studentManagementErrorLoadClassesFailed": "Failed to load classes for assignment.",
   "studentManagementErrorAuthFailed": "User not authenticated or school ID missing.",
   "studentManagementErrorNoSchoolIdSubmit": "Admin school ID is missing.",
@@ -280,6 +280,7 @@
   "studentManagementSuccessAvatarDesc": "Student avatar updated successfully.",
   "studentManagementErrorAvatarUpdateFailed": "Failed to update avatar.",
   "studentManagementPageDesc": "Add, view, or edit student records for your school.",
+  "studentManagementPageDescClassified": "View students grouped by class, add new students, or import them.",
   "studentImportButtonTitle": "Import Students",
   "studentManagementAddStudentButton": "Add Student",
   "studentManagementAddDialogTitle": "Add New Student",
@@ -322,9 +323,6 @@
   "studentImportErrorParsingFailedExcel": "Failed to parse Excel file:",
   "studentImportErrorReadingFile": "Error reading file.",
   "studentImportErrorAllFailed": "All student records failed to import. Check file format and console for errors.",
-  "errorLoadingStats": "Failed to load platform statistics.",
-  "errorLoadingChartData": "Failed to load user role distribution data.",
-  "errorAuthRequired": "Authentication required to view this data.",
   "parentNotLinkedToSchool": "Not yet linked to a specific school",
   "studentDeleteConfirmTitle": "Delete Student?",
   "studentDeleteConfirmDesc": "Are you sure you want to delete {{name}}?",
@@ -333,5 +331,8 @@
   "studentDeleteSuccessTitle": "Student Deleted",
   "studentDeleteSuccessDesc": "{{name}} has been successfully deleted.",
   "studentDeleteFailedDesc": "Failed to delete the student. Please try again.",
-  "studentManagementErrorDeleteSchoolMismatch": "Cannot delete a student who does not belong to your school."
+  "studentManagementErrorDeleteSchoolMismatch": "Cannot delete a student who does not belong to your school.",
+  "students": "students",
+  "unassignedStudentsTitle": "Unassigned Students",
+  "studentManagementNoStudentsInClass": "No students in this class."
 }

@@ -3,7 +3,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, arrayUnion, getDoc, deleteDoc, arrayRemove, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,16 +15,16 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2 } from "lucide-react";
-import type { Student, UserProfile, Class, Parent } from "@/lib/types";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users } from "lucide-react";
+import type { Student, UserProfile, Class } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
 import { useLanguage } from "@/contexts/LanguageContext";
-
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -40,23 +40,24 @@ const studentSchema = z.object({
 
 type StudentFormData = z.infer<typeof studentSchema>;
 
-interface StudentDisplay extends Student {
-    // id is already in Student -> UserProfile
-}
+interface StudentDisplay extends Student {}
+interface ClassSelectItem { id: string; name: string; }
 
-interface ClassSelectItem {
-  id: string;
-  name: string;
+interface GroupedStudents {
+  byClass: Record<string, StudentDisplay[]>;
+  unassigned: StudentDisplay[];
 }
 
 export default function ManageStudentsPage() {
   const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const { translate } = useLanguage();
-  const [students, setStudents] = useState<StudentDisplay[]>([]);
-  const [classes, setClasses] = useState<ClassSelectItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingClasses, setLoadingClasses] = useState(true);
+  
+  const [allStudents, setAllStudents] = useState<StudentDisplay[]>([]);
+  const [allClasses, setAllClasses] = useState<ClassSelectItem[]>([]);
+  
+  const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditAvatarDialogOpen, setIsEditAvatarDialogOpen] = useState(false);
   const [currentEditingStudent, setCurrentEditingStudent] = useState<StudentDisplay | null>(null);
@@ -66,7 +67,6 @@ export default function ManageStudentsPage() {
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); 
 
-
   const { toast } = useToast();
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<StudentFormData>({
@@ -74,18 +74,21 @@ export default function ManageStudentsPage() {
     defaultValues: { name: '', email: '', studentInfo: '', avatarUrl: '', classId: undefined }
   });
 
-  const fetchStudents = React.useCallback(async () => {
-    if (!adminSchoolId) {
-      setError(translate("studentManagementErrorNoSchoolId") || "School ID not found for admin.");
-      setLoading(false);
+  const fetchData = useCallback(async () => {
+    if (!adminSchoolId || authLoading) {
+      if (!authLoading && !adminSchoolId) {
+        setError(translate("studentManagementErrorNoSchoolId") || "School ID not found for admin.");
+        setLoadingData(false);
+      }
       return;
     }
-    setLoading(true);
+    setLoadingData(true);
     setError(null);
     try {
-      const q = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
-      const querySnapshot = await getDocs(q);
-      const studentList = querySnapshot.docs.map(doc => ({
+      // Fetch students
+      const studentsQuery = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
+      const studentsSnapshot = await getDocs(studentsQuery);
+      const studentList = studentsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...(doc.data() as Omit<UserProfile, 'uid' | 'createdAt'> & { createdAt: Timestamp }),
         name: doc.data().name || 'Unnamed Student',
@@ -97,46 +100,55 @@ export default function ManageStudentsPage() {
         avatarUrl: doc.data().avatarUrl,
         schoolId: doc.data().schoolId, 
       })) as StudentDisplay[];
-      setStudents(studentList);
+      setAllStudents(studentList);
+
+      // Fetch classes
+      const classesQuery = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
+      const classesSnapshot = await getDocs(classesQuery);
+      const classListItems = classesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().name || `Class (${doc.id.substring(0,4)})`,
+      }));
+      setAllClasses(classListItems);
+
     } catch (err: any) {
-      console.error("Error fetching students:", err);
-      setError(translate("studentManagementErrorLoadFailed") || "Failed to load students. Please try again.");
+      console.error("Error fetching data:", err);
+      setError(translate("studentManagementErrorLoadFailed") || "Failed to load students or classes. Please try again.");
       toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorLoadFailed") });
     } finally {
-      setLoading(false);
+      setLoadingData(false);
     }
-  }, [adminSchoolId, toast, translate]);
-
-  const fetchClassesForDropdown = React.useCallback(async () => {
-    if (!adminSchoolId) return;
-    setLoadingClasses(true);
-    try {
-        const q = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
-        const querySnapshot = await getDocs(q);
-        const classList = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            name: doc.data().name || `Class (${doc.id.substring(0,4)})`,
-        }));
-        setClasses(classList);
-    } catch (err) {
-        console.error("Error fetching classes for dropdown:", err);
-        toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorLoadClassesFailed") });
-    } finally {
-        setLoadingClasses(false);
-    }
-  }, [adminSchoolId, toast, translate]);
+  }, [adminSchoolId, authLoading, toast, translate]);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!authUser || !adminSchoolId) {
-      setError(translate("studentManagementErrorAuthFailed") || "User not authenticated or school ID missing.");
-      setLoading(false);
-      setLoadingClasses(false);
-      return;
-    }
-    fetchStudents();
-    fetchClassesForDropdown();
-  }, [authUser, authLoading, adminSchoolId, fetchStudents, fetchClassesForDropdown, translate]);
+    fetchData();
+  }, [fetchData]);
+
+  const groupedStudents = useMemo(() => {
+    const byClass: Record<string, StudentDisplay[]> = {};
+    const unassigned: StudentDisplay[] = [];
+
+    allClasses.forEach(cls => {
+      byClass[cls.id] = [];
+    });
+
+    allStudents.forEach(student => {
+      let assigned = false;
+      if (student.classIds && student.classIds.length > 0) {
+        student.classIds.forEach(classId => {
+          if (byClass[classId]) {
+            byClass[classId].push(student);
+            assigned = true;
+          }
+        });
+      }
+      if (!assigned) {
+        unassigned.push(student);
+      }
+    });
+    return { byClass, unassigned };
+  }, [allStudents, allClasses]);
+
 
   const onAddSubmit: SubmitHandler<StudentFormData> = async (data) => {
     if (!adminSchoolId) {
@@ -151,14 +163,14 @@ export default function ManageStudentsPage() {
         studentInfo: data.studentInfo || null,
         avatarUrl: data.avatarUrl || null,
         createdAt: Timestamp.now(),
-        classIds: data.classId ? [data.classId] : [],
+        classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
         parentIds: [],
         schoolId: adminSchoolId, 
       };
 
       const docRef = await addDoc(collection(db, "users"), studentData);
       
-      if (data.classId) {
+      if (data.classId && data.classId !== 'none_class_option') {
         const classRef = doc(db, "classes", data.classId);
         const classSnap = await getDoc(classRef);
         if(classSnap.exists() && classSnap.data().schoolId === adminSchoolId) {
@@ -173,7 +185,7 @@ export default function ManageStudentsPage() {
       toast({ title: translate("studentManagementSuccessAddTitle"), description: translate("studentManagementSuccessAddDesc") });
       reset();
       setIsAddDialogOpen(false);
-      fetchStudents();
+      fetchData(); // Refresh data
     } catch (err: any) {
       console.error("Error adding student:", err);
       toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAddFailed") });
@@ -192,18 +204,16 @@ export default function ManageStudentsPage() {
         toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAvatarSchoolMismatch") });
         return;
     }
-
-    if (newAvatarUrl.trim() !== "" ) {
+     if (newAvatarUrl.trim() !== "" ) {
       try {
           new URL(newAvatarUrl.trim());
       } catch (_) {
-          if(newAvatarUrl.trim() !== "") { 
-              toast({ variant: "destructive", title: "Invalid URL", description: translate("invalidUrlDesc") });
-              return;
-          }
+         if(newAvatarUrl.trim() !== "") {
+            toast({ variant: "destructive", title: "Invalid URL", description: translate("invalidUrlDesc") });
+            return;
+         }
       }
     }
-
     setIsSubmittingAvatar(true);
     try {
       const studentRef = doc(db, "users", currentEditingStudent!.id);
@@ -213,7 +223,7 @@ export default function ManageStudentsPage() {
       toast({ title: translate("studentManagementSuccessAvatarTitle"), description: translate("studentManagementSuccessAvatarDesc") });
       setIsEditAvatarDialogOpen(false);
       setCurrentEditingStudent(null);
-      fetchStudents(); 
+      fetchData(); // Refresh data
     } catch (err: any) {
       console.error("Error updating avatar:", err);
       toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAvatarUpdateFailed") });
@@ -229,46 +239,35 @@ export default function ManageStudentsPage() {
         setStudentToDelete(null);
         return;
     }
-
     setIsDeletingStudent(true);
     try {
         const studentDocRef = doc(db, "users", studentToDelete.id);
-        const studentDocSnap = await getDoc(studentDocRef); // Re-fetch to get latest classIds/parentIds
-        if (!studentDocSnap.exists()) {
-            throw new Error("Student document not found.");
-        }
+        const studentDocSnap = await getDoc(studentDocRef);
+        if (!studentDocSnap.exists()) throw new Error("Student document not found.");
+        
         const studentData = studentDocSnap.data() as Student;
-
         const batch = writeBatch(db);
         batch.delete(studentDocRef);
 
-        // Remove student from classes
         if (studentData.classIds && studentData.classIds.length > 0) {
             for (const classId of studentData.classIds) {
                 const classRef = doc(db, "classes", classId);
-                // Ensure class belongs to the same school before updating
                 const classSnap = await getDoc(classRef);
                 if (classSnap.exists() && classSnap.data()?.schoolId === adminSchoolId) {
                     batch.update(classRef, { studentIds: arrayRemove(studentToDelete.id) });
                 }
             }
         }
-
-        // Remove student from parents' childIds
         if (studentData.parentIds && studentData.parentIds.length > 0) {
             for (const parentId of studentData.parentIds) {
                 const parentRef = doc(db, "users", parentId);
-                // No schoolId check needed for parents here, just remove child link
                 batch.update(parentRef, { childIds: arrayRemove(studentToDelete.id) });
             }
         }
-        
         await batch.commit();
-
         toast({ title: translate("studentDeleteSuccessTitle"), description: translate("studentDeleteSuccessDesc", { name: studentToDelete.name }) });
-        fetchStudents();
-    } catch (err: any)
-     {
+        fetchData(); // Refresh data
+    } catch (err: any) {
         console.error("Error deleting student:", err);
         toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentDeleteFailedDesc") });
     } finally {
@@ -276,6 +275,74 @@ export default function ManageStudentsPage() {
         setStudentToDelete(null);
     }
   };
+
+  const renderStudentTable = (studentsToRender: StudentDisplay[]) => (
+    <div className="border rounded-md mt-2">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
+            <TableHead>{translate("nameLabel")}</TableHead>
+            <TableHead>{translate("emailLabel")}</TableHead>
+            <TableHead>{translate("studentManagementStudentInfoLabel")}</TableHead>
+            <TableHead className="text-right">{translate("actionsLabel")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {studentsToRender.length > 0 ? (
+            studentsToRender.map((student) => (
+              <TableRow key={student.id}>
+                <TableCell>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={student.avatarUrl || undefined} alt={student.name} />
+                    <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
+                  </Avatar>
+                </TableCell>
+                <TableCell className="font-medium">{student.name}</TableCell>
+                <TableCell>{student.email || 'N/A'}</TableCell>
+                <TableCell>{student.studentInfo || 'N/A'}</TableCell>
+                <TableCell className="text-right space-x-2">
+                   <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
+                      <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton")}
+                   </Button>
+                   <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm" onClick={() => setStudentToDelete(student)} className="gap-1">
+                              <Trash2 className="h-3 w-3" /> {translate("deleteButtonLabel")}
+                          </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                          <AlertDialogHeader>
+                          <AlertDialogTitle>{translate("studentDeleteConfirmTitle")}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                              {translate("studentDeleteConfirmDesc", { name: studentToDelete?.name || "this student"})}
+                              {" "}
+                              {translate("studentDeleteConfirmActionUndone")}
+                          </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                          <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translate("cancelButton")}</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeletingStudent}>
+                              {isDeletingStudent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                              {translate("deleteButtonLabel")}
+                          </AlertDialogAction>
+                          </AlertDialogFooter>
+                      </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} className="h-24 text-center">
+                {translate("studentManagementNoStudentsInClass") || "No students in this class."}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
 
 
   if (authLoading) {
@@ -288,30 +355,27 @@ export default function ManageStudentsPage() {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
             <CardTitle>{translate("manageStudents")}</CardTitle>
-            <CardDescription>{translate("studentManagementPageDesc") || "Add, view, or edit student records for your school."}</CardDescription>
+            <CardDescription>{translate("studentManagementPageDescClassified") || "View students grouped by class, add new students, or import them."}</CardDescription>
         </div>
         <div className="flex gap-2">
             <Button size="sm" className="gap-1" onClick={() => setIsImportDialogOpen(true)} disabled={!adminSchoolId}>
                 <Upload className="h-4 w-4" />
-                {translate("studentImportButtonTitle") || "Import Students"}
+                {translate("studentImportButtonTitle")}
             </Button>
-            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-                setIsAddDialogOpen(open);
-                if (!open) reset();
-                else if (classes.length === 0 && !loadingClasses) fetchClassesForDropdown();
-            }}>
+            <Dialog open={isAddDialogOpen} onOpenChange={(open) => { setIsAddDialogOpen(open); if (!open) reset(); }}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
                   <PlusCircle className="h-4 w-4" />
-                  {translate("studentManagementAddStudentButton") || "Add Student"}
+                  {translate("studentManagementAddStudentButton")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>{translate("studentManagementAddDialogTitle") || "Add New Student"}</DialogTitle>
-                  <DialogDescription>{translate("studentManagementAddDialogDesc") || "Fill in the details for the new student."}</DialogDescription>
+                  <DialogTitle>{translate("studentManagementAddDialogTitle")}</DialogTitle>
+                  <DialogDescription>{translate("studentManagementAddDialogDesc")}</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
+                   {/* Form fields same as before */}
                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">{translate("nameLabel")}</Label>
                       <div className="col-span-3">
@@ -320,16 +384,16 @@ export default function ManageStudentsPage() {
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">{translate("studentManagementEmailOptionalLabel") || "Email (Optional)"}</Label>
+                      <Label htmlFor="email" className="text-right">{translate("studentManagementEmailOptionalLabel")}</Label>
                        <div className="col-span-3">
                           <Input id="email" type="email" {...register("email")} className={errors.email ? 'border-destructive' : ''} placeholder="student@example.com"/>
                           {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="studentInfo" className="text-right">{translate("studentManagementStudentInfoLabel") || "Student Info"}</Label>
+                      <Label htmlFor="studentInfo" className="text-right">{translate("studentManagementStudentInfoLabel")}</Label>
                        <div className="col-span-3">
-                          <Input id="studentInfo" {...register("studentInfo")} placeholder={translate("studentManagementStudentInfoPlaceholder") || "e.g., Roll No, Admission ID"}/>
+                          <Input id="studentInfo" {...register("studentInfo")} placeholder={translate("studentManagementStudentInfoPlaceholder")}/>
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
@@ -340,7 +404,7 @@ export default function ManageStudentsPage() {
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="classId" className="text-right">{translate("studentManagementAssignToClassLabel") || "Assign to Class"}</Label>
+                      <Label htmlFor="classId" className="text-right">{translate("studentManagementAssignToClassLabel")}</Label>
                       <div className="col-span-3">
                            <Controller
                               control={control}
@@ -348,21 +412,21 @@ export default function ManageStudentsPage() {
                               render={({ field }) => (
                                   <Select
                                       onValueChange={field.onChange}
-                                      value={field.value || ''}
-                                      disabled={loadingClasses}
+                                      value={field.value || 'none_class_option'} // Ensure a default value for controlled component
+                                      disabled={loadingData || allClasses.length === 0}
                                   >
                                       <SelectTrigger id="classId">
-                                          <SelectValue placeholder={loadingClasses ? translate("loading") : translate("studentManagementSelectClassOptionalPlaceholder") || "Select Class (Optional)"} />
+                                          <SelectValue placeholder={loadingData ? translate("loading") : translate("studentManagementSelectClassOptionalPlaceholder")} />
                                       </SelectTrigger>
                                       <SelectContent>
-                                          <SelectItem value="none_class_option">{translate("studentManagementNoneOption") || "None"}</SelectItem>
-                                          {classes.map(cls => (
+                                          <SelectItem value="none_class_option">{translate("studentManagementNoneOption")}</SelectItem>
+                                          {allClasses.map(cls => (
                                               <SelectItem key={cls.id} value={cls.id}>
                                                   {cls.name}
                                               </SelectItem>
                                           ))}
-                                          {!loadingClasses && classes.length === 0 && (
-                                              <SelectItem value="no_classes_available" disabled>{translate("studentManagementNoClassesAvailable") || "No classes available for this school"}</SelectItem>
+                                          {!loadingData && allClasses.length === 0 && (
+                                              <SelectItem value="no_classes_available" disabled>{translate("studentManagementNoClassesAvailable")}</SelectItem>
                                           )}
                                       </SelectContent>
                                   </Select>
@@ -372,11 +436,11 @@ export default function ManageStudentsPage() {
                    </div>
                    <DialogFooter>
                       <DialogClose asChild>
-                         <Button type="button" variant="outline">{translate("cancelButton") || "Cancel"}</Button>
+                         <Button type="button" variant="outline">{translate("cancelButton")}</Button>
                       </DialogClose>
-                      <Button type="submit" disabled={isSubmitting || loadingClasses}>
+                      <Button type="submit" disabled={isSubmitting || loadingData}>
                           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          {translate("studentManagementAddStudentButton") || "Add Student"}
+                          {translate("studentManagementAddStudentButton")}
                       </Button>
                    </DialogFooter>
                 </form>
@@ -385,83 +449,50 @@ export default function ManageStudentsPage() {
         </div>
       </CardHeader>
       <CardContent>
-        {loading ? (
+        {loadingData ? (
            <div className="flex justify-center items-center py-10">
              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-             <span className="ml-2">{translate("studentManagementLoadingStudents") || "Loading students..."}</span>
+             <span className="ml-2">{translate("studentManagementLoadingStudents")}</span>
            </div>
          ) : error ? (
             <p className="text-center text-destructive">{error}</p>
          ) : !adminSchoolId ? (
             <p className="text-center text-destructive">{translate("studentManagementErrorNoSchoolId")}</p>
          ) : (
-          <div className="border rounded-md">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
-                  <TableHead>{translate("nameLabel")}</TableHead>
-                  <TableHead>{translate("emailLabel")}</TableHead>
-                  <TableHead>{translate("studentManagementStudentInfoLabel")}</TableHead>
-                   <TableHead>{translate("studentManagementClassesLabel") || "Classes"}</TableHead>
-                  <TableHead className="text-right">{translate("actionsLabel") || "Actions"}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {students.length > 0 ? (
-                  students.map((student) => (
-                    <TableRow key={student.id}>
-                      <TableCell>
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={student.avatarUrl || undefined} alt={student.name} />
-                          <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
-                        </Avatar>
-                      </TableCell>
-                      <TableCell className="font-medium">{student.name}</TableCell>
-                      <TableCell>{student.email || 'N/A'}</TableCell>
-                      <TableCell>{student.studentInfo || 'N/A'}</TableCell>
-                       <TableCell>{student.classIds?.length || 0}</TableCell>
-                      <TableCell className="text-right space-x-2">
-                         <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
-                            <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton") || "Edit Avatar"}
-                         </Button>
-                         <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm" onClick={() => setStudentToDelete(student)} className="gap-1">
-                                    <Trash2 className="h-3 w-3" /> {translate("deleteButtonLabel") || "Delete"}
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>{translate("studentDeleteConfirmTitle")}</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {translate("studentDeleteConfirmDesc", { name: studentToDelete?.name || "this student"})}
-                                    {" "}
-                                    {translate("studentDeleteConfirmActionUndone")}
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translate("cancelButton")}</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeletingStudent}>
-                                    {isDeletingStudent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    {translate("deleteButtonLabel")}
-                                </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                      {translate("studentManagementNoStudentsFound") || "No students found for your school. Add one using the button above."}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+            allClasses.length === 0 && groupedStudents.unassigned.length === 0 ? (
+                 <p className="text-center text-muted-foreground py-10">{translate("studentManagementNoStudentsFound")}</p>
+            ) : (
+            <Accordion type="multiple" className="w-full">
+              {allClasses.map((cls) => (
+                <AccordionItem key={cls.id} value={cls.id}>
+                  <AccordionTrigger>
+                    <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-primary" />
+                        <span>{cls.name}</span>
+                        <span className="text-sm text-muted-foreground">({(groupedStudents.byClass[cls.id] || []).length} {translate("students")})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {renderStudentTable(groupedStudents.byClass[cls.id] || [])}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+              {groupedStudents.unassigned.length > 0 && (
+                <AccordionItem value="unassigned-students">
+                  <AccordionTrigger>
+                    <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-muted-foreground" />
+                        <span>{translate("unassignedStudentsTitle") || "Unassigned Students"}</span>
+                        <span className="text-sm text-muted-foreground">({groupedStudents.unassigned.length} {translate("students")})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {renderStudentTable(groupedStudents.unassigned)}
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+            </Accordion>
+            )
         )}
       </CardContent>
     </Card>
@@ -471,22 +502,19 @@ export default function ManageStudentsPage() {
         onOpenChange={setIsImportDialogOpen}
         adminSchoolId={adminSchoolId}
         onImportSuccess={() => {
-            fetchStudents(); 
+            fetchData(); 
             setIsImportDialogOpen(false);
         }}
     />
 
     <Dialog open={isEditAvatarDialogOpen} onOpenChange={(open) => {
         setIsEditAvatarDialogOpen(open);
-        if (!open) {
-            setCurrentEditingStudent(null);
-            setNewAvatarUrl("");
-        }
+        if (!open) { setCurrentEditingStudent(null); setNewAvatarUrl("");}
     }}>
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-                <DialogTitle>{translate("studentManagementEditAvatarDialogTitle", { name: currentEditingStudent?.name || ""}) || `Edit Avatar for ${currentEditingStudent?.name}`}</DialogTitle>
-                <DialogDescription>{translate("studentManagementEditAvatarDialogDesc") || "Enter a new image URL for the student's avatar."}</DialogDescription>
+                <DialogTitle>{translate("studentManagementEditAvatarDialogTitle", { name: currentEditingStudent?.name || ""})}</DialogTitle>
+                <DialogDescription>{translate("studentManagementEditAvatarDialogDesc")}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="flex justify-center mb-4">
@@ -508,12 +536,10 @@ export default function ManageStudentsPage() {
                 </div>
             </div>
             <DialogFooter>
-                <DialogClose asChild>
-                    <Button type="button" variant="outline">{translate("cancelButton")}</Button>
-                </DialogClose>
+                <DialogClose asChild><Button type="button" variant="outline">{translate("cancelButton")}</Button></DialogClose>
                 <Button onClick={handleUpdateAvatar} disabled={isSubmittingAvatar}>
                     {isSubmittingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {translate("studentManagementSaveAvatarButton") || "Save Avatar"}
+                    {translate("studentManagementSaveAvatarButton")}
                 </Button>
             </DialogFooter>
         </DialogContent>
@@ -521,4 +547,3 @@ export default function ManageStudentsPage() {
     </>
   );
 }
-

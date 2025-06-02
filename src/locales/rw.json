@@ -266,7 +266,7 @@
   "adminSchoolSettingsDesc": "Cunga izina ry'ishuri ryawe na kode idasanzwe yo kumenyekanisha abarimu.",
   "roleStudent": "Umunyeshuri",
   "studentManagementErrorNoSchoolId": "ID y'ishuri ntiyabonetse ku muyobozi.",
-  "studentManagementErrorLoadFailed": "Kunanirwa gutwara abanyeshuri. Nyamuneka gerageza nanone.",
+  "studentManagementErrorLoadFailed": "Kunanirwa gutwara abanyeshuri cyangwa amashuri. Nyamuneka gerageza nanone.",
   "studentManagementErrorLoadClassesFailed": "Kunanirwa gutwara amashuri yo gushyiramo.",
   "studentManagementErrorAuthFailed": "Umukoresha ntiyemejwe cyangwa ID y'ishuri irabuze.",
   "studentManagementErrorNoSchoolIdSubmit": "ID y'ishuri y'umuyobozi irabuze.",
@@ -280,6 +280,7 @@
   "studentManagementSuccessAvatarDesc": "Ifoto y'umunyeshuri yavuguruwe neza.",
   "studentManagementErrorAvatarUpdateFailed": "Kunanirwa kuvugurura ifoto.",
   "studentManagementPageDesc": "Ongeramo, reba, cyangwa hindura amakuru y'abanyeshuri b'ishuri ryawe.",
+  "studentManagementPageDescClassified": "Reba abanyeshuri bashyizwe mu matsinda y'amashuri, ongeramo abanyeshuri bashya, cyangwa ubatorere.",
   "studentImportButtonTitle": "Tora Abanyeshuri",
   "studentManagementAddStudentButton": "Ongeramo Umunyeshuri",
   "studentManagementAddDialogTitle": "Ongeramo Umunyeshuri Mushya",
@@ -322,9 +323,6 @@
   "studentImportErrorParsingFailedExcel": "Kunanirwa gusoma dosiye ya Excel:",
   "studentImportErrorReadingFile": "Ikosa mu gusoma dosiye.",
   "studentImportErrorAllFailed": "Amakuru y'abanyeshuri bose yananiwe gutorwa. Genzura imiterere ya dosiye na console kugira ngo umenye amakosa.",
-  "errorLoadingStats": "Kunanirwa gutwara imibare ya sisitemu.",
-  "errorLoadingChartData": "Kunanirwa gutwara amakuru y'ikigabanyo cy'inshingano z'abakoresha.",
-  "errorAuthRequired": "Ukwemezwa birakenewe kugira ngo urebe aya makuru.",
   "parentNotLinkedToSchool": "Ntaho ahuriye n'ishuri ryihariye",
   "studentDeleteConfirmTitle": "Gusiba Umunyeshuri?",
   "studentDeleteConfirmDesc": "Uremeza ko ushaka gusiba {{name}}?",
@@ -333,5 +331,8 @@
   "studentDeleteSuccessTitle": "Umunyeshuri Yasibwe",
   "studentDeleteSuccessDesc": "{{name}} yasibwe neza.",
   "studentDeleteFailedDesc": "Kunanirwa gusiba umunyeshuri. Nyamuneka gerageza nanone.",
-  "studentManagementErrorDeleteSchoolMismatch": "Ntushobora gusiba umunyeshuri utari mu ishuri ryawe."
+  "studentManagementErrorDeleteSchoolMismatch": "Ntushobora gusiba umunyeshuri utari mu ishuri ryawe.",
+  "students": "abanyeshuri",
+  "unassignedStudentsTitle": "Abanyeshuri Batashyizwe mu Mashuri",
+  "studentManagementNoStudentsInClass": "Nta banyeshuri bari muri iri shuri."
 }

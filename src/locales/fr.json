@@ -266,7 +266,7 @@
   "adminSchoolSettingsDesc": "Gérez le nom de votre école et son code d'identification unique pour l'inscription des enseignants.",
   "roleStudent": "Étudiant",
   "studentManagementErrorNoSchoolId": "ID d'école introuvable pour l'administrateur.",
-  "studentManagementErrorLoadFailed": "Échec du chargement des étudiants. Veuillez réessayer.",
+  "studentManagementErrorLoadFailed": "Échec du chargement des étudiants ou des classes. Veuillez réessayer.",
   "studentManagementErrorLoadClassesFailed": "Échec du chargement des classes pour l'affectation.",
   "studentManagementErrorAuthFailed": "Utilisateur non authentifié ou ID d'école manquant.",
   "studentManagementErrorNoSchoolIdSubmit": "L'ID d'école de l'administrateur est manquant.",
@@ -280,6 +280,7 @@
   "studentManagementSuccessAvatarDesc": "Avatar de l'étudiant mis à jour avec succès.",
   "studentManagementErrorAvatarUpdateFailed": "Échec de la mise à jour de l'avatar.",
   "studentManagementPageDesc": "Ajoutez, affichez ou modifiez les dossiers des étudiants de votre école.",
+  "studentManagementPageDescClassified": "Affichez les étudiants regroupés par classe, ajoutez de nouveaux étudiants ou importez-les.",
   "studentImportButtonTitle": "Importer des Étudiants",
   "studentManagementAddStudentButton": "Ajouter un Étudiant",
   "studentManagementAddDialogTitle": "Ajouter un Nouvel Étudiant",
@@ -322,9 +323,6 @@
   "studentImportErrorParsingFailedExcel": "Échec de l'analyse du fichier Excel :",
   "studentImportErrorReadingFile": "Erreur de lecture du fichier.",
   "studentImportErrorAllFailed": "Tous les enregistrements d'étudiants ont échoué à l'importation. Vérifiez le format du fichier et la console pour les erreurs.",
-  "errorLoadingStats": "Échec du chargement des statistiques de la plateforme.",
-  "errorLoadingChartData": "Échec du chargement des données de répartition des rôles utilisateurs.",
-  "errorAuthRequired": "Authentification requise pour afficher ces données.",
   "parentNotLinkedToSchool": "Pas encore lié à une école spécifique",
   "studentDeleteConfirmTitle": "Supprimer l'Étudiant ?",
   "studentDeleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer {{name}} ?",
@@ -333,5 +331,8 @@
   "studentDeleteSuccessTitle": "Étudiant Supprimé",
   "studentDeleteSuccessDesc": "{{name}} a été supprimé avec succès.",
   "studentDeleteFailedDesc": "Échec de la suppression de l'étudiant. Veuillez réessayer.",
-  "studentManagementErrorDeleteSchoolMismatch": "Impossible de supprimer un étudiant qui n'appartient pas à votre école."
+  "studentManagementErrorDeleteSchoolMismatch": "Impossible de supprimer un étudiant qui n'appartient pas à votre école.",
+  "students": "étudiants",
+  "unassignedStudentsTitle": "Étudiants non assignés",
+  "studentManagementNoStudentsInClass": "Aucun étudiant dans cette classe."
 }
