@@ -24,10 +24,10 @@ interface StudentImportDialogProps {
 }
 
 interface CsvStudent {
-  Name?: string;
-  Email?: string;
-  StudentInfo?: string;
-  AvatarURL?: string;
+  Name?: string | number | boolean; // Allow for non-string types from parser
+  Email?: string | number | boolean;
+  StudentInfo?: string | number | boolean;
+  AvatarURL?: string | number | boolean;
 }
 
 const BATCH_SIZE = 100;
@@ -78,7 +78,8 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         return;
     }
 
-    const studentsToImport = dataToImport.filter(row => row.Name && row.Name.trim() !== "");
+    // Filter out rows where Name is essentially empty after converting to string and trimming
+    const studentsToImport = dataToImport.filter(row => row.Name != null && String(row.Name).trim() !== "");
     setTotalToImport(studentsToImport.length);
 
     if (studentsToImport.length === 0) {
@@ -91,23 +92,25 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     let errorCount = 0;
 
     for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
-      const firestoreBatch = writeBatch(db); // Correctly create a batch
+      const firestoreBatch = writeBatch(db);
       const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
 
       chunk.forEach((csvStudent) => {
-        if (!csvStudent.Name || csvStudent.Name.trim() === "") {
-          console.warn("Skipping row due to missing Name:", csvStudent);
+        // Ensure Name is present and not just whitespace after converting to string
+        const studentNameStr = csvStudent.Name != null ? String(csvStudent.Name).trim() : "";
+        if (studentNameStr === "") {
+          console.warn("Skipping row due to missing or empty Name (after trim):", csvStudent);
           errorCount++;
           return;
         }
 
         const studentDocRef = doc(collection(db, "users"));
         const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' | 'classIds'> & Partial<Pick<Student, 'classIds'>> = {
-          name: csvStudent.Name.trim(),
-          email: csvStudent.Email?.trim() || null,
+          name: studentNameStr,
+          email: csvStudent.Email != null && String(csvStudent.Email).trim() !== "" ? String(csvStudent.Email).trim() : null,
           role: "Student",
-          studentInfo: csvStudent.StudentInfo?.trim() || null,
-          avatarUrl: csvStudent.AvatarURL?.trim() || null,
+          studentInfo: csvStudent.StudentInfo != null && String(csvStudent.StudentInfo).trim() !== "" ? String(csvStudent.StudentInfo).trim() : null,
+          avatarUrl: csvStudent.AvatarURL != null && String(csvStudent.AvatarURL).trim() !== "" ? String(csvStudent.AvatarURL).trim() : null,
           createdAt: Timestamp.now(),
           schoolId: adminSchoolId,
         };
@@ -116,11 +119,13 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
 
       try {
         await firestoreBatch.commit();
-        importedCount += chunk.length - chunk.filter(s => !s.Name || s.Name.trim() === "").length;
+        // Calculate how many were actually attempted to be set in this batch
+        const validInChunk = chunk.filter(s => s.Name != null && String(s.Name).trim() !== "").length;
+        importedCount += validInChunk;
         setImportProgress(importedCount);
       } catch (batchError) {
         console.error("Error importing batch:", batchError);
-        errorCount += chunk.length;
+        errorCount += chunk.length; // Assume all in chunk failed if batch commit fails
         toast({
           variant: "destructive",
           title: translate("studentImportErrorBatchFailedTitle") || "Batch Import Failed",
@@ -178,7 +183,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
           setIsImporting(false);
         }
       });
-    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.type === "application/vnd.ms-excel" || file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       reader.onload = (event) => {
         try {
           const data = event.target?.result;
