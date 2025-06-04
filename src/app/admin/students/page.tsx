@@ -505,6 +505,7 @@ export default function ManageStudentsPage() {
             fetchData(); 
             setIsImportDialogOpen(false);
         }}
+        allClasses={allClasses}
     />
 
     <Dialog open={isEditAvatarDialogOpen} onOpenChange={(open) => {
@@ -547,3 +548,4 @@ export default function ManageStudentsPage() {
     </>
   );
 }
+

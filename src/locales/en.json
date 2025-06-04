@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "Enter a new image URL for the student's avatar.",
   "studentManagementSaveAvatarButton": "Save Avatar",
   "studentImportTitle": "Import Students",
-  "studentImportDescExcelCsv": "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs.",
+  "studentImportDescExcelCsv": "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL'. For profile pictures, include an 'AvatarURL' column with image URLs.",
+  "studentImportDescExcelCsvWithClass": "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school.",
   "studentImportFileLabelExcelCsv": "CSV or Excel File",
   "studentImportSelectedFile": "Selected:",
   "studentImportProgress": "Import Progress:",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "Cannot delete a student who does not belong to your school.",
   "students": "students",
   "unassignedStudentsTitle": "Unassigned Students",
-  "studentManagementNoStudentsInClass": "No students in this class."
+  "studentManagementNoStudentsInClass": "No students in this class.",
+  "studentImportWarningClassNotAssigned": "{{count}} students were imported but their specified 'ClassName' was not found in your school and they remain unassigned. Please check the class names in your file or create the classes first."
 }
+

@@ -304,6 +304,7 @@
   "studentManagementSaveAvatarButton": "Bika Ifoto",
   "studentImportTitle": "Tora Abanyeshuri",
   "studentImportDescExcelCsv": "Tora dosiye ya CSV, XLSX, cyangwa XLS. Inkingi ikenewe: 'Name'. Izindi zishobora kongerwaho: 'Email', 'StudentInfo'. Ku mafoto ya porofayili, shyiramo inkingi ya 'AvatarURL' irimo URL z'amafoto.",
+  "studentImportDescExcelCsvWithClass": "Tora dosiye ya CSV, XLSX, cyangwa XLS. Inkingi ikenewe: 'Name'. Izindi zishobora kongerwaho: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Abanyeshuri bazashyirwa muri 'ClassName' niba ihuye n'ishuri risanzwe ririho mu ishuri ryawe.",
   "studentImportFileLabelExcelCsv": "Dosiye ya CSV cyangwa Excel",
   "studentImportSelectedFile": "Yahiswemo:",
   "studentImportProgress": "Iterambere ryo Gutora:",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "Ntushobora gusiba umunyeshuri utari mu ishuri ryawe.",
   "students": "abanyeshuri",
   "unassignedStudentsTitle": "Abanyeshuri Batashyizwe mu Mashuri",
-  "studentManagementNoStudentsInClass": "Nta banyeshuri bari muri iri shuri."
+  "studentManagementNoStudentsInClass": "Nta banyeshuri bari muri iri shuri.",
+  "studentImportWarningClassNotAssigned": "Abanyeshuri {{count}} batowe ariko 'ClassName' yabo ntiyabonetse mu ishuri ryawe kandi bagumye batashyizwe mu mashuri. Nyamuneka genzura amazina y'amashuri muri dosiye yawe cyangwa banza ukore amashuri."
 }
+

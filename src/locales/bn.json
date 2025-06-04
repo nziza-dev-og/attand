@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "ছাত্রের অবতারের জন্য একটি নতুন ছবির URL লিখুন।",
   "studentManagementSaveAvatarButton": "অবতার সংরক্ষণ করুন",
   "studentImportTitle": "ছাত্র আমদানি করুন",
-  "studentImportDescExcelCsv": "একটি CSV, XLSX, বা XLS ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক: 'Email', 'StudentInfo'। প্রোফাইল ছবির জন্য, ছবির URL সহ একটি 'AvatarURL' কলাম অন্তর্ভুক্ত করুন।",
+  "studentImportDescExcelCsv": "একটি CSV, XLSX, বা XLS ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক: 'Email', 'StudentInfo', 'AvatarURL'। প্রোফাইল ছবির জন্য, ছবির URL সহ একটি 'AvatarURL' কলাম অন্তর্ভুক্ত করুন।",
+  "studentImportDescExcelCsvWithClass": "একটি CSV, XLSX, বা XLS ফাইল আপলোড করুন। প্রয়োজনীয় কলাম: 'Name'। ঐচ্ছিক: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'। আপনার স্কুলে বিদ্যমান ক্লাসের সাথে মিললে ছাত্রদের 'ClassName' এ বরাদ্দ করা হবে।",
   "studentImportFileLabelExcelCsv": "CSV বা Excel ফাইল",
   "studentImportSelectedFile": "নির্বাচিত:",
   "studentImportProgress": "আমদানি অগ্রগতি:",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "আপনার স্কুলে না থাকা ছাত্রকে মুছে ফেলা যাবে না।",
   "students": "ছাত্র",
   "unassignedStudentsTitle": "অ্যাসাইন না করা ছাত্র",
-  "studentManagementNoStudentsInClass": "এই ক্লাসে কোনো ছাত্র নেই।"
+  "studentManagementNoStudentsInClass": "এই ক্লাসে কোনো ছাত্র নেই।",
+  "studentImportWarningClassNotAssigned": "{{count}} জন ছাত্র আমদানি করা হয়েছে কিন্তু তাদের নির্দিষ্ট 'ClassName' আপনার স্কুলে পাওয়া যায়নি এবং তারা অ্যাসাইন করা হয়নি। অনুগ্রহ করে আপনার ফাইলের ক্লাসের নামগুলি পরীক্ষা করুন বা প্রথমে ক্লাসগুলি তৈরি করুন।"
 }
+

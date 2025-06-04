@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "மாணவரின் சுயவிவரப் படத்திற்கான புதிய பட URL ஐ உள்ளிடவும்.",
   "studentManagementSaveAvatarButton": "சுயவிவரப் படத்தை சேமி",
   "studentImportTitle": "மாணவர்களை இறக்குமதி செய்",
-  "studentImportDescExcelCsv": "ஒரு CSV, XLSX, அல்லது XLS கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு: 'Email', 'StudentInfo'. சுயவிவரப் படங்களுக்கு, பட URL களுடன் 'AvatarURL' என்ற நெடுவரிசையைச் சேர்க்கவும்.",
+  "studentImportDescExcelCsv": "ஒரு CSV, XLSX, அல்லது XLS கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு: 'Email', 'StudentInfo', 'AvatarURL'. சுயவிவரப் படங்களுக்கு, பட URL களுடன் 'AvatarURL' என்ற நெடுவரிசையைச் சேர்க்கவும்.",
+  "studentImportDescExcelCsvWithClass": "ஒரு CSV, XLSX, அல்லது XLS கோப்பை பதிவேற்றவும். தேவையான நெடுவரிசை: 'Name'. விருப்பத்தேர்வு: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. உங்கள் பள்ளியில் ஏற்கனவே உள்ள வகுப்புடன் பொருந்தினால் மாணவர்கள் 'ClassName' இல் சேர்க்கப்படுவார்கள்.",
   "studentImportFileLabelExcelCsv": "CSV அல்லது Excel கோப்பு",
   "studentImportSelectedFile": "தேர்ந்தெடுக்கப்பட்டது:",
   "studentImportProgress": "இறக்குமதி முன்னேற்றம்:",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "உங்கள் பள்ளிக்குச் சொந்தமில்லாத மாணவரை நீக்க முடியாது.",
   "students": "மாணவர்கள்",
   "unassignedStudentsTitle": "ஒதுக்கப்படாத மாணவர்கள்",
-  "studentManagementNoStudentsInClass": "இந்த வகுப்பில் மாணவர்கள் யாரும் இல்லை."
+  "studentManagementNoStudentsInClass": "இந்த வகுப்பில் மாணவர்கள் யாரும் இல்லை.",
+  "studentImportWarningClassNotAssigned": "{{count}} மாணவர்கள் இறக்குமதி செய்யப்பட்டனர் ஆனால் அவர்களின் குறிப்பிட்ட 'ClassName' உங்கள் பள்ளியில் காணப்படவில்லை மற்றும் அவர்கள் ஒதுக்கப்படாமல் உள்ளனர். தயவுசெய்து உங்கள் கோப்பில் உள்ள வகுப்புப் பெயர்களைச் சரிபார்க்கவும் அல்லது முதலில் வகுப்புகளை உருவாக்கவும்."
 }
+

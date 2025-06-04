@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "Entrez une nouvelle URL d'image pour l'avatar de l'étudiant.",
   "studentManagementSaveAvatarButton": "Enregistrer l'Avatar",
   "studentImportTitle": "Importer des Étudiants",
-  "studentImportDescExcelCsv": "Téléchargez un fichier CSV, XLSX ou XLS. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo'. Pour les photos de profil, incluez une colonne 'AvatarURL' avec les URL des images.",
+  "studentImportDescExcelCsv": "Téléchargez un fichier CSV, XLSX ou XLS. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo', 'AvatarURL'. Pour les photos de profil, incluez une colonne 'AvatarURL' avec les URL des images.",
+  "studentImportDescExcelCsvWithClass": "Téléchargez un fichier CSV, XLSX ou XLS. Colonne requise : 'Name'. Optionnel : 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Les étudiants seront affectés à 'ClassName' s'il correspond à une classe existante dans votre école.",
   "studentImportFileLabelExcelCsv": "Fichier CSV ou Excel",
   "studentImportSelectedFile": "Sélectionné :",
   "studentImportProgress": "Progression de l'importation :",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "Impossible de supprimer un étudiant qui n'appartient pas à votre école.",
   "students": "étudiants",
   "unassignedStudentsTitle": "Étudiants non assignés",
-  "studentManagementNoStudentsInClass": "Aucun étudiant dans cette classe."
+  "studentManagementNoStudentsInClass": "Aucun étudiant dans cette classe.",
+  "studentImportWarningClassNotAssigned": "{{count}} étudiants ont été importés mais leur 'ClassName' spécifié n'a pas été trouvé dans votre école et ils restent non assignés. Veuillez vérifier les noms de classe dans votre fichier ou créer les classes d'abord."
 }
+

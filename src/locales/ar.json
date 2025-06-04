@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "أدخل رابط صورة جديد لصورة الطالب.",
   "studentManagementSaveAvatarButton": "حفظ الصورة الرمزية",
   "studentImportTitle": "استيراد الطلاب",
-  "studentImportDescExcelCsv": "قم بتحميل ملف CSV أو XLSX أو XLS. العمود المطلوب: 'Name'. اختياري: 'Email'، 'StudentInfo'. بالنسبة لصور الملف الشخصي، قم بتضمين عمود 'AvatarURL' يحتوي على عناوين URL للصور.",
+  "studentImportDescExcelCsv": "قم بتحميل ملف CSV أو XLSX أو XLS. العمود المطلوب: 'Name'. اختياري: 'Email'، 'StudentInfo'، 'AvatarURL'. بالنسبة لصور الملف الشخصي، قم بتضمين عمود 'AvatarURL' يحتوي على عناوين URL للصور.",
+  "studentImportDescExcelCsvWithClass": "قم بتحميل ملف CSV أو XLSX أو XLS. العمود المطلوب: 'Name'. اختياري: 'Email'، 'StudentInfo'، 'AvatarURL'، 'ClassName'. سيتم تعيين الطلاب إلى 'ClassName' إذا كان يطابق فصلًا موجودًا في مدرستك.",
   "studentImportFileLabelExcelCsv": "ملف CSV أو Excel",
   "studentImportSelectedFile": "المحدد:",
   "studentImportProgress": "تقدم الاستيراد:",
@@ -330,8 +331,11 @@
   "deleteButtonLabel": "حذف",
   "studentDeleteSuccessTitle": "تم حذف الطالب",
   "studentDeleteSuccessDesc": "{{name}} تم حذفه بنجاح.",
+  "studentDeleteFailedDesc": "فشل حذف الطالب. يرجى المحاولة مرة أخرى.",
   "studentManagementErrorDeleteSchoolMismatch": "لا يمكن حذف طالب لا ينتمي إلى مدرستك.",
   "students": "طلاب",
   "unassignedStudentsTitle": "طلاب غير معينين",
-  "studentManagementNoStudentsInClass": "لا يوجد طلاب في هذا الفصل."
+  "studentManagementNoStudentsInClass": "لا يوجد طلاب في هذا الفصل.",
+  "studentImportWarningClassNotAssigned": "تم استيراد {{count}} طالبًا ولكن لم يتم العثور على 'ClassName' المحدد في مدرستك وبقوا غير معينين. يرجى التحقق من أسماء الفصول في ملفك أو إنشاء الفصول أولاً."
 }
+

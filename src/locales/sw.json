@@ -303,7 +303,8 @@
   "studentManagementEditAvatarDialogDesc": "Weka URL mpya ya picha ya mwanafunzi.",
   "studentManagementSaveAvatarButton": "Hifadhi Picha",
   "studentImportTitle": "Ingiza Wanafunzi",
-  "studentImportDescExcelCsv": "Pakia faili ya CSV, XLSX, au XLS. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo'. Kwa picha za wasifu, jumuisha safu ya 'AvatarURL' yenye URL za picha.",
+  "studentImportDescExcelCsv": "Pakia faili ya CSV, XLSX, au XLS. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo', 'AvatarURL'. Kwa picha za wasifu, jumuisha safu ya 'AvatarURL' yenye URL za picha.",
+  "studentImportDescExcelCsvWithClass": "Pakia faili ya CSV, XLSX, au XLS. Safu inayohitajika: 'Name'. Hiari: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Wanafunzi watapangiwa 'ClassName' ikiwa inalingana na darasa lililopo shuleni kwako.",
   "studentImportFileLabelExcelCsv": "Faili ya CSV au Excel",
   "studentImportSelectedFile": "Imechaguliwa:",
   "studentImportProgress": "Maendeleo ya Kuingiza:",
@@ -334,5 +335,7 @@
   "studentManagementErrorDeleteSchoolMismatch": "Haiwezi kumfuta mwanafunzi ambaye si wa shule yako.",
   "students": "wanafunzi",
   "unassignedStudentsTitle": "Wanafunzi Wasio na Darasa",
-  "studentManagementNoStudentsInClass": "Hakuna wanafunzi katika darasa hili."
+  "studentManagementNoStudentsInClass": "Hakuna wanafunzi katika darasa hili.",
+  "studentImportWarningClassNotAssigned": "Wanafunzi {{count}} waliingizwa lakini 'ClassName' yao maalum haikupatikana shuleni kwako na wanabaki hawajapangiwa. Tafadhali angalia majina ya madarasa kwenye faili yako au unda madarasa kwanza."
 }
+

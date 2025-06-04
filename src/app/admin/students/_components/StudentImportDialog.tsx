@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { collection, Timestamp, writeBatch, doc } from "firebase/firestore";
+import { collection, Timestamp, writeBatch, doc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, FileText, AlertCircle } from "lucide-react";
 import Papa from 'papaparse';
-import * as XLSX from 'xlsx'; // Import xlsx library
-import type { Student, UserProfile } from "@/lib/types";
+import * as XLSX from 'xlsx';
+import type { Student, UserProfile, Class } from "@/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface StudentImportDialogProps {
@@ -21,18 +21,20 @@ interface StudentImportDialogProps {
   onOpenChange: (isOpen: boolean) => void;
   adminSchoolId: string | null;
   onImportSuccess: () => void;
+  allClasses: { id: string; name: string; }[]; // Pass all classes for name matching
 }
 
 interface CsvStudent {
-  Name?: string | number | boolean; // Allow for non-string types from parser
+  Name?: string | number | boolean;
   Email?: string | number | boolean;
   StudentInfo?: string | number | boolean;
   AvatarURL?: string | number | boolean;
+  ClassName?: string | number | boolean; // New optional column for class name
 }
 
 const BATCH_SIZE = 100;
 
-export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImportSuccess }: StudentImportDialogProps) {
+export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImportSuccess, allClasses }: StudentImportDialogProps) {
   const { toast } = useToast();
   const { translate } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
@@ -48,9 +50,9 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
       const fileName = selectedFile.name.toLowerCase();
 
       if (
-        fileType === "text/csv" || fileName.endsWith(".csv") || // CSV types
-        fileType === "application/vnd.ms-excel" || // Older Excel .xls
-        fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // Newer Excel .xlsx
+        fileType === "text/csv" || fileName.endsWith(".csv") ||
+        fileType === "application/vnd.ms-excel" ||
+        fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
         fileName.endsWith(".xls") || fileName.endsWith(".xlsx")
       ) {
         setFile(selectedFile);
@@ -78,8 +80,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         return;
     }
 
-    // Filter out rows where Name is essentially empty after converting to string and trimming
-    const studentsToImport = dataToImport.filter(row => row.Name != null && String(row.Name).trim() !== "");
+    const studentsToImport = dataToImport.filter(row => String(row.Name || "").trim() !== "");
     setTotalToImport(studentsToImport.length);
 
     if (studentsToImport.length === 0) {
@@ -90,14 +91,16 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
 
     let importedCount = 0;
     let errorCount = 0;
+    let unassignedClassCount = 0;
+
+    const classNameToIdMap = new Map(allClasses.map(cls => [cls.name.toLowerCase(), cls.id]));
 
     for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
       const firestoreBatch = writeBatch(db);
       const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
 
       chunk.forEach((csvStudent) => {
-        // Ensure Name is present and not just whitespace after converting to string
-        const studentNameStr = csvStudent.Name != null ? String(csvStudent.Name).trim() : "";
+        const studentNameStr = String(csvStudent.Name || "").trim();
         if (studentNameStr === "") {
           console.warn("Skipping row due to missing or empty Name (after trim):", csvStudent);
           errorCount++;
@@ -105,27 +108,44 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         }
 
         const studentDocRef = doc(collection(db, "users"));
-        const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' | 'classIds'> & Partial<Pick<Student, 'classIds'>> = {
+        const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' > & Partial<Pick<Student, 'classIds' | 'parentIds'>> = {
           name: studentNameStr,
-          email: csvStudent.Email != null && String(csvStudent.Email).trim() !== "" ? String(csvStudent.Email).trim() : null,
+          email: String(csvStudent.Email || "").trim() || null,
           role: "Student",
-          studentInfo: csvStudent.StudentInfo != null && String(csvStudent.StudentInfo).trim() !== "" ? String(csvStudent.StudentInfo).trim() : null,
-          avatarUrl: csvStudent.AvatarURL != null && String(csvStudent.AvatarURL).trim() !== "" ? String(csvStudent.AvatarURL).trim() : null,
+          studentInfo: String(csvStudent.StudentInfo || "").trim() || null,
+          avatarUrl: String(csvStudent.AvatarURL || "").trim() || null,
           createdAt: Timestamp.now(),
           schoolId: adminSchoolId,
+          classIds: [],
+          parentIds: [],
         };
+
+        const providedClassName = String(csvStudent.ClassName || "").trim();
+        let assignedClassId: string | undefined = undefined;
+
+        if (providedClassName) {
+          assignedClassId = classNameToIdMap.get(providedClassName.toLowerCase());
+          if (assignedClassId) {
+            studentData.classIds = [assignedClassId];
+            const classDocRef = doc(db, "classes", assignedClassId);
+            firestoreBatch.update(classDocRef, { studentIds: arrayUnion(studentDocRef.id) });
+          } else {
+            unassignedClassCount++;
+            console.warn(`Class name "${providedClassName}" not found for student "${studentNameStr}". Student will be unassigned.`);
+          }
+        }
+        
         firestoreBatch.set(studentDocRef, studentData);
       });
 
       try {
         await firestoreBatch.commit();
-        // Calculate how many were actually attempted to be set in this batch
-        const validInChunk = chunk.filter(s => s.Name != null && String(s.Name).trim() !== "").length;
+        const validInChunk = chunk.filter(s => String(s.Name || "").trim() !== "").length;
         importedCount += validInChunk;
         setImportProgress(importedCount);
       } catch (batchError) {
         console.error("Error importing batch:", batchError);
-        errorCount += chunk.length; // Assume all in chunk failed if batch commit fails
+        errorCount += chunk.length; 
         toast({
           variant: "destructive",
           title: translate("studentImportErrorBatchFailedTitle") || "Batch Import Failed",
@@ -141,15 +161,24 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         title: translate("studentImportSuccessTitle") || "Import Successful",
         description: translate("studentImportSuccessDesc", { count: importedCount.toString() }),
       });
+      if (unassignedClassCount > 0) {
+        toast({
+          variant: "warning",
+          title: translate("studentImportWarningTitle") || "Import Warnings",
+          description: translate("studentImportWarningClassNotAssigned", { count: unassignedClassCount.toString() }),
+          duration: 7000,
+        });
+      }
       onImportSuccess();
     }
-    if (errorCount > 0) {
+    if (errorCount > 0 && importedCount === 0) { // Only show general error if no successes
       toast({
         variant: "warning",
         title: translate("studentImportWarningTitle") || "Import Warnings",
         description: translate("studentImportWarningDesc", { count: errorCount.toString() }),
       });
     }
+    
     if (importedCount === 0 && errorCount === 0 && studentsToImport.length > 0) {
          setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
     } else if (importedCount === 0 && errorCount > 0) {
@@ -193,7 +222,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
           const workbook = XLSX.read(data, { type: 'array' });
           const firstSheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[firstSheetName];
-          const jsonData = XLSX.utils.sheet_to_json<CsvStudent>(worksheet, { defval: "" }); // Ensure empty cells become empty strings
+          const jsonData = XLSX.utils.sheet_to_json<CsvStudent>(worksheet, { defval: "" });
           processImportData(jsonData);
         } catch (excelError) {
           console.error("Excel Parsing Error:", excelError);
@@ -224,7 +253,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDescExcelCsv") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo'. For profile pictures, include an 'AvatarURL' column with image URLs."}
+            {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
