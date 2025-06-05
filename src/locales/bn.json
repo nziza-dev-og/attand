@@ -348,7 +348,7 @@
   "errorLoadingAdminRegCode": "অ্যাডমিন নিবন্ধন কোড লোড করতে ব্যর্থ।",
   "adminRegCodeCannotBeEmpty": "অ্যাডমিন নিবন্ধন কোড খালি হতে পারে না।",
   "adminRegCodeNotSetError": "অ্যাডমিন নিবন্ধন কোড সুপার অ্যাডমিন দ্বারা সেট করা হয়নি। অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
-  "errorFetchingAdminCode": "অ্যাডমিন নিবন্ধন কোড আনতে ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "errorFetchingAdminCode": "অ্যাডমিন নিবন্ধন কোড আনতে ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন。",
   "manageAdvertisements": "বিজ্ঞাপন পরিচালনা করুন",
   "manageAdvertisementsDesc": "প্ল্যাটফর্ম-ব্যাপী বিজ্ঞাপন তৈরি করুন, দেখুন এবং পরিচালনা করুন।",
   "addAdvertisementButton": "বিজ্ঞাপন যোগ করুন",
