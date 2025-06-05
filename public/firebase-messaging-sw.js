@@ -1,42 +1,67 @@
-// /public/firebase-messaging-sw.js
 
-// Scripts for firebase and firebase messaging
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
+// public/firebase-messaging-sw.js
+// IMPORTANT: This file needs to be in the public directory.
 
-// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
-// TODO: Replace with your actual Firebase project configuration or use environment variables
+// Scripts for Firebase products (ensure you have the compat versions for service worker)
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
+
+// Firebase configuration - Hardcoded values for service worker context
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCG5PTHBhiIr3kGoB_Ip0CWpnydmEgriok",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "attandence-ce454.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "attandence-ce454",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "attandence-ce454.firebasestorage.app",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "190465524423",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:190465524423:web:16f8338841b549853934e2",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-6TQ4PRYWNL"
+  apiKey: "AIzaSyCG5PTHBhiIr3kGoB_Ip0CWpnydmEgriok",
+  authDomain: "attandence-ce454.firebaseapp.com",
+  projectId: "attandence-ce454",
+  storageBucket: "attandence-ce454.firebasestorage.app",
+  messagingSenderId: "190465524423",
+  appId: "1:190465524423:web:16f8338841b549853934e2",
+  measurementId: "G-6TQ4PRYWNL"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
 
-// Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   // Customize notification here
-  const notificationTitle = payload.notification.title || 'New Notification';
+  const notificationTitle = payload.notification?.title || 'New Message';
   const notificationOptions = {
-    body: payload.notification.body || 'You have a new message.',
-    icon: payload.notification.icon || '/favicon.ico' // Default icon
+    body: payload.notification?.body || 'You have a new message.',
+    icon: payload.notification?.icon || '/icons/icon-192x192.png', // Default icon
+    data: payload.data, // Pass along any data for click handling
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
+// Optional: Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
   console.log('[firebase-messaging-sw.js] Notification click Received.', event.notification);
   event.notification.close();
-  // TODO: Define what happens when the notification is clicked.
-  // For example, open a specific URL:
-  // event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
+
+  const payloadData = event.notification.data;
+  // Example: Open a specific URL or focus an existing window
+  // const urlToOpen = payloadData && payloadData.url ? payloadData.url : '/';
+  // event.waitUntil(clients.openWindow(urlToOpen));
+
+  // For now, just focus or open the app's root
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      if (clientList.length > 0) {
+        let client = clientList[0];
+        for (let i = 0; i < clientList.length; i++) {
+          if (clientList[i].focused) {
+            client = clientList[i];
+          }
+        }
+        return client.focus();
+      }
+      return clients.openWindow('/');
+    })
+  );
 });
