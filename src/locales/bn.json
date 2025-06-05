@@ -336,6 +336,18 @@
   "students": "ছাত্র",
   "unassignedStudentsTitle": "অ্যাসাইন না করা ছাত্র",
   "studentManagementNoStudentsInClass": "এই ক্লাসে কোনো ছাত্র নেই।",
-  "studentImportWarningClassNotAssigned": "{{count}} জন ছাত্র আমদানি করা হয়েছে কিন্তু তাদের নির্দিষ্ট 'ClassName' আপনার স্কুলে পাওয়া যায়নি এবং তারা অ্যাসাইন করা হয়নি। অনুগ্রহ করে আপনার ফাইলের ক্লাসের নামগুলি পরীক্ষা করুন বা প্রথমে ক্লাসগুলি তৈরি করুন।"
+  "studentImportWarningClassNotAssigned": "{{count}} জন ছাত্র আমদানি করা হয়েছে কিন্তু তাদের নির্দিষ্ট 'ClassName' আপনার স্কুলে পাওয়া যায়নি এবং তারা অ্যাসাইন করা হয়নি। অনুগ্রহ করে আপনার ফাইলের ক্লাসের নামগুলি পরীক্ষা করুন বা প্রথমে ক্লাসগুলি তৈরি করুন।",
+  "manageAdminRegCodeTitle": "অ্যাডমিন নিবন্ধন কোড পরিচালনা করুন",
+  "manageAdminRegCodeDesc": "নতুন অ্যাডমিন নিবন্ধনের জন্য প্রয়োজনীয় গোপন কোড সেট বা আপডেট করুন।",
+  "adminRegCodeLabel": "অ্যাডমিন নিবন্ধন কোড",
+  "enterAdminRegCodePlaceholder": "নতুন কোড প্রবেশ করান",
+  "saveAdminRegCodeButton": "কোড সংরক্ষণ করুন",
+  "adminRegCodeSavedTitle": "কোড সংরক্ষিত হয়েছে",
+  "adminRegCodeSavedDesc": "অ্যাডমিন নিবন্ধন কোড সফলভাবে সংরক্ষিত হয়েছে।",
+  "errorSavingAdminRegCode": "অ্যাডমিন নিবন্ধন কোড সংরক্ষণ করতে ব্যর্থ।",
+  "errorLoadingAdminRegCode": "অ্যাডমিন নিবন্ধন কোড লোড করতে ব্যর্থ।",
+  "adminRegCodeCannotBeEmpty": "অ্যাডমিন নিবন্ধন কোড খালি হতে পারে না।",
+  "adminRegCodeNotSetError": "অ্যাডমিন নিবন্ধন কোড সুপার অ্যাডমিন দ্বারা সেট করা হয়নি। অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
+  "errorFetchingAdminCode": "অ্যাডমিন নিবন্ধন কোড আনতে ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }
 

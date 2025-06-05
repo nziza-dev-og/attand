@@ -336,6 +336,18 @@
   "students": "طلاب",
   "unassignedStudentsTitle": "طلاب غير معينين",
   "studentManagementNoStudentsInClass": "لا يوجد طلاب في هذا الفصل.",
-  "studentImportWarningClassNotAssigned": "تم استيراد {{count}} طالبًا ولكن لم يتم العثور على 'ClassName' المحدد في مدرستك وبقوا غير معينين. يرجى التحقق من أسماء الفصول في ملفك أو إنشاء الفصول أولاً."
+  "studentImportWarningClassNotAssigned": "تم استيراد {{count}} طالبًا ولكن لم يتم العثور على 'ClassName' المحدد في مدرستك وبقوا غير معينين. يرجى التحقق من أسماء الفصول في ملفك أو إنشاء الفصول أولاً.",
+  "manageAdminRegCodeTitle": "إدارة رمز تسجيل المسؤول",
+  "manageAdminRegCodeDesc": "تعيين أو تحديث الرمز السري المطلوب لتسجيلات المسؤولين الجدد.",
+  "adminRegCodeLabel": "رمز تسجيل المسؤول",
+  "enterAdminRegCodePlaceholder": "أدخل الرمز الجديد",
+  "saveAdminRegCodeButton": "حفظ الرمز",
+  "adminRegCodeSavedTitle": "تم حفظ الرمز",
+  "adminRegCodeSavedDesc": "تم حفظ رمز تسجيل المسؤول بنجاح.",
+  "errorSavingAdminRegCode": "فشل حفظ رمز تسجيل المسؤول.",
+  "errorLoadingAdminRegCode": "فشل تحميل رمز تسجيل المسؤول.",
+  "adminRegCodeCannotBeEmpty": "لا يمكن أن يكون رمز تسجيل المسؤول فارغًا.",
+  "adminRegCodeNotSetError": "لم يتم تعيين رمز تسجيل المسؤول بواسطة المسؤول الأعلى. يرجى الاتصال بالدعم.",
+  "errorFetchingAdminCode": "خطأ في جلب رمز تسجيل المسؤول. يرجى المحاولة مرة أخرى."
 }
 

@@ -2,17 +2,19 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Users, School, ShieldCheck } from "lucide-react"; // Removed PieChartIcon
+import { Users, School, ShieldCheck, Edit3, Save } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, getCountFromServer, query, where } from "firebase/firestore"; 
+import { collection, getCountFromServer, query, where, doc, getDoc, setDoc } from "firebase/firestore"; 
 import { db } from "@/lib/firebase";
-// Removed Recharts and Chart component imports
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
-// Removed UserRoleDistributionData interface
-// Removed ChartConfig type
 
 interface SuperAdminStats {
   totalSchools: number; // Number of Admin accounts
@@ -22,19 +24,21 @@ interface SuperAdminStats {
 export default function SuperAdminDashboardPage() {
   const { translate } = useLanguage();
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [stats, setStats] = useState<SuperAdminStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
-  // Removed userRoleDistribution and loadingUserRoleDistribution states
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Removed chartConfig
+  const [adminRegCode, setAdminRegCode] = useState<string>("");
+  const [loadingAdminRegCode, setLoadingAdminRegCode] = useState(true);
+  const [isSavingAdminRegCode, setIsSavingAdminRegCode] = useState(false);
 
   useEffect(() => {
     const fetchAllData = async () => {
       if (authLoading || !user) return;
       
       setLoadingStats(true);
-      // setLoadingUserRoleDistribution(true); // Removed
+      setLoadingAdminRegCode(true);
       setFetchError(null);
 
       try {
@@ -56,20 +60,53 @@ export default function SuperAdminDashboardPage() {
         setLoadingStats(false);
       }
 
-      // Removed user role distribution data fetching logic
+      // Fetch Admin Registration Code
+      try {
+        const regCodesDocRef = doc(db, "platformSettings", "registrationCodes");
+        const docSnap = await getDoc(regCodesDocRef);
+        if (docSnap.exists()) {
+          setAdminRegCode(docSnap.data().adminSecretCode || "");
+        } else {
+          setAdminRegCode(""); // Not set yet
+        }
+      } catch (error) {
+        console.error("Error fetching admin registration code:", error);
+        toast({ variant: "destructive", title: translate("errorTitle"), description: translate("errorLoadingAdminRegCode") });
+      } finally {
+        setLoadingAdminRegCode(false);
+      }
     };
 
     if (!authLoading && user) {
         fetchAllData();
     } else if (!authLoading && !user) {
         setLoadingStats(false);
-        // setLoadingUserRoleDistribution(false); // Removed
+        setLoadingAdminRegCode(false);
         setFetchError(translate("errorAuthRequired") || "Authentication required to view this data.");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading, translate]);
+  }, [user, authLoading, translate, toast]);
 
-  const isLoading = authLoading || loadingStats; // Removed loadingUserRoleDistribution
+  const handleSaveAdminRegCode = async () => {
+    if (!adminRegCode.trim()) {
+      toast({ variant: "destructive", title: translate("errorTitle"), description: translate("adminRegCodeCannotBeEmpty") });
+      return;
+    }
+    setIsSavingAdminRegCode(true);
+    try {
+      const regCodesDocRef = doc(db, "platformSettings", "registrationCodes");
+      await setDoc(regCodesDocRef, { adminSecretCode: adminRegCode.trim() }, { merge: true });
+      toast({ title: translate("adminRegCodeSavedTitle"), description: translate("adminRegCodeSavedDesc") });
+    } catch (error) {
+      console.error("Error saving admin registration code:", error);
+      toast({ variant: "destructive", title: translate("errorTitle"), description: translate("errorSavingAdminRegCode") });
+    } finally {
+      setIsSavingAdminRegCode(false);
+    }
+  };
+
+
+  const isLoading = authLoading || loadingStats || loadingAdminRegCode; 
 
   if (isLoading) {
     return (
@@ -111,7 +148,6 @@ export default function SuperAdminDashboardPage() {
             </div>
           </CardContent>
         </Card>
-        {/* Removed Skeleton for chart */}
          <Card>
             <CardHeader>
                 <Skeleton className="h-7 w-1/2 rounded-md" />
@@ -185,7 +221,35 @@ export default function SuperAdminDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Removed User Role Distribution Chart Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Edit3 className="h-5 w-5 text-primary" />
+            {translate('manageAdminRegCodeTitle') || "Manage Admin Registration Code"}
+          </CardTitle>
+          <CardDescription>
+            {translate('manageAdminRegCodeDesc') || "Set or update the secret code required for new Admin registrations."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="adminRegCodeInput">{translate('adminRegCodeLabel') || "Admin Registration Code"}</Label>
+            <Input
+              id="adminRegCodeInput"
+              type="text"
+              value={adminRegCode}
+              onChange={(e) => setAdminRegCode(e.target.value)}
+              placeholder={translate('enterAdminRegCodePlaceholder') || "Enter new code"}
+              disabled={isSavingAdminRegCode}
+              className="mt-1"
+            />
+          </div>
+          <Button onClick={handleSaveAdminRegCode} disabled={isSavingAdminRegCode || !adminRegCode.trim()}>
+            {isSavingAdminRegCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {translate('saveAdminRegCodeButton') || "Save Code"}
+          </Button>
+        </CardContent>
+      </Card>
 
        <Card>
           <CardHeader>
@@ -200,3 +264,4 @@ export default function SuperAdminDashboardPage() {
     </div>
   );
 }
+

@@ -336,6 +336,18 @@
   "students": "abanyeshuri",
   "unassignedStudentsTitle": "Abanyeshuri Batashyizwe mu Mashuri",
   "studentManagementNoStudentsInClass": "Nta banyeshuri bari muri iri shuri.",
-  "studentImportWarningClassNotAssigned": "Abanyeshuri {{count}} batowe ariko 'ClassName' yabo ntiyabonetse mu ishuri ryawe kandi bagumye batashyizwe mu mashuri. Nyamuneka genzura amazina y'amashuri muri dosiye yawe cyangwa banza ukore amashuri."
+  "studentImportWarningClassNotAssigned": "Abanyeshuri {{count}} batowe ariko 'ClassName' yabo ntiyabonetse mu ishuri ryawe kandi bagumye batashyizwe mu mashuri. Nyamuneka genzura amazina y'amashuri muri dosiye yawe cyangwa banza ukore amashuri.",
+  "manageAdminRegCodeTitle": "Gucunga Kode yo Kwiyandikisha y'Admin",
+  "manageAdminRegCodeDesc": "Shyiraho cyangwa hindura kode y'ibanga ikenewe ku kwiyandikisha gushya kw'Admin.",
+  "adminRegCodeLabel": "Kode yo Kwiyandikisha y'Admin",
+  "enterAdminRegCodePlaceholder": "Andika kode nshya",
+  "saveAdminRegCodeButton": "Bika Kode",
+  "adminRegCodeSavedTitle": "Kode Yabitswe",
+  "adminRegCodeSavedDesc": "Kode yo kwiyandikisha y'Admin yabitswe neza.",
+  "errorSavingAdminRegCode": "Kunanirwa kubika kode yo kwiyandikisha y'Admin.",
+  "errorLoadingAdminRegCode": "Kunanirwa gutwara kode yo kwiyandikisha y'Admin.",
+  "adminRegCodeCannotBeEmpty": "Kode yo kwiyandikisha y'Admin ntishobora kuba ubusa.",
+  "adminRegCodeNotSetError": "Kode yo kwiyandikisha y'Admin ntiyashyizweho na Super Admin. Nyamuneka hamagara ubufasha.",
+  "errorFetchingAdminCode": "Ikosa mu gukurura kode yo kwiyandikisha y'Admin. Nyamuneka gerageza nanone."
 }
 

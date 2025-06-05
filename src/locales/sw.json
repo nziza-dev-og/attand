@@ -336,6 +336,18 @@
   "students": "wanafunzi",
   "unassignedStudentsTitle": "Wanafunzi Wasio na Darasa",
   "studentManagementNoStudentsInClass": "Hakuna wanafunzi katika darasa hili.",
-  "studentImportWarningClassNotAssigned": "Wanafunzi {{count}} waliingizwa lakini 'ClassName' yao maalum haikupatikana shuleni kwako na wanabaki hawajapangiwa. Tafadhali angalia majina ya madarasa kwenye faili yako au unda madarasa kwanza."
+  "studentImportWarningClassNotAssigned": "Wanafunzi {{count}} waliingizwa lakini 'ClassName' yao maalum haikupatikana shuleni kwako na wanabaki hawajapangiwa. Tafadhali angalia majina ya madarasa kwenye faili yako au unda madarasa kwanza.",
+  "manageAdminRegCodeTitle": "Dhibiti Nambari ya Usajili ya Msimamizi",
+  "manageAdminRegCodeDesc": "Weka au sasisha nambari ya siri inayohitajika kwa usajili mpya wa Wasimamizi.",
+  "adminRegCodeLabel": "Nambari ya Usajili ya Msimamizi",
+  "enterAdminRegCodePlaceholder": "Weka nambari mpya",
+  "saveAdminRegCodeButton": "Hifadhi Nambari",
+  "adminRegCodeSavedTitle": "Nambari Imehifadhiwa",
+  "adminRegCodeSavedDesc": "Nambari ya usajili ya Msimamizi imehifadhiwa kwa mafanikio.",
+  "errorSavingAdminRegCode": "Imeshindwa kuhifadhi nambari ya usajili ya Msimamizi.",
+  "errorLoadingAdminRegCode": "Imeshindwa kupakia nambari ya usajili ya Msimamizi.",
+  "adminRegCodeCannotBeEmpty": "Nambari ya usajili ya Msimamizi haiwezi kuwa tupu.",
+  "adminRegCodeNotSetError": "Nambari ya usajili ya Msimamizi haijawekwa na Msimamizi Mkuu. Tafadhali wasiliana na usaidizi.",
+  "errorFetchingAdminCode": "Hitilafu wakati wa kupata nambari ya usajili ya Msimamizi. Tafadhali jaribu tena."
 }
 

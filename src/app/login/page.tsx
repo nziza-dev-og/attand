@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { setDoc, doc, Timestamp, query, collection, where, getDocs } from 'firebase/firestore';
+import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "attandance";
+// ADMIN_SECRET_CODE is now fetched from Firestore
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
 
@@ -27,7 +27,7 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<Role | ''>('');
   const [name, setName] = useState('');
-  const [adminSecretCode, setAdminSecretCode] = useState('');
+  const [adminSecretCodeInput, setAdminSecretCodeInput] = useState(''); // Renamed from adminSecretCode to avoid confusion
   const [superAdminSecretCode, setSuperAdminSecretCode] = useState('');
   const [teacherSchoolCode, setTeacherSchoolCode] = useState('');
   const [parentSchoolCode, setParentSchoolCode] = useState('');
@@ -43,7 +43,7 @@ export default function LoginPage() {
     setConfirmPassword('');
     setRole('');
     setName('');
-    setAdminSecretCode('');
+    setAdminSecretCodeInput('');
     setSuperAdminSecretCode('');
     setTeacherSchoolCode('');
     setParentSchoolCode('');
@@ -89,9 +89,25 @@ export default function LoginPage() {
      }
 
     if (role === 'Admin') {
-      if (adminSecretCode !== ADMIN_SECRET_CODE) {
-        setError(translate("invalidAdminCodeError"));
-        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
+      // Fetch Admin Secret Code from Firestore
+      try {
+        const regCodesDocRef = doc(db, "platformSettings", "registrationCodes");
+        const docSnap = await getDoc(regCodesDocRef);
+        if (!docSnap.exists() || !docSnap.data()?.adminSecretCode) {
+          setError(translate("adminRegCodeNotSetError"));
+          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("adminRegCodeNotSetError") });
+          return;
+        }
+        const firestoreAdminCode = docSnap.data().adminSecretCode;
+        if (adminSecretCodeInput !== firestoreAdminCode) {
+          setError(translate("invalidAdminCodeError"));
+          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
+          return;
+        }
+      } catch (fetchError) {
+        console.error("Error fetching admin registration code during signup:", fetchError);
+        setError(translate("errorFetchingAdminCode"));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("errorFetchingAdminCode") });
         return;
       }
     }
@@ -122,14 +138,16 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-        isSchoolCodeVerified: role === 'Admin' || role === 'SuperAdmin', 
+        isSchoolCodeVerified: role === 'SuperAdmin', // Admins need to be verified by the code they enter
+        schoolId: null, // Default to null
       };
       
       if (role === 'Admin') {
         userDocData.schoolId = user.uid; 
         userDocData.schoolIdentifierCode = ""; 
+        userDocData.isSchoolCodeVerified = true; // Verified by entering the correct code
       } else if (role === 'SuperAdmin') {
-        userDocData.schoolId = null; // SuperAdmins don't belong to a specific school
+        // schoolId remains null for SuperAdmins
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
@@ -141,7 +159,6 @@ export default function LoginPage() {
         userDocData.childIds = [];
         if (parentSchoolCode.trim()) {
           userDocData.enteredSchoolCode = parentSchoolCode.trim();
-          // Attempt to auto-verify and set schoolId if code is valid
           const adminsQuery = query(
             collection(db, "users"),
             where("role", "==", "Admin"),
@@ -282,8 +299,8 @@ export default function LoginPage() {
                       id="admin-secret-code"
                       type="password"
                       placeholder={translate("enterAdminSecretCodePlaceholder")}
-                      value={adminSecretCode}
-                      onChange={(e) => setAdminSecretCode(e.target.value)}
+                      value={adminSecretCodeInput}
+                      onChange={(e) => setAdminSecretCodeInput(e.target.value)}
                       required
                       autoComplete="off"
                     />
@@ -364,3 +381,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

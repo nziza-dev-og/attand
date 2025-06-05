@@ -336,6 +336,18 @@
   "students": "étudiants",
   "unassignedStudentsTitle": "Étudiants non assignés",
   "studentManagementNoStudentsInClass": "Aucun étudiant dans cette classe.",
-  "studentImportWarningClassNotAssigned": "{{count}} étudiants ont été importés mais leur 'ClassName' spécifié n'a pas été trouvé dans votre école et ils restent non assignés. Veuillez vérifier les noms de classe dans votre fichier ou créer les classes d'abord."
+  "studentImportWarningClassNotAssigned": "{{count}} étudiants ont été importés mais leur 'ClassName' spécifié n'a pas été trouvé dans votre école et ils restent non assignés. Veuillez vérifier les noms de classe dans votre fichier ou créer les classes d'abord.",
+  "manageAdminRegCodeTitle": "Gérer le Code d'Enregistrement Admin",
+  "manageAdminRegCodeDesc": "Définissez ou mettez à jour le code secret requis pour les nouvelles inscriptions Admin.",
+  "adminRegCodeLabel": "Code d'Enregistrement Admin",
+  "enterAdminRegCodePlaceholder": "Entrez le nouveau code",
+  "saveAdminRegCodeButton": "Enregistrer le Code",
+  "adminRegCodeSavedTitle": "Code Enregistré",
+  "adminRegCodeSavedDesc": "Le code d'enregistrement Admin a été enregistré avec succès.",
+  "errorSavingAdminRegCode": "Échec de l'enregistrement du code d'enregistrement Admin.",
+  "errorLoadingAdminRegCode": "Échec du chargement du code d'enregistrement Admin.",
+  "adminRegCodeCannotBeEmpty": "Le code d'enregistrement Admin ne peut pas être vide.",
+  "adminRegCodeNotSetError": "Le code d'enregistrement Admin n'a pas été défini par le Super Admin. Veuillez contacter le support.",
+  "errorFetchingAdminCode": "Erreur lors de la récupération du code d'enregistrement Admin. Veuillez réessayer."
 }
 

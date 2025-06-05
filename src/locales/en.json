@@ -336,6 +336,18 @@
   "students": "students",
   "unassignedStudentsTitle": "Unassigned Students",
   "studentManagementNoStudentsInClass": "No students in this class.",
-  "studentImportWarningClassNotAssigned": "{{count}} students were imported but their specified 'ClassName' was not found in your school and they remain unassigned. Please check the class names in your file or create the classes first."
+  "studentImportWarningClassNotAssigned": "{{count}} students were imported but their specified 'ClassName' was not found in your school and they remain unassigned. Please check the class names in your file or create the classes first.",
+  "manageAdminRegCodeTitle": "Manage Admin Registration Code",
+  "manageAdminRegCodeDesc": "Set or update the secret code required for new Admin registrations.",
+  "adminRegCodeLabel": "Admin Registration Code",
+  "enterAdminRegCodePlaceholder": "Enter new code",
+  "saveAdminRegCodeButton": "Save Code",
+  "adminRegCodeSavedTitle": "Code Saved",
+  "adminRegCodeSavedDesc": "Admin registration code saved successfully.",
+  "errorSavingAdminRegCode": "Failed to save Admin registration code.",
+  "errorLoadingAdminRegCode": "Failed to load Admin registration code.",
+  "adminRegCodeCannotBeEmpty": "Admin registration code cannot be empty.",
+  "adminRegCodeNotSetError": "The Admin registration code has not been set by the Super Admin. Please contact support.",
+  "errorFetchingAdminCode": "Error fetching Admin registration code. Please try again."
 }
 

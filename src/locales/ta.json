@@ -299,7 +299,7 @@
   "actionsLabel": "செயல்கள்",
   "studentManagementEditAvatarButton": "சுயவிவரப் படத்தைத் திருத்து",
   "studentManagementNoStudentsFound": "உங்கள் பள்ளிக்கு மாணவர்கள் யாரும் இல்லை. மேலே உள்ள பொத்தானைப் பயன்படுத்தி ஒருவரைச் சேர்க்கவும்.",
-  "studentManagementEditAvatarDialogTitle": "திருத்து",
+  "studentManagementEditAvatarDialogTitle": "{{name}} க்கான சுயவிவரப் படத்தைத் திருத்து",
   "studentManagementEditAvatarDialogDesc": "மாணவரின் சுயவிவரப் படத்திற்கான புதிய பட URL ஐ உள்ளிடவும்.",
   "studentManagementSaveAvatarButton": "சுயவிவரப் படத்தை சேமி",
   "studentImportTitle": "மாணவர்களை இறக்குமதி செய்",
@@ -336,6 +336,18 @@
   "students": "மாணவர்கள்",
   "unassignedStudentsTitle": "ஒதுக்கப்படாத மாணவர்கள்",
   "studentManagementNoStudentsInClass": "இந்த வகுப்பில் மாணவர்கள் யாரும் இல்லை.",
-  "studentImportWarningClassNotAssigned": "{{count}} மாணவர்கள் இறக்குமதி செய்யப்பட்டனர் ஆனால் அவர்களின் குறிப்பிட்ட 'ClassName' உங்கள் பள்ளியில் காணப்படவில்லை மற்றும் அவர்கள் ஒதுக்கப்படாமல் உள்ளனர். தயவுசெய்து உங்கள் கோப்பில் உள்ள வகுப்புப் பெயர்களைச் சரிபார்க்கவும் அல்லது முதலில் வகுப்புகளை உருவாக்கவும்."
+  "studentImportWarningClassNotAssigned": "{{count}} மாணவர்கள் இறக்குமதி செய்யப்பட்டனர் ஆனால் அவர்களின் குறிப்பிட்ட 'ClassName' உங்கள் பள்ளியில் காணப்படவில்லை மற்றும் அவர்கள் ஒதுக்கப்படாமல் உள்ளனர். தயவுசெய்து உங்கள் கோப்பில் உள்ள வகுப்புப் பெயர்களைச் சரிபார்க்கவும் அல்லது முதலில் வகுப்புகளை உருவாக்கவும்.",
+  "manageAdminRegCodeTitle": "நிர்வாகி பதிவு குறியீட்டை நிர்வகி",
+  "manageAdminRegCodeDesc": "புதிய நிர்வாகி பதிவுகளுக்கு தேவையான ரகசிய குறியீட்டை அமைக்கவும் அல்லது புதுப்பிக்கவும்.",
+  "adminRegCodeLabel": "நிர்வாகி பதிவு குறியீடு",
+  "enterAdminRegCodePlaceholder": "புதிய குறியீட்டை உள்ளிடவும்",
+  "saveAdminRegCodeButton": "குறியீட்டை சேமி",
+  "adminRegCodeSavedTitle": "குறியீடு சேமிக்கப்பட்டது",
+  "adminRegCodeSavedDesc": "நிர்வாகி பதிவு குறியீடு வெற்றிகரமாக சேமிக்கப்பட்டது.",
+  "errorSavingAdminRegCode": "நிர்வாகி பதிவு குறியீட்டை சேமிப்பதில் தோல்வி.",
+  "errorLoadingAdminRegCode": "நிர்வாகி பதிவு குறியீட்டை ஏற்றுவதில் தோல்வி.",
+  "adminRegCodeCannotBeEmpty": "நிர்வாகி பதிவு குறியீடு காலியாக இருக்கக்கூடாது.",
+  "adminRegCodeNotSetError": "நிர்வாகி பதிவு குறியீடு சூப்பர் நிர்வாகியால் அமைக்கப்படவில்லை. தயவுசெய்து ஆதரவைத் தொடர்பு கொள்ளவும்.",
+  "errorFetchingAdminCode": "நிர்வாகி பதிவு குறியீட்டைப் பெறுவதில் பிழை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்."
 }
 
