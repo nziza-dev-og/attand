@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/shared/ProtectedRoute';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { SuperAdminSidebar } from './_components/SuperAdminSidebar';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { AdvertisementDisplay } from '@/components/shared/AdvertisementDisplay'; // Import Ad Display
 
 export default function SuperAdminLayout({ children }: { children: ReactNode }) {
   const { translate } = useLanguage();
@@ -20,6 +21,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
               homePath="/superadmin" 
             />
             <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
+              <AdvertisementDisplay /> {/* Display Ad */}
               {children}
             </main>
          </div>

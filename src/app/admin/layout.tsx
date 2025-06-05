@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/shared/ProtectedRoute';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { AdminSidebar } from './_components/AdminSidebar';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { AdvertisementDisplay } from '@/components/shared/AdvertisementDisplay'; // Import Ad Display
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { translate } = useLanguage();
@@ -20,6 +21,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               homePath="/admin" 
             />
             <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
+              <AdvertisementDisplay /> {/* Display Ad */}
               {children}
             </main>
          </div>
