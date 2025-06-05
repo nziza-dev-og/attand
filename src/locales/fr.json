@@ -385,5 +385,6 @@
   "adDeletedSuccessTitle": "Publicité Supprimée",
   "adDeletedSuccessDesc": "La publicité '{{title}}' a été supprimée avec succès.",
   "errorDeletingAd": "Échec de la suppression de la publicité.",
-  "learnMore": "En Savoir Plus"
+  "learnMore": "En Savoir Plus",
+  "dismissAd": "Rejeter la publicité"
 }

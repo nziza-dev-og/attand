@@ -385,5 +385,6 @@
   "adDeletedSuccessTitle": "Itangazo Ryasibwe",
   "adDeletedSuccessDesc": "Itangazo '{{title}}' ryasibwe neza.",
   "errorDeletingAd": "Kunanirwa gusiba itangazo.",
-  "learnMore": "Menya Byinshi"
+  "learnMore": "Menya Byinshi",
+  "dismissAd": "Kwanga itangazo"
 }

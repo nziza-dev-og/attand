@@ -385,5 +385,6 @@
   "adDeletedSuccessTitle": "বিজ্ঞাপন মোছা হয়েছে",
   "adDeletedSuccessDesc": "'{{title}}' বিজ্ঞাপনটি সফলভাবে মুছে ফেলা হয়েছে।",
   "errorDeletingAd": "বিজ্ঞাপন মুছতে ব্যর্থ।",
-  "learnMore": "আরও জানুন"
+  "learnMore": "আরও জানুন",
+  "dismissAd": "বিজ্ঞাপন খারিজ করুন"
 }

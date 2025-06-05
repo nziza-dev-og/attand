@@ -385,5 +385,6 @@
   "adDeletedSuccessTitle": "விளம்பரம் நீக்கப்பட்டது",
   "adDeletedSuccessDesc": "'{{title}}' என்ற விளம்பரம் வெற்றிகரமாக நீக்கப்பட்டது.",
   "errorDeletingAd": "விளம்பரத்தை நீக்குவதில் தோல்வி.",
-  "learnMore": "மேலும் அறிக"
+  "learnMore": "மேலும் அறிக",
+  "dismissAd": "விளம்பரத்தை நிராகரி"
 }

@@ -379,11 +379,11 @@
   "deactivateAdButton": "Deactivate",
   "adStatusUpdatedTitle": "Ad Status Updated",
   "adStatusUpdatedDesc": "The advertisement status has been updated.",
-  "errorUpdatingAdStatus": "Failed to update advertisement status.",
   "deleteAdConfirmTitle": "Delete Advertisement?",
   "deleteAdConfirmDesc": "Are you sure you want to delete the advertisement titled '{{title}}'? This action cannot be undone.",
   "adDeletedSuccessTitle": "Advertisement Deleted",
   "adDeletedSuccessDesc": "The advertisement '{{title}}' has been successfully deleted.",
   "errorDeletingAd": "Failed to delete the advertisement.",
-  "learnMore": "Learn More"
+  "learnMore": "Learn More",
+  "dismissAd": "Dismiss advertisement"
 }

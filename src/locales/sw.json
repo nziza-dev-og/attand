@@ -385,5 +385,6 @@
   "adDeletedSuccessTitle": "Tangazo Limefutwa",
   "adDeletedSuccessDesc": "Tangazo '{{title}}' limefutwa kwa mafanikio.",
   "errorDeletingAd": "Imeshindwa kufuta tangazo.",
-  "learnMore": "Jifunze Zaidi"
+  "learnMore": "Jifunze Zaidi",
+  "dismissAd": "Kataa tangazo"
 }

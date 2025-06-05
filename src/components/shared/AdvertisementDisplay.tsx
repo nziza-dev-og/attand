@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Megaphone, ExternalLink } from 'lucide-react';
+import { Megaphone, ExternalLink, X } from 'lucide-react'; // Added X icon
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Advertisement {
@@ -25,11 +25,13 @@ interface Advertisement {
 export function AdvertisementDisplay() {
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(true); // State to control visibility
   const { translate } = useLanguage();
 
   useEffect(() => {
     const fetchAd = async () => {
       setLoading(true);
+      setIsVisible(true); // Reset visibility when fetching a new ad
       try {
         const q = query(
           collection(db, "advertisements"),
@@ -55,8 +57,11 @@ export function AdvertisementDisplay() {
     fetchAd();
   }, []);
 
-  if (loading) {
-    // You can return a skeleton loader here if desired
+  const handleDismiss = () => {
+    setIsVisible(false);
+  };
+
+  if (loading || !isVisible) {
     return null; 
   }
 
@@ -65,8 +70,17 @@ export function AdvertisementDisplay() {
   }
 
   return (
-    <Card className="mb-6 border-primary/50 bg-primary/5 shadow-lg animate-in fade-in-50 slide-in-from-top-10 duration-500">
-      <CardHeader className="pb-3">
+    <Card className="relative mb-6 border-primary/50 bg-primary/5 shadow-lg animate-in fade-in-50 slide-in-from-top-10 duration-500">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-foreground"
+        onClick={handleDismiss}
+        aria-label={translate('dismissAd') || 'Dismiss advertisement'}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+      <CardHeader className="pb-3 pr-10"> {/* Added padding-right to avoid overlap with dismiss button */}
         <div className="flex items-center gap-2">
             <Megaphone className="h-6 w-6 text-primary" />
             <CardTitle className="text-lg text-primary">{ad.title}</CardTitle>
