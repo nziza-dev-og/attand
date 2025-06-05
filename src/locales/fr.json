@@ -379,12 +379,14 @@
   "deactivateAdButton": "Désactiver",
   "adStatusUpdatedTitle": "Statut de la Publicité Mis à Jour",
   "adStatusUpdatedDesc": "Le statut de la publicité a été mis à jour.",
-  "errorUpdatingAdStatus": "Échec de la mise à jour du statut de la publicité.",
   "deleteAdConfirmTitle": "Supprimer la Publicité ?",
   "deleteAdConfirmDesc": "Êtes-vous sûr de vouloir supprimer la publicité intitulée '{{title}}' ? Cette action ne peut pas être annulée.",
   "adDeletedSuccessTitle": "Publicité Supprimée",
   "adDeletedSuccessDesc": "La publicité '{{title}}' a été supprimée avec succès.",
   "errorDeletingAd": "Échec de la suppression de la publicité.",
   "learnMore": "En Savoir Plus",
-  "dismissAd": "Rejeter la publicité"
+  "dismissAd": "Rejeter la publicité",
+  "recaptchaRequiredError": "Veuillez compléter le reCAPTCHA."
 }
+
+      

@@ -279,7 +279,7 @@
   "studentManagementSuccessAvatarTitle": "வெற்றி",
   "studentManagementSuccessAvatarDesc": "மாணவர் அவதார் வெற்றிகரமாக புதுப்பிக்கப்பட்டது.",
   "studentManagementErrorAvatarUpdateFailed": "அவதாரத்தைப் புதுப்பிப்பதில் தோல்வி.",
-  "studentManagementPageDesc": "உங்கள் பள்ளிக்கான மாணவர் பதிவுகளைச் சேர்க்கவும், பார்க்கவும் அல்லது திருத்தவும்.",
+  "studentManagementPageDesc": "உங்கள் பள்ளிக்கான மாணவர் பதிவுகளைச் சேர்க்கவும், பார்க்கவும் அல்லது திருத்தவும்。",
   "studentManagementPageDescClassified": "வகுப்பு வாரியாக தொகுக்கப்பட்ட மாணவர்களைப் பார்க்கவும், புதிய மாணவர்களைச் சேர்க்கவும் அல்லது இறக்குமதி செய்யவும்.",
   "studentImportButtonTitle": "மாணவர்களை இறக்குமதி செய்",
   "studentManagementAddStudentButton": "மாணவரைச் சேர்",
@@ -386,5 +386,8 @@
   "adDeletedSuccessDesc": "'{{title}}' என்ற விளம்பரம் வெற்றிகரமாக நீக்கப்பட்டது.",
   "errorDeletingAd": "விளம்பரத்தை நீக்குவதில் தோல்வி.",
   "learnMore": "மேலும் அறிக",
-  "dismissAd": "விளம்பரத்தை நிராகரி"
+  "dismissAd": "விளம்பரத்தை நிராகரி",
+  "recaptchaRequiredError": "தயவுசெய்து reCAPTCHA ஐ முடிக்கவும்."
 }
+
+    

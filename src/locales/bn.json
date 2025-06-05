@@ -379,12 +379,14 @@
   "deactivateAdButton": "নিষ্ক্রিয় করুন",
   "adStatusUpdatedTitle": "বিজ্ঞাপনের স্থিতি আপডেট করা হয়েছে",
   "adStatusUpdatedDesc": "বিজ্ঞাপনের স্থিতি আপডেট করা হয়েছে।",
-  "errorUpdatingAdStatus": "বিজ্ঞাপনের স্থিতি আপডেট করতে ব্যর্থ।",
   "deleteAdConfirmTitle": "বিজ্ঞাপন মুছে ফেলবেন?",
   "deleteAdConfirmDesc": "আপনি কি নিশ্চিত যে আপনি '{{title}}' শিরোনামের বিজ্ঞাপনটি মুছে ফেলতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।",
   "adDeletedSuccessTitle": "বিজ্ঞাপন মোছা হয়েছে",
   "adDeletedSuccessDesc": "'{{title}}' বিজ্ঞাপনটি সফলভাবে মুছে ফেলা হয়েছে।",
   "errorDeletingAd": "বিজ্ঞাপন মুছতে ব্যর্থ।",
   "learnMore": "আরও জানুন",
-  "dismissAd": "বিজ্ঞাপন খারিজ করুন"
+  "dismissAd": "বিজ্ঞাপন খারিজ করুন",
+  "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA সম্পূর্ণ করুন।"
 }
+
+    

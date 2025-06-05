@@ -2,7 +2,7 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, type FormEvent } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
@@ -16,8 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ReCAPTCHA from "react-google-recaptcha";
 
-// ADMIN_SECRET_CODE is now fetched from Firestore
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
 
@@ -27,7 +27,7 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<Role | ''>('');
   const [name, setName] = useState('');
-  const [adminSecretCodeInput, setAdminSecretCodeInput] = useState(''); // Renamed from adminSecretCode to avoid confusion
+  const [adminSecretCodeInput, setAdminSecretCodeInput] = useState('');
   const [superAdminSecretCode, setSuperAdminSecretCode] = useState('');
   const [teacherSchoolCode, setTeacherSchoolCode] = useState('');
   const [parentSchoolCode, setParentSchoolCode] = useState('');
@@ -36,6 +36,16 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { translate } = useLanguage();
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+  if (!siteKey) {
+    console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
+    // Optionally, you can render a message to the user or disable the forms
+  }
+
 
   const resetFormFields = () => {
     setEmail('');
@@ -48,6 +58,8 @@ export default function LoginPage() {
     setTeacherSchoolCode('');
     setParentSchoolCode('');
     setError(null);
+    setRecaptchaToken(null);
+    recaptchaRef.current?.reset();
   };
 
   const handleTabChange = (value: string) => {
@@ -56,58 +68,101 @@ export default function LoginPage() {
   };
 
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!recaptchaToken) {
+      setError(translate("recaptchaRequiredError") || "Please complete the reCAPTCHA.");
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate("recaptchaRequiredError") || "Please complete the reCAPTCHA." });
+      return;
+    }
+    
+    // !! IMPORTANT !!
+    // TODO: Send 'recaptchaToken' to your backend for verification with Google using your RECAPTCHA_SECRET_KEY.
+    // Only proceed with Firebase login if backend verification is successful.
+    // Example: const backendVerification = await verifyTokenOnBackend(recaptchaToken);
+    // if (!backendVerification.success) {
+    //   setError("reCAPTCHA verification failed on server.");
+    //   toast({ variant: "destructive", title: "Login Failed", description: "reCAPTCHA verification failed." });
+    //   recaptchaRef.current?.reset();
+    //   setRecaptchaToken(null);
+    //   return;
+    // }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: translate("loginSuccessTitle") || "Login Successful", description: translate("loginSuccessDesc") || "Redirecting to dashboard..." });
       router.push('/'); 
     } catch (err: any) {
       setError(err.message);
-       toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
+      toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!recaptchaToken) {
+      setError(translate("recaptchaRequiredError") || "Please complete the reCAPTCHA.");
+      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("recaptchaRequiredError") || "Please complete the reCAPTCHA." });
+      return;
+    }
+
+    // !! IMPORTANT !!
+    // TODO: Send 'recaptchaToken' to your backend for verification with Google using your RECAPTCHA_SECRET_KEY.
+    // Only proceed with Firebase signup if backend verification is successful.
+
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
       toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("passwordsDontMatchError") });
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       return;
     }
     if (!role || role === 'none') {
         setError(translate("selectRoleError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("selectRoleError") });
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
     }
      if (!name.trim()) {
          setError(translate("enterNameError"));
          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterNameError") });
+         recaptchaRef.current?.reset();
+         setRecaptchaToken(null);
          return;
      }
 
     if (role === 'Admin') {
-      // Fetch Admin Secret Code from Firestore
       try {
         const regCodesDocRef = doc(db, "platformSettings", "registrationCodes");
         const docSnap = await getDoc(regCodesDocRef);
         if (!docSnap.exists() || !docSnap.data()?.adminSecretCode) {
           setError(translate("adminRegCodeNotSetError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("adminRegCodeNotSetError") });
+          recaptchaRef.current?.reset();
+          setRecaptchaToken(null);
           return;
         }
         const firestoreAdminCode = docSnap.data().adminSecretCode;
         if (adminSecretCodeInput !== firestoreAdminCode) {
           setError(translate("invalidAdminCodeError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
+          recaptchaRef.current?.reset();
+          setRecaptchaToken(null);
           return;
         }
       } catch (fetchError) {
         console.error("Error fetching admin registration code during signup:", fetchError);
         setError(translate("errorFetchingAdminCode"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("errorFetchingAdminCode") });
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
       }
     }
@@ -116,6 +171,8 @@ export default function LoginPage() {
       if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
         setError(translate("invalidSuperAdminCodeError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidSuperAdminCodeError") });
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
       }
     }
@@ -123,6 +180,8 @@ export default function LoginPage() {
     if (role === 'Teacher' && !teacherSchoolCode.trim()) {
         setError(translate("enterSchoolCodeErrorTeacher"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterSchoolCodeErrorTeacher") });
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
     }
 
@@ -138,23 +197,20 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-        isSchoolCodeVerified: role === 'SuperAdmin', // Admins need to be verified by the code they enter
-        schoolId: null, // Default to null
+        isSchoolCodeVerified: role === 'SuperAdmin',
+        schoolId: null,
       };
       
       if (role === 'Admin') {
         userDocData.schoolId = user.uid; 
         userDocData.schoolIdentifierCode = ""; 
-        userDocData.isSchoolCodeVerified = true; // Verified by entering the correct code
-      } else if (role === 'SuperAdmin') {
-        // schoolId remains null for SuperAdmins
+        userDocData.isSchoolCodeVerified = true; 
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
         userDocData.isSchoolCodeVerified = false;
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
-        // schoolId for Teacher will be set upon successful verification
       } else if (role === 'Parent') {
         userDocData.childIds = [];
         if (parentSchoolCode.trim()) {
@@ -181,7 +237,7 @@ export default function LoginPage() {
       await setDoc(doc(db, 'users', user.uid), userDocData);
 
       toast({ title: translate("signUpSuccessTitle"), description: translate("signUpSuccessDesc") });
-      resetFormFields();
+      resetFormFields(); // Resets reCAPTCHA as well
       setCurrentTab('login');
 
     } catch (err: any) {
@@ -196,6 +252,8 @@ export default function LoginPage() {
         setError(err.message);
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     }
   };
 
@@ -237,10 +295,20 @@ export default function LoginPage() {
                     autoComplete="current-password"
                   />
                 </div>
+                {siteKey && (
+                  <div className="flex justify-center">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={siteKey}
+                      onChange={(token) => setRecaptchaToken(token)}
+                      onExpired={() => setRecaptchaToken(null)}
+                    />
+                  </div>
+                )}
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">{translate("loginButton")}</Button>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey}>{translate("loginButton")}</Button>
               </CardFooter>
             </form>
           </Card>
@@ -369,10 +437,20 @@ export default function LoginPage() {
                      autoComplete="new-password"
                   />
                 </div>
+                {siteKey && (
+                  <div className="flex justify-center">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={siteKey}
+                      onChange={(token) => setRecaptchaToken(token)}
+                      onExpired={() => setRecaptchaToken(null)}
+                    />
+                  </div>
+                )}
                  {error && <p className="text-sm font-medium text-destructive">{error}</p>}
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">{translate("signUpButton")}</Button>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey}>{translate("signUpButton")}</Button>
               </CardFooter>
             </form>
           </Card>

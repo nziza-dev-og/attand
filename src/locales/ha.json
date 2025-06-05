@@ -386,5 +386,8 @@
   "adDeletedSuccessDesc": "Itangazo '{{title}}' ryasibwe neza.",
   "errorDeletingAd": "Kunanirwa gusiba itangazo.",
   "learnMore": "Menya Byinshi",
-  "dismissAd": "Kataa tangazo"
+  "dismissAd": "Kwanga itangazo",
+  "recaptchaRequiredError": "Nyamuneka emeza reCAPTCHA."
 }
+
+    

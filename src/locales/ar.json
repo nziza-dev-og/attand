@@ -348,7 +348,7 @@
   "errorLoadingAdminRegCode": "فشل تحميل رمز تسجيل المسؤول.",
   "adminRegCodeCannotBeEmpty": "لا يمكن أن يكون رمز تسجيل المسؤول فارغًا.",
   "adminRegCodeNotSetError": "لم يتم تعيين رمز تسجيل المسؤول بواسطة المسؤول الأعلى. يرجى الاتصال بالدعم.",
-  "errorFetchingAdminCode": "خطأ في جلب رمز تسجيل المسؤول. يرجى المحاولة مرة أخرى.",
+  "errorFetchingAdminCode": "خطأ في جلب رمز تسجيل المسؤول. يرجى المحاولة مرة أخرى。",
   "manageAdvertisements": "إدارة الإعلانات",
   "manageAdvertisementsDesc": "إنشاء وعرض وإدارة الإعلانات على مستوى المنصة.",
   "addAdvertisementButton": "إضافة إعلان",
@@ -386,5 +386,8 @@
   "adDeletedSuccessDesc": "تم حذف الإعلان '{{title}}' بنجاح.",
   "errorDeletingAd": "فشل حذف الإعلان.",
   "learnMore": "اعرف المزيد",
-  "dismissAd": "رفض الإعلان"
+  "dismissAd": "رفض الإعلان",
+  "recaptchaRequiredError": "يرجى إكمال reCAPTCHA."
 }
+
+    

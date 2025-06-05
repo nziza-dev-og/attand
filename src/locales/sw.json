@@ -386,5 +386,8 @@
   "adDeletedSuccessDesc": "Tangazo '{{title}}' limefutwa kwa mafanikio.",
   "errorDeletingAd": "Imeshindwa kufuta tangazo.",
   "learnMore": "Jifunze Zaidi",
-  "dismissAd": "Kataa tangazo"
+  "dismissAd": "Kataa tangazo",
+  "recaptchaRequiredError": "Tafadhali kamilisha reCAPTCHA."
 }
+
+    
