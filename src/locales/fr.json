@@ -386,10 +386,6 @@
   "errorDeletingAd": "Échec de la suppression de la publicité.",
   "learnMore": "En Savoir Plus",
   "dismissAd": "Rejeter la publicité",
-  "recaptchaNotConfiguredError": "reCAPTCHA n'est pas configuré. La connexion/l'inscription est désactivée.",
-  "recaptchaRequiredError": "Veuillez compléter la vérification reCAPTCHA.",
-  "recaptchaNotReadyError": "reCAPTCHA n'est pas prêt. Veuillez réessayer.",
-  "recaptchaFailedError": "Échec de l'exécution de reCAPTCHA.",
   "previousAd": "Publicité précédente",
   "nextAd": "Publicité suivante"
 }

@@ -386,10 +386,6 @@
   "errorDeletingAd": "বিজ্ঞাপন মুছতে ব্যর্থ।",
   "learnMore": "আরও জানুন",
   "dismissAd": "বিজ্ঞাপন খারিজ করুন",
-  "recaptchaNotConfiguredError": "reCAPTCHA কনফিগার করা নেই। লগইন/সাইনআপ নিষ্ক্রিয় করা হয়েছে।",
-  "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA যাচাইকরণ সম্পূর্ণ করুন।",
-  "recaptchaNotReadyError": "reCAPTCHA প্রস্তুত নয়। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "recaptchaFailedError": "reCAPTCHA চালাতে ব্যর্থ।",
   "previousAd": "পূর্ববর্তী বিজ্ঞাপন",
   "nextAd": "পরবর্তী বিজ্ঞাপন"
 }

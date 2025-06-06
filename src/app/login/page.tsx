@@ -16,11 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ReCAPTCHA from "react-google-recaptcha";
 
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -37,17 +35,9 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { translate } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  useEffect(() => {
-    if (!RECAPTCHA_SITE_KEY) {
-      console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
-    }
-  }, []);
-
-  const resetFormFields = (resetToken: boolean = true) => {
+  const resetFormFields = () => {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -58,42 +48,17 @@ export default function LoginPage() {
     setTeacherSchoolCode('');
     setParentSchoolCode('');
     setError(null);
-    if (resetToken) {
-      setRecaptchaToken(null);
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
-      }
-    }
   };
 
   const handleTabChange = (value: string) => {
     setCurrentTab(value);
-    resetFormFields(); 
+    resetFormFields();
   };
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!RECAPTCHA_SITE_KEY) {
-      setError(translate('recaptchaNotConfiguredError'));
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('recaptchaNotConfiguredError') });
-      return;
-    }
-    if (!recaptchaToken) {
-      setError(translate('recaptchaRequiredError'));
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('recaptchaRequiredError') });
-      return;
-    }
-    
-    // TODO: Send recaptchaToken to your backend for verification with your reCAPTCHA Secret Key
-    // Example: const verificationResult = await verifyRecaptchaOnBackend(recaptchaToken);
-    // if (!verificationResult.success) {
-    //   setError("reCAPTCHA verification failed on server.");
-    //   toast({ variant: "destructive", title: "Login Failed", description: "Human verification failed." });
-    //   resetFormFields(true); // Reset form and reCAPTCHA token
-    //   return;
-    // }
+    setIsSubmitting(true);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -102,43 +67,33 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: translate("loginFailedTitle"), description: err.message });
-      resetFormFields(true); 
+      resetFormFields();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!RECAPTCHA_SITE_KEY) {
-        setError(translate('recaptchaNotConfiguredError'));
-        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('recaptchaNotConfiguredError') });
-        return;
-    }
-    if (!recaptchaToken) {
-      setError(translate('recaptchaRequiredError'));
-      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('recaptchaRequiredError') });
-      return;
-    }
-
-    // TODO: Send recaptchaToken to your backend for verification (similar to login)
+    setIsSubmitting(true);
 
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
       toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("passwordsDontMatchError") });
-      resetFormFields(true);
+      setIsSubmitting(false);
       return;
     }
     if (!role || role === 'none') {
         setError(translate("selectRoleError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("selectRoleError") });
-        resetFormFields(true);
+        setIsSubmitting(false);
         return;
     }
      if (!name.trim()) {
          setError(translate("enterNameError"));
          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterNameError") });
-         resetFormFields(true);
+         setIsSubmitting(false);
          return;
      }
 
@@ -149,21 +104,21 @@ export default function LoginPage() {
         if (!docSnap.exists() || !docSnap.data()?.adminSecretCode) {
           setError(translate("adminRegCodeNotSetError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("adminRegCodeNotSetError") });
-          resetFormFields(true);
+          setIsSubmitting(false);
           return;
         }
         const firestoreAdminCode = docSnap.data().adminSecretCode;
         if (adminSecretCodeInput !== firestoreAdminCode) {
           setError(translate("invalidAdminCodeError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
-          resetFormFields(true);
+          setIsSubmitting(false);
           return;
         }
       } catch (fetchError) {
         console.error("Error fetching admin registration code during signup:", fetchError);
         setError(translate("errorFetchingAdminCode"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("errorFetchingAdminCode") });
-        resetFormFields(true);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -172,7 +127,7 @@ export default function LoginPage() {
       if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
         setError(translate("invalidSuperAdminCodeError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidSuperAdminCodeError") });
-        resetFormFields(true);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -180,7 +135,7 @@ export default function LoginPage() {
     if (role === 'Teacher' && !teacherSchoolCode.trim()) {
         setError(translate("enterSchoolCodeErrorTeacher"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterSchoolCodeErrorTeacher") });
-        resetFormFields(true);
+        setIsSubmitting(false);
         return;
     }
 
@@ -251,7 +206,9 @@ export default function LoginPage() {
         setError(err.message);
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
-      resetFormFields(true); 
+      resetFormFields();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -281,6 +238,7 @@ export default function LoginPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       autoComplete="email"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="space-y-2">
@@ -292,26 +250,14 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       autoComplete="current-password"
+                      disabled={isSubmitting}
                     />
                   </div>
-                  {RECAPTCHA_SITE_KEY ? (
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={RECAPTCHA_SITE_KEY}
-                      onChange={setRecaptchaToken}
-                      onExpired={() => setRecaptchaToken(null)}
-                      className="my-4 flex justify-center"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                      {translate('recaptchaNotConfiguredError')}
-                    </p>
-                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!RECAPTCHA_SITE_KEY || !recaptchaToken}>
-                    {translate("loginButton")}
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+                    {isSubmitting ? (translate('loading') || 'Loading...') : translate("loginButton")}
                   </Button>
                 </CardFooter>
               </form>
@@ -335,6 +281,7 @@ export default function LoginPage() {
                          onChange={(e) => setName(e.target.value)}
                          required
                          autoComplete="name"
+                         disabled={isSubmitting}
                       />
                    </div>
                   <div className="space-y-2">
@@ -347,11 +294,12 @@ export default function LoginPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                        autoComplete="email"
+                       disabled={isSubmitting}
                     />
                   </div>
                    <div className="space-y-2">
                     <Label htmlFor="role">{translate("roleLabel")}</Label>
-                     <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
+                     <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)} disabled={isSubmitting}>
                         <SelectTrigger id="role">
                           <SelectValue placeholder={translate("selectRolePlaceholder")} />
                         </SelectTrigger>
@@ -375,6 +323,7 @@ export default function LoginPage() {
                         onChange={(e) => setAdminSecretCodeInput(e.target.value)}
                         required
                         autoComplete="off"
+                        disabled={isSubmitting}
                       />
                     </div>
                   )}
@@ -389,6 +338,7 @@ export default function LoginPage() {
                         onChange={(e) => setSuperAdminSecretCode(e.target.value)}
                         required
                         autoComplete="off"
+                        disabled={isSubmitting}
                       />
                     </div>
                   )}
@@ -403,6 +353,7 @@ export default function LoginPage() {
                         onChange={(e) => setTeacherSchoolCode(e.target.value)}
                         required
                         autoComplete="off"
+                        disabled={isSubmitting}
                       />
                     </div>
                   )}
@@ -416,6 +367,7 @@ export default function LoginPage() {
                         value={parentSchoolCode}
                         onChange={(e) => setParentSchoolCode(e.target.value)}
                         autoComplete="off"
+                        disabled={isSubmitting}
                       />
                     </div>
                   )}
@@ -428,6 +380,7 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       autoComplete="new-password"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="space-y-2">
@@ -439,26 +392,14 @@ export default function LoginPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                        autoComplete="new-password"
+                       disabled={isSubmitting}
                     />
                   </div>
-                  {RECAPTCHA_SITE_KEY ? (
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={RECAPTCHA_SITE_KEY}
-                      onChange={setRecaptchaToken}
-                      onExpired={() => setRecaptchaToken(null)}
-                      className="my-4 flex justify-center"
-                    />
-                  ) : (
-                     <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                       {translate('recaptchaNotConfiguredError')}
-                     </p>
-                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!RECAPTCHA_SITE_KEY || !recaptchaToken}>
-                    {translate("signUpButton")}
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+                     {isSubmitting ? (translate('loading') || 'Loading...') : translate("signUpButton")}
                   </Button>
                 </CardFooter>
               </form>
