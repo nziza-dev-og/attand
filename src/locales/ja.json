@@ -386,8 +386,8 @@
   "errorDeletingAd": "広告の削除に失敗しました。",
   "learnMore": "詳細はこちら",
   "dismissAd": "広告を閉じる",
-  "recaptchaRequiredError": "reCAPTCHAを完了してください。"
+  "recaptchaNotConfiguredError": "reCAPTCHAが設定されていません。ログイン/登録が無効になっています。",
+  "recaptchaRequiredError": "reCAPTCHAを完了してください。",
+  "recaptchaNotReadyError": "reCAPTCHAの準備ができていません。もう一度お試しください。",
+  "recaptchaFailedError": "reCAPTCHAの実行に失敗しました。"
 }
-
-
-    

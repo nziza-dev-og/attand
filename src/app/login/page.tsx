@@ -2,7 +2,7 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState, useRef, type FormEvent } from 'react';
+import { useState, useRef, type FormEvent, useEffect } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
@@ -16,10 +16,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ReCAPTCHA from "react-google-recaptcha";
+import Script from 'next/script'; // Import next/script
 
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
+
+// Augment the window object to include grecaptcha
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -36,16 +43,31 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { translate } = useLanguage();
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const [isRecaptchaReady, setIsRecaptchaReady] = useState(false);
 
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
-  if (!siteKey) {
-    console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
-    // Optionally, you can render a message to the user or disable the forms
-  }
+  useEffect(() => {
+    if (!siteKey) {
+      console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
+    }
+  }, [siteKey]);
 
+  const getRecaptchaToken = async (action: string): Promise<string | null> => {
+    if (!siteKey || !isRecaptchaReady || !window.grecaptcha || !window.grecaptcha.enterprise) {
+      setError(translate("recaptchaNotReadyError") || "reCAPTCHA is not ready. Please try again.");
+      return null;
+    }
+    try {
+      await window.grecaptcha.enterprise.ready();
+      const token = await window.grecaptcha.enterprise.execute(siteKey, { action });
+      return token;
+    } catch (err) {
+      console.error("Error executing reCAPTCHA:", err);
+      setError(translate("recaptchaFailedError") || "Failed to execute reCAPTCHA.");
+      return null;
+    }
+  };
 
   const resetFormFields = () => {
     setEmail('');
@@ -58,8 +80,6 @@ export default function LoginPage() {
     setTeacherSchoolCode('');
     setParentSchoolCode('');
     setError(null);
-    setRecaptchaToken(null);
-    recaptchaRef.current?.reset();
   };
 
   const handleTabChange = (value: string) => {
@@ -67,26 +87,29 @@ export default function LoginPage() {
     resetFormFields();
   };
 
-
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    if (!siteKey) {
+        toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate("recaptchaNotConfiguredError") });
+        return;
+    }
+
+    const recaptchaToken = await getRecaptchaToken('LOGIN');
     if (!recaptchaToken) {
-      setError(translate("recaptchaRequiredError") || "Please complete the reCAPTCHA.");
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate("recaptchaRequiredError") || "Please complete the reCAPTCHA." });
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: error || translate("recaptchaRequiredError") });
       return;
     }
     
     // !! IMPORTANT !!
-    // TODO: Send 'recaptchaToken' to your backend for verification with Google using your RECAPTCHA_SECRET_KEY.
+    // TODO: Send 'recaptchaToken' to your backend for verification with Google reCAPTCHA Enterprise API
+    // using your reCAPTCHA Enterprise Secret Key.
     // Only proceed with Firebase login if backend verification is successful.
     // Example: const backendVerification = await verifyTokenOnBackend(recaptchaToken);
     // if (!backendVerification.success) {
     //   setError("reCAPTCHA verification failed on server.");
     //   toast({ variant: "destructive", title: "Login Failed", description: "reCAPTCHA verification failed." });
-    //   recaptchaRef.current?.reset();
-    //   setRecaptchaToken(null);
     //   return;
     // }
 
@@ -97,8 +120,6 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
-      recaptchaRef.current?.reset();
-      setRecaptchaToken(null);
     }
   };
 
@@ -106,35 +127,33 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
+    if (!siteKey) {
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("recaptchaNotConfiguredError") });
+        return;
+    }
+    
+    const recaptchaToken = await getRecaptchaToken('SIGNUP');
     if (!recaptchaToken) {
-      setError(translate("recaptchaRequiredError") || "Please complete the reCAPTCHA.");
-      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("recaptchaRequiredError") || "Please complete the reCAPTCHA." });
+      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: error || translate("recaptchaRequiredError") });
       return;
     }
 
     // !! IMPORTANT !!
-    // TODO: Send 'recaptchaToken' to your backend for verification with Google using your RECAPTCHA_SECRET_KEY.
-    // Only proceed with Firebase signup if backend verification is successful.
+    // TODO: Send 'recaptchaToken' to your backend for verification.
 
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
       toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("passwordsDontMatchError") });
-      recaptchaRef.current?.reset();
-      setRecaptchaToken(null);
       return;
     }
     if (!role || role === 'none') {
         setError(translate("selectRoleError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("selectRoleError") });
-        recaptchaRef.current?.reset();
-        setRecaptchaToken(null);
         return;
     }
      if (!name.trim()) {
          setError(translate("enterNameError"));
          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterNameError") });
-         recaptchaRef.current?.reset();
-         setRecaptchaToken(null);
          return;
      }
 
@@ -145,24 +164,18 @@ export default function LoginPage() {
         if (!docSnap.exists() || !docSnap.data()?.adminSecretCode) {
           setError(translate("adminRegCodeNotSetError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("adminRegCodeNotSetError") });
-          recaptchaRef.current?.reset();
-          setRecaptchaToken(null);
           return;
         }
         const firestoreAdminCode = docSnap.data().adminSecretCode;
         if (adminSecretCodeInput !== firestoreAdminCode) {
           setError(translate("invalidAdminCodeError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
-          recaptchaRef.current?.reset();
-          setRecaptchaToken(null);
           return;
         }
       } catch (fetchError) {
         console.error("Error fetching admin registration code during signup:", fetchError);
         setError(translate("errorFetchingAdminCode"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("errorFetchingAdminCode") });
-        recaptchaRef.current?.reset();
-        setRecaptchaToken(null);
         return;
       }
     }
@@ -171,8 +184,6 @@ export default function LoginPage() {
       if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
         setError(translate("invalidSuperAdminCodeError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidSuperAdminCodeError") });
-        recaptchaRef.current?.reset();
-        setRecaptchaToken(null);
         return;
       }
     }
@@ -180,8 +191,6 @@ export default function LoginPage() {
     if (role === 'Teacher' && !teacherSchoolCode.trim()) {
         setError(translate("enterSchoolCodeErrorTeacher"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterSchoolCodeErrorTeacher") });
-        recaptchaRef.current?.reset();
-        setRecaptchaToken(null);
         return;
     }
 
@@ -237,7 +246,7 @@ export default function LoginPage() {
       await setDoc(doc(db, 'users', user.uid), userDocData);
 
       toast({ title: translate("signUpSuccessTitle"), description: translate("signUpSuccessDesc") });
-      resetFormFields(); // Resets reCAPTCHA as well
+      resetFormFields();
       setCurrentTab('login');
 
     } catch (err: any) {
@@ -252,211 +261,203 @@ export default function LoginPage() {
         setError(err.message);
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
-      recaptchaRef.current?.reset();
-      setRecaptchaToken(null);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-secondary">
-      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">{translate("loginTab")}</TabsTrigger>
-          <TabsTrigger value="signup">{translate("signUpTab")}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card>
-            <CardHeader>
-              <CardTitle>{translate("loginTitle")}</CardTitle>
-              <CardDescription>{translate("loginDescription")}</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleLogin}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">{translate("emailLabel")}</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="m@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">{translate("passwordLabel")}</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
-                </div>
-                {siteKey && (
-                  <div className="flex justify-center">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={siteKey}
-                      onChange={(token) => setRecaptchaToken(token)}
-                      onExpired={() => setRecaptchaToken(null)}
+    <>
+      {siteKey && (
+        <Script
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`}
+          strategy="afterInteractive"
+          onReady={() => setIsRecaptchaReady(true)}
+        />
+      )}
+      <div className="flex items-center justify-center min-h-screen bg-secondary">
+        <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">{translate("loginTab")}</TabsTrigger>
+            <TabsTrigger value="signup">{translate("signUpTab")}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle>{translate("loginTitle")}</CardTitle>
+                <CardDescription>{translate("loginDescription")}</CardDescription>
+              </CardHeader>
+              <form onSubmit={handleLogin}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">{translate("emailLabel")}</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="m@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
                     />
                   </div>
-                )}
-                 {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey}>{translate("loginButton")}</Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </TabsContent>
-        <TabsContent value="signup">
-          <Card>
-            <CardHeader>
-              <CardTitle>{translate("signUpTitle")}</CardTitle>
-              <CardDescription>{translate("signUpDescription")}</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSignUp}>
-              <CardContent className="space-y-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="signup-name">{translate("nameLabel")}</Label>
-                    <Input
-                       id="signup-name"
-                       type="text"
-                       placeholder={translate("fullNamePlaceholder")}
-                       value={name}
-                       onChange={(e) => setName(e.target.value)}
-                       required
-                       autoComplete="name"
-                    />
-                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">{translate("emailLabel")}</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="m@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                     autoComplete="email"
-                  />
-                </div>
-                 <div className="space-y-2">
-                  <Label htmlFor="role">{translate("roleLabel")}</Label>
-                   <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
-                      <SelectTrigger id="role">
-                        <SelectValue placeholder={translate("selectRolePlaceholder")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                         <SelectItem value="none" disabled>{translate("selectRolePlaceholder")}</SelectItem>
-                         <SelectItem value="SuperAdmin">{translate("roleSuperAdmin")}</SelectItem>
-                        <SelectItem value="Admin">{translate("roleAdmin")}</SelectItem>
-                        <SelectItem value="Teacher">{translate("roleTeacher")}</SelectItem>
-                        <SelectItem value="Parent">{translate("roleParent")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                </div>
-                {role === 'Admin' && (
                   <div className="space-y-2">
-                    <Label htmlFor="admin-secret-code">{translate("adminSecretCodeLabel")}</Label>
+                    <Label htmlFor="login-password">{translate("passwordLabel")}</Label>
                     <Input
-                      id="admin-secret-code"
+                      id="login-password"
                       type="password"
-                      placeholder={translate("enterAdminSecretCodePlaceholder")}
-                      value={adminSecretCodeInput}
-                      onChange={(e) => setAdminSecretCodeInput(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
-                      autoComplete="off"
+                      autoComplete="current-password"
                     />
                   </div>
-                )}
-                {role === 'SuperAdmin' && (
+                  {!siteKey && (
+                    <p className="text-sm font-medium text-destructive">{translate("recaptchaNotConfiguredError")}</p>
+                  )}
+                   {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || !isRecaptchaReady}>{translate("loginButton")}</Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+          <TabsContent value="signup">
+            <Card>
+              <CardHeader>
+                <CardTitle>{translate("signUpTitle")}</CardTitle>
+                <CardDescription>{translate("signUpDescription")}</CardDescription>
+              </CardHeader>
+              <form onSubmit={handleSignUp}>
+                <CardContent className="space-y-4">
+                   <div className="space-y-2">
+                      <Label htmlFor="signup-name">{translate("nameLabel")}</Label>
+                      <Input
+                         id="signup-name"
+                         type="text"
+                         placeholder={translate("fullNamePlaceholder")}
+                         value={name}
+                         onChange={(e) => setName(e.target.value)}
+                         required
+                         autoComplete="name"
+                      />
+                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="super-admin-secret-code">{translate("superAdminSecretCodeLabel")}</Label>
+                    <Label htmlFor="signup-email">{translate("emailLabel")}</Label>
                     <Input
-                      id="super-admin-secret-code"
+                      id="signup-email"
+                      type="email"
+                      placeholder="m@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                       autoComplete="email"
+                    />
+                  </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="role">{translate("roleLabel")}</Label>
+                     <Select value={role || 'none'} onValueChange={(value) => setRole(value === 'none' ? '' : value as Role)}>
+                        <SelectTrigger id="role">
+                          <SelectValue placeholder={translate("selectRolePlaceholder")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="none" disabled>{translate("selectRolePlaceholder")}</SelectItem>
+                           <SelectItem value="SuperAdmin">{translate("roleSuperAdmin")}</SelectItem>
+                          <SelectItem value="Admin">{translate("roleAdmin")}</SelectItem>
+                          <SelectItem value="Teacher">{translate("roleTeacher")}</SelectItem>
+                          <SelectItem value="Parent">{translate("roleParent")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                  </div>
+                  {role === 'Admin' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="admin-secret-code">{translate("adminSecretCodeLabel")}</Label>
+                      <Input
+                        id="admin-secret-code"
+                        type="password"
+                        placeholder={translate("enterAdminSecretCodePlaceholder")}
+                        value={adminSecretCodeInput}
+                        onChange={(e) => setAdminSecretCodeInput(e.target.value)}
+                        required
+                        autoComplete="off"
+                      />
+                    </div>
+                  )}
+                  {role === 'SuperAdmin' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="super-admin-secret-code">{translate("superAdminSecretCodeLabel")}</Label>
+                      <Input
+                        id="super-admin-secret-code"
+                        type="password"
+                        placeholder={translate("enterSuperAdminSecretCodePlaceholder")}
+                        value={superAdminSecretCode}
+                        onChange={(e) => setSuperAdminSecretCode(e.target.value)}
+                        required
+                        autoComplete="off"
+                      />
+                    </div>
+                  )}
+                  {role === 'Teacher' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="teacher-school-code">{translate("teacherSchoolCodeLabel")}</Label>
+                      <Input
+                        id="teacher-school-code"
+                        type="text"
+                        placeholder={translate("enterSchoolCodePlaceholderTeacher")}
+                        value={teacherSchoolCode}
+                        onChange={(e) => setTeacherSchoolCode(e.target.value)}
+                        required
+                        autoComplete="off"
+                      />
+                    </div>
+                  )}
+                  {role === 'Parent' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="parent-school-code">{translate("parentSchoolCodeLabel")}</Label>
+                      <Input
+                        id="parent-school-code"
+                        type="text"
+                        placeholder={translate("enterSchoolCodePlaceholderParentOptional")}
+                        value={parentSchoolCode}
+                        onChange={(e) => setParentSchoolCode(e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">{translate("passwordLabel")}</Label>
+                    <Input
+                      id="signup-password"
                       type="password"
-                      placeholder={translate("enterSuperAdminSecretCodePlaceholder")}
-                      value={superAdminSecretCode}
-                      onChange={(e) => setSuperAdminSecretCode(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
-                      autoComplete="off"
+                      autoComplete="new-password"
                     />
                   </div>
-                )}
-                {role === 'Teacher' && (
                   <div className="space-y-2">
-                    <Label htmlFor="teacher-school-code">{translate("teacherSchoolCodeLabel")}</Label>
+                    <Label htmlFor="confirm-password">{translate("confirmPasswordLabel")}</Label>
                     <Input
-                      id="teacher-school-code"
-                      type="text"
-                      placeholder={translate("enterSchoolCodePlaceholderTeacher")}
-                      value={teacherSchoolCode}
-                      onChange={(e) => setTeacherSchoolCode(e.target.value)}
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      autoComplete="off"
+                       autoComplete="new-password"
                     />
                   </div>
-                )}
-                {role === 'Parent' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="parent-school-code">{translate("parentSchoolCodeLabel")}</Label>
-                    <Input
-                      id="parent-school-code"
-                      type="text"
-                      placeholder={translate("enterSchoolCodePlaceholderParentOptional")}
-                      value={parentSchoolCode}
-                      onChange={(e) => setParentSchoolCode(e.target.value)}
-                      autoComplete="off"
-                    />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">{translate("passwordLabel")}</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">{translate("confirmPasswordLabel")}</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                     autoComplete="new-password"
-                  />
-                </div>
-                {siteKey && (
-                  <div className="flex justify-center">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={siteKey}
-                      onChange={(token) => setRecaptchaToken(token)}
-                      onExpired={() => setRecaptchaToken(null)}
-                    />
-                  </div>
-                )}
-                 {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey}>{translate("signUpButton")}</Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                   {!siteKey && (
+                    <p className="text-sm font-medium text-destructive">{translate("recaptchaNotConfiguredError")}</p>
+                  )}
+                   {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || !isRecaptchaReady}>{translate("signUpButton")}</Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 }
-

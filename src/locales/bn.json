@@ -117,7 +117,7 @@
   "invalidUrlTitle": "অবৈধ ইউআরএল",
   "invalidUrlDesc": "অনুগ্রহ করে একটি বৈধ ছবির ইউআরএল লিখুন।",
   "schoolIdentifierCodeTitle": "স্কুল শনাক্তকারী কোড",
-  "adminSchoolCodeDesc": "আপনার স্কুলের জন্য একটি অনন্য কোড নির্ধারণ করুন। শিক্ষকদের সাথে এই কোডটি শেয়ার করুন যাতে তারা সাইন আপ করার সময় আপনার স্কুলের সাথে নিজেদের যুক্ত করতে পারে।",
+  "adminSchoolCodeDesc": "Define a unique code for your school. Share this code with teachers so they can associate themselves with your school during their signup.",
   "teacherSchoolCodeDesc": "আপনার অ্যাকাউন্ট স্কুলের সাথে যুক্ত করতে আপনার স্কুল প্রশাসক কর্তৃক প্রদত্ত স্কুল শনাক্তকারী কোডটি প্রবেশ করান।",
   "setSchoolCodeLabel": "স্কুল কোড সেট/আপডেট করুন",
   "enterSchoolCodePlaceholder": "আপনার স্কুলের অনন্য কোড প্রবেশ করান",
@@ -386,7 +386,8 @@
   "errorDeletingAd": "বিজ্ঞাপন মুছতে ব্যর্থ।",
   "learnMore": "আরও জানুন",
   "dismissAd": "বিজ্ঞাপন খারিজ করুন",
-  "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA সম্পূর্ণ করুন।"
+  "recaptchaNotConfiguredError": "reCAPTCHA কনফিগার করা হয়নি। লগইন/সাইনআপ নিষ্ক্রিয় করা হয়েছে।",
+  "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA সম্পূর্ণ করুন।",
+  "recaptchaNotReadyError": "reCAPTCHA প্রস্তুত নয়। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "recaptchaFailedError": "reCAPTCHA কার্যকর করতে ব্যর্থ।"
 }
-
-    

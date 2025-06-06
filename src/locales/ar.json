@@ -379,7 +379,6 @@
   "deactivateAdButton": "إلغاء التفعيل",
   "adStatusUpdatedTitle": "تم تحديث حالة الإعلان",
   "adStatusUpdatedDesc": "تم تحديث حالة الإعلان.",
-  "errorUpdatingAdStatus": "فشل تحديث حالة الإعلان.",
   "deleteAdConfirmTitle": "حذف الإعلان؟",
   "deleteAdConfirmDesc": "هل أنت متأكد أنك تريد حذف الإعلان المعنون '{{title}}'؟ لا يمكن التراجع عن هذا الإجراء.",
   "adDeletedSuccessTitle": "تم حذف الإعلان",
@@ -387,7 +386,8 @@
   "errorDeletingAd": "فشل حذف الإعلان.",
   "learnMore": "اعرف المزيد",
   "dismissAd": "رفض الإعلان",
-  "recaptchaRequiredError": "يرجى إكمال reCAPTCHA."
+  "recaptchaNotConfiguredError": "لم يتم تكوين reCAPTCHA. تم تعطيل تسجيل الدخول/التسجيل.",
+  "recaptchaRequiredError": "يرجى إكمال reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA ليست جاهزة. يرجى المحاولة مرة أخرى.",
+  "recaptchaFailedError": "فشل تنفيذ reCAPTCHA."
 }
-
-    

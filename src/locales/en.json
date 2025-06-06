@@ -386,7 +386,8 @@
   "errorDeletingAd": "Failed to delete the advertisement.",
   "learnMore": "Learn More",
   "dismissAd": "Dismiss advertisement",
-  "recaptchaRequiredError": "Please complete the reCAPTCHA."
+  "recaptchaNotConfiguredError": "reCAPTCHA is not configured. Login/Signup is disabled.",
+  "recaptchaRequiredError": "Please complete the reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA is not ready. Please try again.",
+  "recaptchaFailedError": "Failed to execute reCAPTCHA."
 }
-
-      
