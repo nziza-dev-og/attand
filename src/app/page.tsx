@@ -1,20 +1,23 @@
-
+// src/app/page.tsx
 "use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingProgressBar } from '@/components/shared/LoadingProgressBar'; // Import the new component
+import { useLanguage } from '@/contexts/LanguageContext'; 
 
 export default function Home() {
   const { user, role, loading, isSchoolCodeVerified, isSchoolCodeLocked } = useAuth();
   const router = useRouter();
+  const { translate } = useLanguage(); 
 
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push('/login');
       } else {
+        // Role-based redirection logic (existing)
         if (role === 'Teacher' && (isSchoolCodeVerified === false || isSchoolCodeLocked === true)) {
           router.push('/teacher/verify-school');
         } else {
@@ -43,17 +46,17 @@ export default function Home() {
 
   if (loading) {
     return (
-       <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
-         <Skeleton className="h-12 w-1/2 rounded-lg" />
-         <Skeleton className="h-8 w-1/3 rounded-lg" />
-         <Skeleton className="h-64 w-full max-w-md rounded-lg" />
-       </div>
-     );
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <LoadingProgressBar loadingText={translate('loadingPleaseWait') || "Loading, please wait..."} />
+      </div>
+    );
   }
 
+  // This part is usually not seen as redirection happens quickly.
+  // But keeping a fallback just in case.
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p>Loading...</p>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <p>{translate('redirectingText') || "Redirecting..."}</p>
     </div>
   );
 }

@@ -387,5 +387,6 @@
   "learnMore": "더 알아보기",
   "dismissAd": "광고 닫기",
   "previousAd": "이전 광고",
-  "nextAd": "다음 광고"
+  "nextAd": "다음 광고",
+  "redirectingText": "리디렉션 중..."
 }
