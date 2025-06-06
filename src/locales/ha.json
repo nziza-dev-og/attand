@@ -386,10 +386,10 @@
   "errorDeletingAd": "Kunanirwa gusiba itangazo.",
   "learnMore": "Menya Byinshi",
   "dismissAd": "Kwanga itangazo",
-  "recaptchaNotConfiguredError": "reCAPTCHA ntiyashyizweho. Kwinjira/Kwiyandikisha byahagaritswe.",
-  "recaptchaRequiredError": "Nyamunekauzuza reCAPTCHA.",
-  "recaptchaNotReadyError": "reCAPTCHA ntiyiteguye. Nyamuneka gerageza nanone.",
-  "recaptchaFailedError": "Kunanirwa gukoresha reCAPTCHA.",
+  "humanVerificationRequiredError": "Nyamuneka emeza ko uri umuntu.",
+  "turnstileNotConfiguredError": "Uburyo bwo kwemeza ko uri umuntu ntibushyizweho. Kwinjira/Kwiyandikisha byahagaritswe.",
+  "turnstileLoadError": "Kunanirwa gutwara serivisi yo kwemeza ko uri umuntu. Nyamuneka gerageza nyuma.",
+  "turnstileError": "Habaye ikosa muri serivisi yo kwemeza ko uri umuntu. Nyamuneka gerageza nanone.",
   "previousAd": "Itangazo ryabanje",
   "nextAd": "Itangazo rikurikira"
 }

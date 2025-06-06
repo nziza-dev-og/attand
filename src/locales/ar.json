@@ -386,10 +386,10 @@
   "errorDeletingAd": "فشل حذف الإعلان.",
   "learnMore": "اعرف المزيد",
   "dismissAd": "رفض الإعلان",
-  "recaptchaNotConfiguredError": "لم يتم تكوين reCAPTCHA. تم تعطيل تسجيل الدخول/التسجيل.",
-  "recaptchaRequiredError": "يرجى إكمال reCAPTCHA.",
-  "recaptchaNotReadyError": "reCAPTCHA ليست جاهزة. يرجى المحاولة مرة أخرى.",
-  "recaptchaFailedError": "فشل تنفيذ reCAPTCHA.",
+  "humanVerificationRequiredError": "يرجى إكمال التحقق البشري.",
+  "turnstileNotConfiguredError": "التحقق البشري غير مكوّن. تم تعطيل تسجيل الدخول/التسجيل.",
+  "turnstileLoadError": "فشل تحميل خدمة التحقق البشري. يرجى المحاولة مرة أخرى لاحقًا.",
+  "turnstileError": "حدث خطأ في خدمة التحقق البشري. يرجى المحاولة مرة أخرى.",
   "previousAd": "الإعلان السابق",
   "nextAd": "الإعلان التالي"
 }

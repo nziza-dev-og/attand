@@ -20,6 +20,7 @@ import Script from 'next/script';
 
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "cAnufKypsdnp4e7PSQp4qCIVJ9V9ya5FUJaSKVTB"; // Using your provided key as fallback
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -37,16 +38,59 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { translate } = useLanguage();
 
-  const [isRecaptchaReady, setIsRecaptchaReady] = useState(false);
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const [isTurnstileReady, setIsTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileLoginWidgetRef = useRef<HTMLDivElement>(null);
+  const turnstileSignupWidgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!siteKey) {
-      console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
+    if (!TURNSTILE_SITE_KEY) {
+      console.error("Cloudflare Turnstile Site Key is not configured. Please set NEXT_PUBLIC_TURNSTILE_SITE_KEY environment variable.");
     }
-  }, [siteKey]);
+  }, []);
 
-  const resetFormFields = () => {
+  const renderTurnstileWidget = (widgetRef: React.RefObject<HTMLDivElement>, tab: 'login' | 'signup') => {
+    if (widgetRef.current && window.turnstile && TURNSTILE_SITE_KEY && isTurnstileReady) {
+      // Clear any existing widget first
+      widgetRef.current.innerHTML = '';
+      try {
+        window.turnstile.render(widgetRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: function(token: string) {
+            console.log(`Turnstile token for ${tab}: ${token}`);
+            setTurnstileToken(token);
+          },
+          'expired-callback': function() {
+            console.log(`Turnstile token for ${tab} expired.`);
+            setTurnstileToken(null);
+            // Optionally re-render or prompt user
+            if (widgetRef.current) renderTurnstileWidget(widgetRef, tab);
+          },
+          'error-callback': function() {
+            console.error(`Turnstile error for ${tab}.`);
+            setError(translate('turnstileError'));
+            setTurnstileToken(null);
+          }
+        });
+      } catch (e) {
+        console.error("Error rendering Turnstile widget:", e);
+        setError(translate('turnstileError'));
+      }
+    }
+  };
+  
+  useEffect(() => {
+    if (isTurnstileReady) {
+      if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
+        renderTurnstileWidget(turnstileLoginWidgetRef, 'login');
+      } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
+        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup');
+      }
+    }
+  }, [isTurnstileReady, currentTab]);
+
+
+  const resetFormFields = (resetToken: boolean = true) => {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -57,43 +101,32 @@ export default function LoginPage() {
     setTeacherSchoolCode('');
     setParentSchoolCode('');
     setError(null);
+    if (resetToken) {
+      setTurnstileToken(null);
+      // Re-render turnstile widget if needed after reset
+      if (isTurnstileReady && currentTab === 'login' && turnstileLoginWidgetRef.current) {
+        renderTurnstileWidget(turnstileLoginWidgetRef, 'login');
+      } else if (isTurnstileReady && currentTab === 'signup' && turnstileSignupWidgetRef.current) {
+        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup');
+      }
+    }
   };
 
   const handleTabChange = (value: string) => {
     setCurrentTab(value);
-    resetFormFields();
-  };
-
-  const getRecaptchaToken = async (action: string): Promise<string | null> => {
-    if (!siteKey) {
-      setError(translate('recaptchaNotConfiguredError'));
-      return null;
-    }
-    if (!isRecaptchaReady || typeof window.grecaptcha === 'undefined' || typeof window.grecaptcha.enterprise === 'undefined') {
-      setError(translate('recaptchaNotReadyError'));
-      return null;
-    }
-    try {
-      await window.grecaptcha.enterprise.ready();
-      const token = await window.grecaptcha.enterprise.execute(siteKey, { action });
-      return token;
-    } catch (e) {
-      console.error("reCAPTCHA execution error:", e);
-      setError(translate('recaptchaFailedError'));
-      return null;
-    }
+    resetFormFields(); // This will also reset and re-render turnstile
   };
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const recaptchaToken = await getRecaptchaToken('LOGIN');
-    if (!recaptchaToken && siteKey) { // Only block if siteKey is configured but token failed
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: error || translate('recaptchaRequiredError') });
+    if (!turnstileToken && TURNSTILE_SITE_KEY) {
+      setError(translate('humanVerificationRequiredError'));
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('humanVerificationRequiredError') });
       return;
     }
-    // TODO: Send recaptchaToken to your backend for verification if siteKey is configured
+    // TODO: Send turnstileToken to your backend for verification with your Turnstile Secret Key
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -102,6 +135,7 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: translate("loginFailedTitle"), description: err.message });
+      resetFormFields(true); // Reset token on error
     }
   };
 
@@ -109,28 +143,31 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
+    if (!turnstileToken && TURNSTILE_SITE_KEY) {
+      setError(translate('humanVerificationRequiredError'));
+      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('humanVerificationRequiredError') });
+      return;
+    }
+    // TODO: Send turnstileToken to your backend for verification with your Turnstile Secret Key
+
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
       toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("passwordsDontMatchError") });
+      resetFormFields(true);
       return;
     }
     if (!role || role === 'none') {
         setError(translate("selectRoleError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("selectRoleError") });
+        resetFormFields(true);
         return;
     }
      if (!name.trim()) {
          setError(translate("enterNameError"));
          toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterNameError") });
+         resetFormFields(true);
          return;
      }
-
-    const recaptchaToken = await getRecaptchaToken('SIGNUP');
-    if (!recaptchaToken && siteKey) { // Only block if siteKey is configured but token failed
-        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: error || translate('recaptchaRequiredError') });
-        return;
-    }
-    // TODO: Send recaptchaToken to your backend for verification if siteKey is configured
 
     if (role === 'Admin') {
       try {
@@ -139,18 +176,21 @@ export default function LoginPage() {
         if (!docSnap.exists() || !docSnap.data()?.adminSecretCode) {
           setError(translate("adminRegCodeNotSetError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("adminRegCodeNotSetError") });
+          resetFormFields(true);
           return;
         }
         const firestoreAdminCode = docSnap.data().adminSecretCode;
         if (adminSecretCodeInput !== firestoreAdminCode) {
           setError(translate("invalidAdminCodeError"));
           toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidAdminCodeError") });
+          resetFormFields(true);
           return;
         }
       } catch (fetchError) {
         console.error("Error fetching admin registration code during signup:", fetchError);
         setError(translate("errorFetchingAdminCode"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("errorFetchingAdminCode") });
+        resetFormFields(true);
         return;
       }
     }
@@ -159,6 +199,7 @@ export default function LoginPage() {
       if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
         setError(translate("invalidSuperAdminCodeError"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("invalidSuperAdminCodeError") });
+        resetFormFields(true);
         return;
       }
     }
@@ -166,6 +207,7 @@ export default function LoginPage() {
     if (role === 'Teacher' && !teacherSchoolCode.trim()) {
         setError(translate("enterSchoolCodeErrorTeacher"));
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("enterSchoolCodeErrorTeacher") });
+        resetFormFields(true);
         return;
     }
 
@@ -186,20 +228,19 @@ export default function LoginPage() {
       };
 
       if (role === 'Admin') {
-        userDocData.schoolId = user.uid; // Admin's UID becomes their schoolId
-        userDocData.schoolIdentifierCode = ""; // Initialize school code
-        userDocData.isSchoolCodeVerified = true; // Admins are considered verified for their own school
+        userDocData.schoolId = user.uid; 
+        userDocData.schoolIdentifierCode = ""; 
+        userDocData.isSchoolCodeVerified = true; 
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
-        userDocData.isSchoolCodeVerified = false; // Requires verification via /teacher/verify-school
+        userDocData.isSchoolCodeVerified = false; 
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
       } else if (role === 'Parent') {
         userDocData.childIds = [];
         if (parentSchoolCode.trim()) {
           userDocData.enteredSchoolCode = parentSchoolCode.trim();
-          // Attempt to link parent to school if code matches an admin's school code
           const adminsQuery = query(
             collection(db, "users"),
             where("role", "==", "Admin"),
@@ -207,15 +248,15 @@ export default function LoginPage() {
           );
           const adminSnap = await getDocs(adminsQuery);
           if (!adminSnap.empty) {
-            userDocData.schoolId = adminSnap.docs[0].id; // Assign parent to the Admin's school
-            userDocData.isSchoolCodeVerified = true; // Parent considered verified for this school
+            userDocData.schoolId = adminSnap.docs[0].id; 
+            userDocData.isSchoolCodeVerified = true; 
             toast({ title: translate('schoolCodeVerifiedTitle'), description: translate('parentSchoolCodeVerifiedDesc') });
           } else {
             userDocData.isSchoolCodeVerified = false;
             toast({ variant: "warning", title: translate('schoolCodeNotFoundTitle'), description: translate('parentSchoolCodeNotFoundDesc') });
           }
         } else {
-            userDocData.isSchoolCodeVerified = false; // No code entered, not verified
+            userDocData.isSchoolCodeVerified = false;
         }
       }
 
@@ -237,19 +278,24 @@ export default function LoginPage() {
         setError(err.message);
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
+      resetFormFields(true); // Reset token on error
     }
   };
 
   return (
     <>
-      {siteKey && (
+      {TURNSTILE_SITE_KEY && (
         <Script
-          src={`https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`}
-          strategy="afterInteractive"
-          onLoad={() => setIsRecaptchaReady(true)}
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="lazyOnload" // Or "afterInteractive"
+          onLoad={() => {
+            console.log("Cloudflare Turnstile script loaded.");
+            setIsTurnstileReady(true);
+          }}
           onError={(e) => {
-            console.error("Failed to load reCAPTCHA Enterprise script:", e);
-            toast({ variant: "destructive", title: "Error", description: translate("recaptchaNotReadyError") });
+            console.error("Failed to load Cloudflare Turnstile script:", e);
+            setError(translate('turnstileLoadError'));
+            toast({ variant: "destructive", title: "Error", description: translate('turnstileLoadError') });
           }}
         />
       )}
@@ -267,9 +313,9 @@ export default function LoginPage() {
               </CardHeader>
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
-                  {!siteKey && (
+                  {!TURNSTILE_SITE_KEY && (
                     <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                        {translate('recaptchaNotConfiguredError')}
+                        {translate('turnstileNotConfiguredError')}
                     </p>
                   )}
                   <div className="space-y-2">
@@ -295,10 +341,15 @@ export default function LoginPage() {
                       autoComplete="current-password"
                     />
                   </div>
+                  {TURNSTILE_SITE_KEY && (
+                    <div ref={turnstileLoginWidgetRef} className="cf-turnstile-container my-4">
+                      {/* Turnstile widget will render here */}
+                    </div>
+                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || (siteKey && !isRecaptchaReady)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
                     {translate("loginButton")}
                   </Button>
                 </CardFooter>
@@ -313,9 +364,9 @@ export default function LoginPage() {
               </CardHeader>
               <form onSubmit={handleSignUp}>
                 <CardContent className="space-y-4">
-                  {!siteKey && (
+                  {!TURNSTILE_SITE_KEY && (
                     <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                        {translate('recaptchaNotConfiguredError')}
+                       {translate('turnstileNotConfiguredError')}
                     </p>
                   )}
                    <div className="space-y-2">
@@ -434,10 +485,15 @@ export default function LoginPage() {
                        autoComplete="new-password"
                     />
                   </div>
+                  {TURNSTILE_SITE_KEY && (
+                    <div ref={turnstileSignupWidgetRef} className="cf-turnstile-container my-4">
+                      {/* Turnstile widget will render here */}
+                    </div>
+                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || (siteKey && !isRecaptchaReady)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
                     {translate("signUpButton")}
                   </Button>
                 </CardFooter>
