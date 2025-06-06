@@ -387,7 +387,7 @@
   "learnMore": "மேலும் அறிக",
   "dismissAd": "விளம்பரத்தை நிராகரி",
   "recaptchaNotConfiguredError": "reCAPTCHA கட்டமைக்கப்படவில்லை. உள்நுழைவு/பதிவு முடக்கப்பட்டுள்ளது.",
-  "recaptchaRequiredError": "தயவுசெய்து reCAPTCHA ஐ முடிக்கவும்.",
+  "recaptchaRequiredError": "தயவுசெய்து reCAPTCHA சரிபார்ப்பை முடிக்கவும்.",
   "recaptchaNotReadyError": "reCAPTCHA தயாராக இல்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
   "recaptchaFailedError": "reCAPTCHA ஐ இயக்குவதில் தோல்வி.",
   "previousAd": "முந்தைய விளம்பரம்",

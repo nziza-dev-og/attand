@@ -386,10 +386,10 @@
   "errorDeletingAd": "Échec de la suppression de la publicité.",
   "learnMore": "En Savoir Plus",
   "dismissAd": "Rejeter la publicité",
-  "humanVerificationRequiredError": "Veuillez compléter la vérification humaine.",
-  "turnstileNotConfiguredError": "La vérification humaine n'est pas configurée. Connexion/Inscription désactivée.",
-  "turnstileLoadError": "Échec du chargement du service de vérification humaine. Veuillez réessayer plus tard.",
-  "turnstileError": "Une erreur s'est produite avec le service de vérification humaine. Veuillez réessayer.",
+  "recaptchaNotConfiguredError": "reCAPTCHA n'est pas configuré. La connexion/l'inscription est désactivée.",
+  "recaptchaRequiredError": "Veuillez compléter la vérification reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA n'est pas prêt. Veuillez réessayer.",
+  "recaptchaFailedError": "Échec de l'exécution de reCAPTCHA.",
   "previousAd": "Publicité précédente",
   "nextAd": "Publicité suivante"
 }

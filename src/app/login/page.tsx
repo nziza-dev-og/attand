@@ -2,7 +2,7 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState, type FormEvent, useEffect, useRef, useCallback } from 'react';
+import { useState, type FormEvent, useEffect, useRef } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
@@ -16,42 +16,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/hooks/use-toast';
 import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import Script from 'next/script';
-
-// This type assertion is necessary if you're using Turnstile's explicit rendering
-declare global {
-  interface Window {
-    turnstile: {
-      render: (container: string | HTMLElement, params: TurnstileRenderParameters) => string | undefined;
-      reset: (widgetId?: string) => void;
-      getResponse: (widgetId?: string) => string | undefined;
-      remove: (widgetId?: string) => void;
-    };
-  }
-}
-
-interface TurnstileRenderParameters {
-  sitekey: string;
-  action?: string;
-  cData?: string;
-  callback?: (token: string) => void;
-  'error-callback'?: () => void;
-  'expired-callback'?: () => void;
-  theme?: 'light' | 'dark' | 'auto';
-  language?: string | 'auto';
-  tabindex?: number;
-  'response-field'?: boolean;
-  'response-field-name'?: string;
-  size?: 'normal' | 'compact';
-  retry?: 'auto' | 'never';
-  'retry-interval'?: number;
-  'refresh-expired'?: 'auto' | 'manual' | 'never';
-}
-
+import ReCAPTCHA from "react-google-recaptcha";
 
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "cAnufKypsdnp4e7PSQp4qCIVJ9V9ya5FUJaSKVTB";
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -69,77 +38,14 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { translate } = useLanguage();
 
-  const [isTurnstileScriptReady, setIsTurnstileScriptReady] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const turnstileLoginWidgetRef = useRef<HTMLDivElement>(null);
-  const turnstileSignupWidgetRef = useRef<HTMLDivElement>(null);
-  const [loginWidgetId, setLoginWidgetId] = useState<string | undefined>(undefined);
-  const [signupWidgetId, setSignupWidgetId] = useState<string | undefined>(undefined);
-
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   useEffect(() => {
-    if (!TURNSTILE_SITE_KEY) {
-      console.error("Cloudflare Turnstile Site Key is not configured. Please set NEXT_PUBLIC_TURNSTILE_SITE_KEY environment variable.");
+    if (!RECAPTCHA_SITE_KEY) {
+      console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
     }
   }, []);
-
-  const renderTurnstileWidget = useCallback((
-    widgetRef: React.RefObject<HTMLDivElement>,
-    tab: 'login' | 'signup',
-    setWidgetIdState: React.Dispatch<React.SetStateAction<string | undefined>>,
-    getWidgetIdState: () => string | undefined
-  ) => {
-    if (widgetRef.current && window.turnstile && TURNSTILE_SITE_KEY && isTurnstileScriptReady) {
-      widgetRef.current.innerHTML = ''; // Clear previous widget if any
-      try {
-        const newWidgetId = window.turnstile.render(widgetRef.current, {
-          sitekey: TURNSTILE_SITE_KEY,
-          callback: function(token: string) {
-            console.log(`Turnstile token for ${tab}: ${token}`);
-            setTurnstileToken(token);
-          },
-          'expired-callback': function() {
-            console.log(`Turnstile token for ${tab} expired.`);
-            setTurnstileToken(null);
-            const currentWidgetToReset = getWidgetIdState();
-            if (currentWidgetToReset && window.turnstile) {
-              window.turnstile.reset(currentWidgetToReset);
-            } else {
-              console.warn(`Could not reset Turnstile widget for ${tab} as ID was not available.`);
-            }
-          },
-          'error-callback': function() {
-            console.error(`Turnstile error for ${tab}.`);
-            setError(translate('turnstileError'));
-            setTurnstileToken(null);
-          }
-        });
-        setWidgetIdState(newWidgetId);
-      } catch (e) {
-        console.error(`Error rendering Turnstile widget for ${tab}:`, e);
-        setError(translate('turnstileError'));
-      }
-    }
-  }, [isTurnstileScriptReady, translate, setTurnstileToken, setError]);
-  
-  useEffect(() => {
-    if (isTurnstileScriptReady) {
-      if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
-        if (loginWidgetId && window.turnstile) {
-          window.turnstile.remove(loginWidgetId);
-          setLoginWidgetId(undefined); 
-        }
-        renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId, () => loginWidgetId);
-      } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
-        if (signupWidgetId && window.turnstile) {
-          window.turnstile.remove(signupWidgetId);
-          setSignupWidgetId(undefined);
-        }
-        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId, () => signupWidgetId);
-      }
-    }
-  }, [isTurnstileScriptReady, currentTab, renderTurnstileWidget]);
-
 
   const resetFormFields = (resetToken: boolean = true) => {
     setEmail('');
@@ -153,13 +59,9 @@ export default function LoginPage() {
     setParentSchoolCode('');
     setError(null);
     if (resetToken) {
-      setTurnstileToken(null);
-      if (window.turnstile) {
-        if (currentTab === 'login' && loginWidgetId) {
-          window.turnstile.reset(loginWidgetId);
-        } else if (currentTab === 'signup' && signupWidgetId) {
-          window.turnstile.reset(signupWidgetId);
-        }
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
       }
     }
   };
@@ -173,23 +75,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!TURNSTILE_SITE_KEY) {
-      setError(translate('turnstileNotConfiguredError'));
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('turnstileNotConfiguredError') });
+    if (!RECAPTCHA_SITE_KEY) {
+      setError(translate('recaptchaNotConfiguredError'));
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('recaptchaNotConfiguredError') });
       return;
     }
-    if (!turnstileToken) {
-      setError(translate('humanVerificationRequiredError'));
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('humanVerificationRequiredError') });
+    if (!recaptchaToken) {
+      setError(translate('recaptchaRequiredError'));
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('recaptchaRequiredError') });
       return;
     }
     
-    // TODO: Send turnstileToken to your backend for verification with your Turnstile Secret Key
-    // Example: const verificationResult = await verifyTurnstileOnBackend(turnstileToken);
+    // TODO: Send recaptchaToken to your backend for verification with your reCAPTCHA Secret Key
+    // Example: const verificationResult = await verifyRecaptchaOnBackend(recaptchaToken);
     // if (!verificationResult.success) {
-    //   setError("Turnstile verification failed on server.");
+    //   setError("reCAPTCHA verification failed on server.");
     //   toast({ variant: "destructive", title: "Login Failed", description: "Human verification failed." });
-    //   resetFormFields(true); // Reset form and Turnstile token
+    //   resetFormFields(true); // Reset form and reCAPTCHA token
     //   return;
     // }
 
@@ -208,18 +110,18 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!TURNSTILE_SITE_KEY) {
-        setError(translate('turnstileNotConfiguredError'));
-        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('turnstileNotConfiguredError') });
+    if (!RECAPTCHA_SITE_KEY) {
+        setError(translate('recaptchaNotConfiguredError'));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('recaptchaNotConfiguredError') });
         return;
     }
-    if (!turnstileToken) {
-      setError(translate('humanVerificationRequiredError'));
-      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('humanVerificationRequiredError') });
+    if (!recaptchaToken) {
+      setError(translate('recaptchaRequiredError'));
+      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('recaptchaRequiredError') });
       return;
     }
 
-    // TODO: Send turnstileToken to your backend for verification (similar to login)
+    // TODO: Send recaptchaToken to your backend for verification (similar to login)
 
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
@@ -355,22 +257,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {TURNSTILE_SITE_KEY && (
-        <Script
-          id="cf-turnstile-script"
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-          strategy="lazyOnload"
-          onLoad={() => {
-            console.log("Cloudflare Turnstile script loaded.");
-            setIsTurnstileScriptReady(true);
-          }}
-          onError={(e) => {
-            console.error("Failed to load Cloudflare Turnstile script:", e);
-            setError(translate('turnstileLoadError'));
-            toast({ variant: "destructive", title: "Error", description: translate('turnstileLoadError') });
-          }}
-        />
-      )}
       <div className="flex items-center justify-center min-h-screen bg-secondary">
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
@@ -385,11 +271,6 @@ export default function LoginPage() {
               </CardHeader>
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
-                  {!TURNSTILE_SITE_KEY && (
-                    <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                        {translate('turnstileNotConfiguredError')}
-                    </p>
-                  )}
                   <div className="space-y-2">
                     <Label htmlFor="login-email">{translate("emailLabel")}</Label>
                     <Input
@@ -413,15 +294,23 @@ export default function LoginPage() {
                       autoComplete="current-password"
                     />
                   </div>
-                  {TURNSTILE_SITE_KEY && (
-                    <div ref={turnstileLoginWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
-                      {/* Turnstile widget will render here via useEffect */}
-                    </div>
+                  {RECAPTCHA_SITE_KEY ? (
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={RECAPTCHA_SITE_KEY}
+                      onChange={setRecaptchaToken}
+                      onExpired={() => setRecaptchaToken(null)}
+                      className="my-4 flex justify-center"
+                    />
+                  ) : (
+                    <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
+                      {translate('recaptchaNotConfiguredError')}
+                    </p>
                   )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileScriptReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!RECAPTCHA_SITE_KEY || !recaptchaToken}>
                     {translate("loginButton")}
                   </Button>
                 </CardFooter>
@@ -436,11 +325,6 @@ export default function LoginPage() {
               </CardHeader>
               <form onSubmit={handleSignUp}>
                 <CardContent className="space-y-4">
-                  {!TURNSTILE_SITE_KEY && (
-                    <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
-                       {translate('turnstileNotConfiguredError')}
-                    </p>
-                  )}
                    <div className="space-y-2">
                       <Label htmlFor="signup-name">{translate("nameLabel")}</Label>
                       <Input
@@ -557,15 +441,23 @@ export default function LoginPage() {
                        autoComplete="new-password"
                     />
                   </div>
-                  {TURNSTILE_SITE_KEY && (
-                    <div ref={turnstileSignupWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
-                       {/* Turnstile widget will render here via useEffect */}
-                    </div>
+                  {RECAPTCHA_SITE_KEY ? (
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={RECAPTCHA_SITE_KEY}
+                      onChange={setRecaptchaToken}
+                      onExpired={() => setRecaptchaToken(null)}
+                      className="my-4 flex justify-center"
+                    />
+                  ) : (
+                     <p className="text-sm font-medium text-destructive p-2 border border-destructive/50 bg-destructive/10 rounded-md">
+                       {translate('recaptchaNotConfiguredError')}
+                     </p>
                   )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileScriptReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!RECAPTCHA_SITE_KEY || !recaptchaToken}>
                     {translate("signUpButton")}
                   </Button>
                 </CardFooter>
@@ -577,4 +469,3 @@ export default function LoginPage() {
     </>
   );
 }
-

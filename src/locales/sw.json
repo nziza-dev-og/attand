@@ -386,10 +386,10 @@
   "errorDeletingAd": "Imeshindwa kufuta tangazo.",
   "learnMore": "Jifunze Zaidi",
   "dismissAd": "Kataa tangazo",
-  "humanVerificationRequiredError": "Tafadhali kamilisha uthibitishaji wa kibinadamu.",
-  "turnstileNotConfiguredError": "Uthibitishaji wa kibinadamu haujasanidiwa. Kuingia/Kujisajili kumezimwa.",
-  "turnstileLoadError": "Imeshindwa kupakia huduma ya uthibitishaji wa kibinadamu. Tafadhali jaribu tena baadaye.",
-  "turnstileError": "Hitilafu ilitokea na huduma ya uthibitishaji wa kibinadamu. Tafadhali jaribu tena.",
+  "recaptchaNotConfiguredError": "reCAPTCHA haijasanidiwa. Kuingia/Kujisajili kumezimwa.",
+  "recaptchaRequiredError": "Tafadhali kamilisha uthibitishaji wa reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA haiko tayari. Tafadhali jaribu tena.",
+  "recaptchaFailedError": "Imeshindwa kutekeleza reCAPTCHA.",
   "previousAd": "Tangazo lililopita",
   "nextAd": "Tangazo linalofuata"
 }
