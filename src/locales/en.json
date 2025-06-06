@@ -379,7 +379,6 @@
   "deactivateAdButton": "Deactivate",
   "adStatusUpdatedTitle": "Ad Status Updated",
   "adStatusUpdatedDesc": "The advertisement status has been updated.",
-  "errorUpdatingAdStatus": "Failed to update ad status.",
   "deleteAdConfirmTitle": "Delete Advertisement?",
   "deleteAdConfirmDesc": "Are you sure you want to delete the advertisement titled '{{title}}'? This action cannot be undone.",
   "adDeletedSuccessTitle": "Advertisement Deleted",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA is not configured. Login/Signup is disabled.",
   "recaptchaRequiredError": "Please complete the reCAPTCHA.",
   "recaptchaNotReadyError": "reCAPTCHA is not ready. Please try again.",
-  "recaptchaFailedError": "Failed to execute reCAPTCHA."
+  "recaptchaFailedError": "Failed to execute reCAPTCHA.",
+  "previousAd": "Previous ad",
+  "nextAd": "Next ad"
 }

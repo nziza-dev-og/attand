@@ -379,7 +379,6 @@
   "deactivateAdButton": "செயலிழக்கச் செய்",
   "adStatusUpdatedTitle": "விளம்பர நிலை புதுப்பிக்கப்பட்டது",
   "adStatusUpdatedDesc": "விளம்பரத்தின் நிலை புதுப்பிக்கப்பட்டது.",
-  "errorUpdatingAdStatus": "விளம்பர நிலையைப் புதுப்பிப்பதில் தோல்வி.",
   "deleteAdConfirmTitle": "விளம்பரத்தை நீக்கவா?",
   "deleteAdConfirmDesc": "'{{title}}' என்ற தலைப்பில் உள்ள விளம்பரத்தை நீக்க விரும்புகிறீர்களா? இந்தச் செயலை செயல்தவிர்க்க முடியாது.",
   "adDeletedSuccessTitle": "விளம்பரம் நீக்கப்பட்டது",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA கட்டமைக்கப்படவில்லை. உள்நுழைவு/பதிவு முடக்கப்பட்டுள்ளது.",
   "recaptchaRequiredError": "தயவுசெய்து reCAPTCHA ஐ முடிக்கவும்.",
   "recaptchaNotReadyError": "reCAPTCHA தயாராக இல்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
-  "recaptchaFailedError": "reCAPTCHA ஐ இயக்குவதில் தோல்வி."
+  "recaptchaFailedError": "reCAPTCHA ஐ இயக்குவதில் தோல்வி.",
+  "previousAd": "முந்தைய விளம்பரம்",
+  "nextAd": "அடுத்த விளம்பரம்"
 }

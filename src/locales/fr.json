@@ -379,7 +379,6 @@
   "deactivateAdButton": "Désactiver",
   "adStatusUpdatedTitle": "Statut de la Publicité Mis à Jour",
   "adStatusUpdatedDesc": "Le statut de la publicité a été mis à jour.",
-  "errorUpdatingAdStatus": "Échec de la mise à jour du statut de la publicité.",
   "deleteAdConfirmTitle": "Supprimer la Publicité ?",
   "deleteAdConfirmDesc": "Êtes-vous sûr de vouloir supprimer la publicité intitulée '{{title}}' ? Cette action ne peut pas être annulée.",
   "adDeletedSuccessTitle": "Publicité Supprimée",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA n'est pas configuré. Connexion/Inscription désactivée.",
   "recaptchaRequiredError": "Veuillez compléter le reCAPTCHA.",
   "recaptchaNotReadyError": "reCAPTCHA n'est pas prêt. Veuillez réessayer.",
-  "recaptchaFailedError": "Échec de l'exécution de reCAPTCHA."
+  "recaptchaFailedError": "Échec de l'exécution de reCAPTCHA.",
+  "previousAd": "Publicité précédente",
+  "nextAd": "Publicité suivante"
 }

@@ -389,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHAが設定されていません。ログイン/登録は無効になっています。",
   "recaptchaRequiredError": "reCAPTCHAを完了してください。",
   "recaptchaNotReadyError": "reCAPTCHAの準備ができていません。もう一度お試しください。",
-  "recaptchaFailedError": "reCAPTCHAの実行に失敗しました。"
+  "recaptchaFailedError": "reCAPTCHAの実行に失敗しました。",
+  "previousAd": "前の広告",
+  "nextAd": "次の広告"
 }

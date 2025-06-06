@@ -389,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA 未配置。登录/注册已禁用。",
   "recaptchaRequiredError": "请完成 reCAPTCHA 验证。",
   "recaptchaNotReadyError": "reCAPTCHA 尚未准备就绪。请重试。",
-  "recaptchaFailedError": "执行 reCAPTCHA 失败。"
+  "recaptchaFailedError": "执行 reCAPTCHA 失败。",
+  "previousAd": "上一条广告",
+  "nextAd": "下一条广告"
 }

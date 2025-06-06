@@ -379,7 +379,6 @@
   "deactivateAdButton": "নিষ্ক্রিয় করুন",
   "adStatusUpdatedTitle": "বিজ্ঞাপনের স্থিতি আপডেট করা হয়েছে",
   "adStatusUpdatedDesc": "বিজ্ঞাপনের স্থিতি আপডেট করা হয়েছে।",
-  "errorUpdatingAdStatus": "বিজ্ঞাপনের স্থিতি আপডেট করতে ব্যর্থ।",
   "deleteAdConfirmTitle": "বিজ্ঞাপন মুছে ফেলবেন?",
   "deleteAdConfirmDesc": "আপনি কি নিশ্চিত যে আপনি '{{title}}' শিরোনামের বিজ্ঞাপনটি মুছে ফেলতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।",
   "adDeletedSuccessTitle": "বিজ্ঞাপন মোছা হয়েছে",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA কনফিগার করা নেই। লগইন/সাইনআপ নিষ্ক্রিয় করা হয়েছে।",
   "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA সম্পূর্ণ করুন।",
   "recaptchaNotReadyError": "reCAPTCHA প্রস্তুত নয়। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "recaptchaFailedError": "reCAPTCHA চালাতে ব্যর্থ।"
+  "recaptchaFailedError": "reCAPTCHA চালাতে ব্যর্থ।",
+  "previousAd": "পূর্ববর্তী বিজ্ঞাপন",
+  "nextAd": "পরবর্তী বিজ্ঞাপন"
 }

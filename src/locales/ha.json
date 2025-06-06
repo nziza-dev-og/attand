@@ -379,7 +379,6 @@
   "deactivateAdButton": "Hagarika",
   "adStatusUpdatedTitle": "Imiterere y'Itangazo Yavuguruwe",
   "adStatusUpdatedDesc": "Imiterere y'itangazo yavuguruwe.",
-  "errorUpdatingAdStatus": "Kunanirwa kuvugurura imiterere y'itangazo.",
   "deleteAdConfirmTitle": "Gusiba Itangazo?",
   "deleteAdConfirmDesc": "Uremeza ko ushaka gusiba itangazo ryitwa '{{title}}'? Iki gikorwa ntigishobora guhindurwa.",
   "adDeletedSuccessTitle": "Itangazo Ryasibwe",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "reCAPTCHA ntiyashyizweho. Kwinjira/Kwiyandikisha byahagaritswe.",
   "recaptchaRequiredError": "Nyamunekauzuza reCAPTCHA.",
   "recaptchaNotReadyError": "reCAPTCHA ntiyiteguye. Nyamuneka gerageza nanone.",
-  "recaptchaFailedError": "Kunanirwa gukoresha reCAPTCHA."
+  "recaptchaFailedError": "Kunanirwa gukoresha reCAPTCHA.",
+  "previousAd": "Itangazo ryabanje",
+  "nextAd": "Itangazo rikurikira"
 }

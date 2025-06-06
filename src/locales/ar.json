@@ -117,7 +117,7 @@
   "invalidUrlTitle": "رابط غير صالح",
   "invalidUrlDesc": "يرجى إدخال رابط صورة صالح.",
   "schoolIdentifierCodeTitle": "رمز تعريف المدرسة",
-  "adminSchoolCodeDesc": "حدد رمزًا فريدًا لمدرستك. شارك هذا الرمز مع المعلمين حتى يتمكنوا من ربط أنفسهم بمدرستك أثناء التسجيل.",
+  "adminSchoolCodeDesc": "Define a unique code for your school. Share this code with teachers so they can associate themselves with your school during their signup.",
   "teacherSchoolCodeDesc": "أدخل رمز تعريف المدرسة المقدم من مسؤول مدرستك لربط حسابك بالمدرسة.",
   "setSchoolCodeLabel": "تعيين/تحديث رمز المدرسة",
   "enterSchoolCodePlaceholder": "أدخل الرمز الفريد لمدرستك",
@@ -379,7 +379,6 @@
   "deactivateAdButton": "إلغاء التفعيل",
   "adStatusUpdatedTitle": "تم تحديث حالة الإعلان",
   "adStatusUpdatedDesc": "تم تحديث حالة الإعلان.",
-  "errorUpdatingAdStatus": "فشل تحديث حالة الإعلان.",
   "deleteAdConfirmTitle": "حذف الإعلان؟",
   "deleteAdConfirmDesc": "هل أنت متأكد أنك تريد حذف الإعلان المعنون '{{title}}'؟ لا يمكن التراجع عن هذا الإجراء.",
   "adDeletedSuccessTitle": "تم حذف الإعلان",
@@ -390,5 +389,7 @@
   "recaptchaNotConfiguredError": "لم يتم تكوين reCAPTCHA. تم تعطيل تسجيل الدخول/التسجيل.",
   "recaptchaRequiredError": "يرجى إكمال reCAPTCHA.",
   "recaptchaNotReadyError": "reCAPTCHA ليست جاهزة. يرجى المحاولة مرة أخرى.",
-  "recaptchaFailedError": "فشل تنفيذ reCAPTCHA."
+  "recaptchaFailedError": "فشل تنفيذ reCAPTCHA.",
+  "previousAd": "الإعلان السابق",
+  "nextAd": "الإعلان التالي"
 }
