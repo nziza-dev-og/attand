@@ -46,7 +46,6 @@ interface TurnstileRenderParameters {
   retry?: 'auto' | 'never';
   'retry-interval'?: number;
   'refresh-expired'?: 'auto' | 'manual' | 'never';
-  // ... any other parameters specific to Turnstile
 }
 
 
@@ -70,7 +69,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { translate } = useLanguage();
 
-  const [isTurnstileReady, setIsTurnstileReady] = useState(false);
+  const [isTurnstileScriptReady, setIsTurnstileScriptReady] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileLoginWidgetRef = useRef<HTMLDivElement>(null);
   const turnstileSignupWidgetRef = useRef<HTMLDivElement>(null);
@@ -84,11 +83,16 @@ export default function LoginPage() {
     }
   }, []);
 
-  const renderTurnstileWidget = useCallback((widgetRef: React.RefObject<HTMLDivElement>, tab: 'login' | 'signup', setWidgetId: React.Dispatch<React.SetStateAction<string | undefined>>) => {
-    if (widgetRef.current && window.turnstile && TURNSTILE_SITE_KEY && isTurnstileReady) {
+  const renderTurnstileWidget = useCallback((
+    widgetRef: React.RefObject<HTMLDivElement>,
+    tab: 'login' | 'signup',
+    setWidgetIdState: React.Dispatch<React.SetStateAction<string | undefined>>,
+    getWidgetIdState: () => string | undefined
+  ) => {
+    if (widgetRef.current && window.turnstile && TURNSTILE_SITE_KEY && isTurnstileScriptReady) {
       widgetRef.current.innerHTML = ''; // Clear previous widget if any
       try {
-        const widgetId = window.turnstile.render(widgetRef.current, {
+        const newWidgetId = window.turnstile.render(widgetRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
           callback: function(token: string) {
             console.log(`Turnstile token for ${tab}: ${token}`);
@@ -97,9 +101,11 @@ export default function LoginPage() {
           'expired-callback': function() {
             console.log(`Turnstile token for ${tab} expired.`);
             setTurnstileToken(null);
-            // Re-render the specific widget
-            if (widgetRef.current) {
-                 renderTurnstileWidget(widgetRef, tab, setWidgetId);
+            const currentWidgetToReset = getWidgetIdState();
+            if (currentWidgetToReset && window.turnstile) {
+              window.turnstile.reset(currentWidgetToReset);
+            } else {
+              console.warn(`Could not reset Turnstile widget for ${tab} as ID was not available.`);
             }
           },
           'error-callback': function() {
@@ -108,25 +114,31 @@ export default function LoginPage() {
             setTurnstileToken(null);
           }
         });
-        setWidgetId(widgetId);
+        setWidgetIdState(newWidgetId);
       } catch (e) {
         console.error(`Error rendering Turnstile widget for ${tab}:`, e);
         setError(translate('turnstileError'));
       }
     }
-  }, [isTurnstileReady, translate]);
+  }, [isTurnstileScriptReady, translate, setTurnstileToken, setError]);
   
   useEffect(() => {
-    if (isTurnstileReady) {
+    if (isTurnstileScriptReady) {
       if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
-        if (loginWidgetId && window.turnstile) window.turnstile.remove(loginWidgetId); // Remove old if exists
-        renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId);
+        if (loginWidgetId && window.turnstile) {
+          window.turnstile.remove(loginWidgetId);
+          setLoginWidgetId(undefined); 
+        }
+        renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId, () => loginWidgetId);
       } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
-        if (signupWidgetId && window.turnstile) window.turnstile.remove(signupWidgetId); // Remove old if exists
-        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId);
+        if (signupWidgetId && window.turnstile) {
+          window.turnstile.remove(signupWidgetId);
+          setSignupWidgetId(undefined);
+        }
+        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId, () => signupWidgetId);
       }
     }
-  }, [isTurnstileReady, currentTab, renderTurnstileWidget, loginWidgetId, signupWidgetId]);
+  }, [isTurnstileScriptReady, currentTab, renderTurnstileWidget]);
 
 
   const resetFormFields = (resetToken: boolean = true) => {
@@ -142,14 +154,11 @@ export default function LoginPage() {
     setError(null);
     if (resetToken) {
       setTurnstileToken(null);
-      // Re-render the current widget to reset its state
-      if(isTurnstileReady && window.turnstile) {
-        if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
-            if (loginWidgetId) window.turnstile.remove(loginWidgetId);
-            renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId);
-        } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
-            if (signupWidgetId) window.turnstile.remove(signupWidgetId);
-            renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId);
+      if (window.turnstile) {
+        if (currentTab === 'login' && loginWidgetId) {
+          window.turnstile.reset(loginWidgetId);
+        } else if (currentTab === 'signup' && signupWidgetId) {
+          window.turnstile.reset(signupWidgetId);
         }
       }
     }
@@ -180,7 +189,7 @@ export default function LoginPage() {
     // if (!verificationResult.success) {
     //   setError("Turnstile verification failed on server.");
     //   toast({ variant: "destructive", title: "Login Failed", description: "Human verification failed." });
-    //   resetFormFields(true);
+    //   resetFormFields(true); // Reset form and Turnstile token
     //   return;
     // }
 
@@ -285,18 +294,18 @@ export default function LoginPage() {
         uid: user.uid,
         name: name.trim(),
         createdAt: Timestamp.now(),
-        isSchoolCodeVerified: role === 'SuperAdmin',
-        schoolId: null,
+        isSchoolCodeVerified: role === 'SuperAdmin', // SuperAdmins are auto-verified
+        schoolId: null, // Default to null, set below for Admin
       };
 
       if (role === 'Admin') {
-        userDocData.schoolId = user.uid; 
-        userDocData.schoolIdentifierCode = ""; 
-        userDocData.isSchoolCodeVerified = true; 
+        userDocData.schoolId = user.uid; // Admin's own UID is their schoolId
+        userDocData.schoolIdentifierCode = ""; // Initialize school code
+        userDocData.isSchoolCodeVerified = true; // Admins are auto-verified for their own school
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
-        userDocData.isSchoolCodeVerified = false; 
+        userDocData.isSchoolCodeVerified = false; // Teachers need to verify
         userDocData.schoolCodeVerificationAttempts = MAX_VERIFICATION_ATTEMPTS;
         userDocData.isSchoolCodeLocked = false;
       } else if (role === 'Parent') {
@@ -310,15 +319,15 @@ export default function LoginPage() {
           );
           const adminSnap = await getDocs(adminsQuery);
           if (!adminSnap.empty) {
-            userDocData.schoolId = adminSnap.docs[0].id; 
-            userDocData.isSchoolCodeVerified = true; 
+            userDocData.schoolId = adminSnap.docs[0].id; // Associate with Admin's schoolId
+            userDocData.isSchoolCodeVerified = true; // Auto-verify if code matches
             toast({ title: translate('schoolCodeVerifiedTitle'), description: translate('parentSchoolCodeVerifiedDesc') });
           } else {
             userDocData.isSchoolCodeVerified = false;
             toast({ variant: "warning", title: translate('schoolCodeNotFoundTitle'), description: translate('parentSchoolCodeNotFoundDesc') });
           }
         } else {
-            userDocData.isSchoolCodeVerified = false;
+            userDocData.isSchoolCodeVerified = false; // No code entered, not verified
         }
       }
 
@@ -353,7 +362,7 @@ export default function LoginPage() {
           strategy="lazyOnload"
           onLoad={() => {
             console.log("Cloudflare Turnstile script loaded.");
-            setIsTurnstileReady(true);
+            setIsTurnstileScriptReady(true);
           }}
           onError={(e) => {
             console.error("Failed to load Cloudflare Turnstile script:", e);
@@ -406,13 +415,13 @@ export default function LoginPage() {
                   </div>
                   {TURNSTILE_SITE_KEY && (
                     <div ref={turnstileLoginWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
-                      {/* Turnstile widget will render here */}
+                      {/* Turnstile widget will render here via useEffect */}
                     </div>
                   )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileScriptReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
                     {translate("loginButton")}
                   </Button>
                 </CardFooter>
@@ -550,13 +559,13 @@ export default function LoginPage() {
                   </div>
                   {TURNSTILE_SITE_KEY && (
                     <div ref={turnstileSignupWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
-                      {/* Turnstile widget will render here */}
+                       {/* Turnstile widget will render here via useEffect */}
                     </div>
                   )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!TURNSTILE_SITE_KEY || !isTurnstileScriptReady || (!turnstileToken && !!TURNSTILE_SITE_KEY)}>
                     {translate("signUpButton")}
                   </Button>
                 </CardFooter>
