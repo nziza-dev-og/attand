@@ -379,11 +379,16 @@
   "deactivateAdButton": "Zima",
   "adStatusUpdatedTitle": "Hali ya Tangazo Imesasishwa",
   "adStatusUpdatedDesc": "Hali ya tangazo imesasishwa.",
+  "errorUpdatingAdStatus": "Imeshindwa kusasisha hali ya tangazo.",
   "deleteAdConfirmTitle": "Futa Tangazo?",
   "deleteAdConfirmDesc": "Una uhakika unataka kufuta tangazo lenye kichwa '{{title}}'? Kitendo hiki hakiwezi kutenduliwa.",
   "adDeletedSuccessTitle": "Tangazo Limefutwa",
   "adDeletedSuccessDesc": "Tangazo '{{title}}' limefutwa kwa mafanikio.",
   "errorDeletingAd": "Imeshindwa kufuta tangazo.",
   "learnMore": "Jifunze Zaidi",
-  "dismissAd": "Kataa tangazo"
+  "dismissAd": "Kataa tangazo",
+  "recaptchaNotConfiguredError": "reCAPTCHA haijasanidiwa. Kuingia/Kujisajili kumezimwa.",
+  "recaptchaRequiredError": "Tafadhali kamilisha reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA haiko tayari. Tafadhali jaribu tena.",
+  "recaptchaFailedError": "Imeshindwa kutekeleza reCAPTCHA."
 }

@@ -386,5 +386,9 @@
   "adDeletedSuccessDesc": "Itangazo '{{title}}' ryasibwe neza.",
   "errorDeletingAd": "Kunanirwa gusiba itangazo.",
   "learnMore": "Menya Byinshi",
-  "dismissAd": "Kwanga itangazo"
+  "dismissAd": "Kwanga itangazo",
+  "recaptchaNotConfiguredError": "reCAPTCHA ntiyashyizweho. Kwinjira/Kwiyandikisha byahagaritswe.",
+  "recaptchaRequiredError": "Nyamunekauzuza reCAPTCHA.",
+  "recaptchaNotReadyError": "reCAPTCHA ntiyiteguye. Nyamuneka gerageza nanone.",
+  "recaptchaFailedError": "Kunanirwa gukoresha reCAPTCHA."
 }
