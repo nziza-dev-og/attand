@@ -2,7 +2,7 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState, type FormEvent, useEffect, useRef } from 'react';
+import { useState, type FormEvent, useEffect, useRef, useCallback } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
@@ -18,9 +18,41 @@ import type { Role } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Script from 'next/script';
 
+// This type assertion is necessary if you're using Turnstile's explicit rendering
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: string | HTMLElement, params: TurnstileRenderParameters) => string | undefined;
+      reset: (widgetId?: string) => void;
+      getResponse: (widgetId?: string) => string | undefined;
+      remove: (widgetId?: string) => void;
+    };
+  }
+}
+
+interface TurnstileRenderParameters {
+  sitekey: string;
+  action?: string;
+  cData?: string;
+  callback?: (token: string) => void;
+  'error-callback'?: () => void;
+  'expired-callback'?: () => void;
+  theme?: 'light' | 'dark' | 'auto';
+  language?: string | 'auto';
+  tabindex?: number;
+  'response-field'?: boolean;
+  'response-field-name'?: string;
+  size?: 'normal' | 'compact';
+  retry?: 'auto' | 'never';
+  'retry-interval'?: number;
+  'refresh-expired'?: 'auto' | 'manual' | 'never';
+  // ... any other parameters specific to Turnstile
+}
+
+
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "cAnufKypsdnp4e7PSQp4qCIVJ9V9ya5FUJaSKVTB"; // Using your provided key as fallback
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "cAnufKypsdnp4e7PSQp4qCIVJ9V9ya5FUJaSKVTB";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -42,6 +74,9 @@ export default function LoginPage() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileLoginWidgetRef = useRef<HTMLDivElement>(null);
   const turnstileSignupWidgetRef = useRef<HTMLDivElement>(null);
+  const [loginWidgetId, setLoginWidgetId] = useState<string | undefined>(undefined);
+  const [signupWidgetId, setSignupWidgetId] = useState<string | undefined>(undefined);
+
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY) {
@@ -49,12 +84,11 @@ export default function LoginPage() {
     }
   }, []);
 
-  const renderTurnstileWidget = (widgetRef: React.RefObject<HTMLDivElement>, tab: 'login' | 'signup') => {
+  const renderTurnstileWidget = useCallback((widgetRef: React.RefObject<HTMLDivElement>, tab: 'login' | 'signup', setWidgetId: React.Dispatch<React.SetStateAction<string | undefined>>) => {
     if (widgetRef.current && window.turnstile && TURNSTILE_SITE_KEY && isTurnstileReady) {
-      // Clear any existing widget first
-      widgetRef.current.innerHTML = '';
+      widgetRef.current.innerHTML = ''; // Clear previous widget if any
       try {
-        window.turnstile.render(widgetRef.current, {
+        const widgetId = window.turnstile.render(widgetRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
           callback: function(token: string) {
             console.log(`Turnstile token for ${tab}: ${token}`);
@@ -63,8 +97,10 @@ export default function LoginPage() {
           'expired-callback': function() {
             console.log(`Turnstile token for ${tab} expired.`);
             setTurnstileToken(null);
-            // Optionally re-render or prompt user
-            if (widgetRef.current) renderTurnstileWidget(widgetRef, tab);
+            // Re-render the specific widget
+            if (widgetRef.current) {
+                 renderTurnstileWidget(widgetRef, tab, setWidgetId);
+            }
           },
           'error-callback': function() {
             console.error(`Turnstile error for ${tab}.`);
@@ -72,22 +108,25 @@ export default function LoginPage() {
             setTurnstileToken(null);
           }
         });
+        setWidgetId(widgetId);
       } catch (e) {
-        console.error("Error rendering Turnstile widget:", e);
+        console.error(`Error rendering Turnstile widget for ${tab}:`, e);
         setError(translate('turnstileError'));
       }
     }
-  };
+  }, [isTurnstileReady, translate]);
   
   useEffect(() => {
     if (isTurnstileReady) {
       if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
-        renderTurnstileWidget(turnstileLoginWidgetRef, 'login');
+        if (loginWidgetId && window.turnstile) window.turnstile.remove(loginWidgetId); // Remove old if exists
+        renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId);
       } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
-        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup');
+        if (signupWidgetId && window.turnstile) window.turnstile.remove(signupWidgetId); // Remove old if exists
+        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId);
       }
     }
-  }, [isTurnstileReady, currentTab]);
+  }, [isTurnstileReady, currentTab, renderTurnstileWidget, loginWidgetId, signupWidgetId]);
 
 
   const resetFormFields = (resetToken: boolean = true) => {
@@ -103,30 +142,47 @@ export default function LoginPage() {
     setError(null);
     if (resetToken) {
       setTurnstileToken(null);
-      // Re-render turnstile widget if needed after reset
-      if (isTurnstileReady && currentTab === 'login' && turnstileLoginWidgetRef.current) {
-        renderTurnstileWidget(turnstileLoginWidgetRef, 'login');
-      } else if (isTurnstileReady && currentTab === 'signup' && turnstileSignupWidgetRef.current) {
-        renderTurnstileWidget(turnstileSignupWidgetRef, 'signup');
+      // Re-render the current widget to reset its state
+      if(isTurnstileReady && window.turnstile) {
+        if (currentTab === 'login' && turnstileLoginWidgetRef.current) {
+            if (loginWidgetId) window.turnstile.remove(loginWidgetId);
+            renderTurnstileWidget(turnstileLoginWidgetRef, 'login', setLoginWidgetId);
+        } else if (currentTab === 'signup' && turnstileSignupWidgetRef.current) {
+            if (signupWidgetId) window.turnstile.remove(signupWidgetId);
+            renderTurnstileWidget(turnstileSignupWidgetRef, 'signup', setSignupWidgetId);
+        }
       }
     }
   };
 
   const handleTabChange = (value: string) => {
     setCurrentTab(value);
-    resetFormFields(); // This will also reset and re-render turnstile
+    resetFormFields(); 
   };
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!turnstileToken && TURNSTILE_SITE_KEY) {
+    if (!TURNSTILE_SITE_KEY) {
+      setError(translate('turnstileNotConfiguredError'));
+      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('turnstileNotConfiguredError') });
+      return;
+    }
+    if (!turnstileToken) {
       setError(translate('humanVerificationRequiredError'));
       toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate('humanVerificationRequiredError') });
       return;
     }
+    
     // TODO: Send turnstileToken to your backend for verification with your Turnstile Secret Key
+    // Example: const verificationResult = await verifyTurnstileOnBackend(turnstileToken);
+    // if (!verificationResult.success) {
+    //   setError("Turnstile verification failed on server.");
+    //   toast({ variant: "destructive", title: "Login Failed", description: "Human verification failed." });
+    //   resetFormFields(true);
+    //   return;
+    // }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -135,7 +191,7 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: translate("loginFailedTitle"), description: err.message });
-      resetFormFields(true); // Reset token on error
+      resetFormFields(true); 
     }
   };
 
@@ -143,12 +199,18 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!turnstileToken && TURNSTILE_SITE_KEY) {
+    if (!TURNSTILE_SITE_KEY) {
+        setError(translate('turnstileNotConfiguredError'));
+        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('turnstileNotConfiguredError') });
+        return;
+    }
+    if (!turnstileToken) {
       setError(translate('humanVerificationRequiredError'));
       toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate('humanVerificationRequiredError') });
       return;
     }
-    // TODO: Send turnstileToken to your backend for verification with your Turnstile Secret Key
+
+    // TODO: Send turnstileToken to your backend for verification (similar to login)
 
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
@@ -278,7 +340,7 @@ export default function LoginPage() {
         setError(err.message);
         toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: err.message });
       }
-      resetFormFields(true); // Reset token on error
+      resetFormFields(true); 
     }
   };
 
@@ -286,8 +348,9 @@ export default function LoginPage() {
     <>
       {TURNSTILE_SITE_KEY && (
         <Script
+          id="cf-turnstile-script"
           src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-          strategy="lazyOnload" // Or "afterInteractive"
+          strategy="lazyOnload"
           onLoad={() => {
             console.log("Cloudflare Turnstile script loaded.");
             setIsTurnstileReady(true);
@@ -342,7 +405,7 @@ export default function LoginPage() {
                     />
                   </div>
                   {TURNSTILE_SITE_KEY && (
-                    <div ref={turnstileLoginWidgetRef} className="cf-turnstile-container my-4">
+                    <div ref={turnstileLoginWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
                       {/* Turnstile widget will render here */}
                     </div>
                   )}
@@ -486,7 +549,7 @@ export default function LoginPage() {
                     />
                   </div>
                   {TURNSTILE_SITE_KEY && (
-                    <div ref={turnstileSignupWidgetRef} className="cf-turnstile-container my-4">
+                    <div ref={turnstileSignupWidgetRef} className="cf-turnstile-container my-4 min-h-[65px]">
                       {/* Turnstile widget will render here */}
                     </div>
                   )}
@@ -505,3 +568,4 @@ export default function LoginPage() {
     </>
   );
 }
+
