@@ -385,9 +385,5 @@
   "adDeletedSuccessDesc": "'{{title}}' বিজ্ঞাপনটি সফলভাবে মুছে ফেলা হয়েছে।",
   "errorDeletingAd": "বিজ্ঞাপন মুছতে ব্যর্থ।",
   "learnMore": "আরও জানুন",
-  "dismissAd": "বিজ্ঞাপন খারিজ করুন",
-  "recaptchaNotConfiguredError": "reCAPTCHA কনফিগার করা হয়নি। লগইন/সাইনআপ নিষ্ক্রিয় করা হয়েছে।",
-  "recaptchaRequiredError": "অনুগ্রহ করে reCAPTCHA সম্পূর্ণ করুন।",
-  "recaptchaNotReadyError": "reCAPTCHA প্রস্তুত নয়। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "recaptchaFailedError": "reCAPTCHA কার্যকর করতে ব্যর্থ।"
+  "dismissAd": "বিজ্ঞাপন খারিজ করুন"
 }

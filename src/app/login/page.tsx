@@ -2,7 +2,7 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState, useRef, type FormEvent, useEffect } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { setDoc, doc, Timestamp, query, collection, where, getDocs, getDoc } from 'firebase/firestore';
@@ -21,13 +21,6 @@ import Script from 'next/script'; // Import next/script
 const SUPER_ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_SUPER_ADMIN_SECRET_CODE || "superattandance";
 const MAX_VERIFICATION_ATTEMPTS = 3;
 
-// Augment the window object to include grecaptcha
-declare global {
-  interface Window {
-    grecaptcha: any;
-  }
-}
-
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,31 +36,9 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { translate } = useLanguage();
-  const [isRecaptchaReady, setIsRecaptchaReady] = useState(false);
+  const [isTrustedAccountsReady, setIsTrustedAccountsReady] = useState(false);
 
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-
-  useEffect(() => {
-    if (!siteKey) {
-      console.error("reCAPTCHA Site Key is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.");
-    }
-  }, [siteKey]);
-
-  const getRecaptchaToken = async (action: string): Promise<string | null> => {
-    if (!siteKey || !isRecaptchaReady || !window.grecaptcha || !window.grecaptcha.enterprise) {
-      setError(translate("recaptchaNotReadyError") || "reCAPTCHA is not ready. Please try again.");
-      return null;
-    }
-    try {
-      await window.grecaptcha.enterprise.ready();
-      const token = await window.grecaptcha.enterprise.execute(siteKey, { action });
-      return token;
-    } catch (err) {
-      console.error("Error executing reCAPTCHA:", err);
-      setError(translate("recaptchaFailedError") || "Failed to execute reCAPTCHA.");
-      return null;
-    }
-  };
+  const trustedAccountsClientId = 'fb735fa0-17a8-4de3-80c2-43d2433cddb5';
 
   const resetFormFields = () => {
     setEmail('');
@@ -91,32 +62,13 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!siteKey) {
-        toast({ variant: "destructive", title: translate("loginFailedTitle"), description: translate("recaptchaNotConfiguredError") });
-        return;
-    }
-
-    const recaptchaToken = await getRecaptchaToken('LOGIN');
-    if (!recaptchaToken) {
-      toast({ variant: "destructive", title: translate("loginFailedTitle"), description: error || translate("recaptchaRequiredError") });
-      return;
-    }
-    
-    // !! IMPORTANT !!
-    // TODO: Send 'recaptchaToken' to your backend for verification with Google reCAPTCHA Enterprise API
-    // using your reCAPTCHA Enterprise Secret Key.
-    // Only proceed with Firebase login if backend verification is successful.
-    // Example: const backendVerification = await verifyTokenOnBackend(recaptchaToken);
-    // if (!backendVerification.success) {
-    //   setError("reCAPTCHA verification failed on server.");
-    //   toast({ variant: "destructive", title: "Login Failed", description: "reCAPTCHA verification failed." });
-    //   return;
-    // }
+    // Note: Actual verification with Trusted Accounts would typically involve backend signals.
+    // This client-side setup only initializes the SDK.
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: translate("loginSuccessTitle") || "Login Successful", description: translate("loginSuccessDesc") || "Redirecting to dashboard..." });
-      router.push('/'); 
+      router.push('/');
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: translate("loginFailedTitle") || "Login Failed", description: err.message });
@@ -127,19 +79,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!siteKey) {
-        toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: translate("recaptchaNotConfiguredError") });
-        return;
-    }
-    
-    const recaptchaToken = await getRecaptchaToken('SIGNUP');
-    if (!recaptchaToken) {
-      toast({ variant: "destructive", title: translate("signUpFailedTitle"), description: error || translate("recaptchaRequiredError") });
-      return;
-    }
-
-    // !! IMPORTANT !!
-    // TODO: Send 'recaptchaToken' to your backend for verification.
+    // Note: Actual verification with Trusted Accounts would typically involve backend signals.
 
     if (password !== confirmPassword) {
       setError(translate("passwordsDontMatchError"));
@@ -179,7 +119,7 @@ export default function LoginPage() {
         return;
       }
     }
-    
+
     if (role === 'SuperAdmin') {
       if (superAdminSecretCode !== SUPER_ADMIN_SECRET_CODE) {
         setError(translate("invalidSuperAdminCodeError"));
@@ -209,11 +149,11 @@ export default function LoginPage() {
         isSchoolCodeVerified: role === 'SuperAdmin',
         schoolId: null,
       };
-      
+
       if (role === 'Admin') {
-        userDocData.schoolId = user.uid; 
-        userDocData.schoolIdentifierCode = ""; 
-        userDocData.isSchoolCodeVerified = true; 
+        userDocData.schoolId = user.uid;
+        userDocData.schoolIdentifierCode = "";
+        userDocData.isSchoolCodeVerified = true;
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
         userDocData.assignedClassIds = [];
@@ -232,7 +172,7 @@ export default function LoginPage() {
           const adminSnap = await getDocs(adminsQuery);
           if (!adminSnap.empty) {
             userDocData.schoolId = adminSnap.docs[0].id;
-            userDocData.isSchoolCodeVerified = true;
+            userDocData.isSchoolCodeVerified = true; // Assuming parent is verified if school code matches
             toast({ title: translate('schoolCodeVerifiedTitle'), description: translate('parentSchoolCodeVerifiedDesc') });
           } else {
             userDocData.isSchoolCodeVerified = false;
@@ -264,15 +204,36 @@ export default function LoginPage() {
     }
   };
 
+  const handleTrustedAccountsLoad = () => {
+    // @ts-ignore
+    if (window.TrustedTraffic) {
+      try {
+        // @ts-ignore
+        new window.TrustedTraffic({ clientId: trustedAccountsClientId }).init();
+        setIsTrustedAccountsReady(true);
+        console.log("Trusted Accounts SDK initialized.");
+      } catch (sdkError) {
+        console.error("Error initializing Trusted Accounts SDK:", sdkError);
+        toast({ variant: "destructive", title: "Error", description: "Failed to initialize human verification service."});
+      }
+    } else {
+        console.error("Trusted Accounts SDK not found on window.");
+        toast({ variant: "destructive", title: "Error", description: "Human verification service script not loaded."});
+    }
+  };
+
+
   return (
     <>
-      {siteKey && (
-        <Script
-          src={`https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`}
-          strategy="afterInteractive"
-          onReady={() => setIsRecaptchaReady(true)}
-        />
-      )}
+      <Script
+        src="https://developers.trustedaccounts.org/trusted-sdk/trusted-traffic.js"
+        strategy="afterInteractive"
+        onLoad={handleTrustedAccountsLoad}
+        onError={(e) => {
+            console.error("Failed to load Trusted Accounts SDK script:", e);
+            toast({ variant: "destructive", title: "Error", description: "Could not load human verification service."});
+        }}
+      />
       <div className="flex items-center justify-center min-h-screen bg-secondary">
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
@@ -310,13 +271,12 @@ export default function LoginPage() {
                       autoComplete="current-password"
                     />
                   </div>
-                  {!siteKey && (
-                    <p className="text-sm font-medium text-destructive">{translate("recaptchaNotConfiguredError")}</p>
-                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || !isRecaptchaReady}>{translate("loginButton")}</Button>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!isTrustedAccountsReady}>
+                    {translate("loginButton")}
+                  </Button>
                 </CardFooter>
               </form>
             </Card>
@@ -445,13 +405,12 @@ export default function LoginPage() {
                        autoComplete="new-password"
                     />
                   </div>
-                   {!siteKey && (
-                    <p className="text-sm font-medium text-destructive">{translate("recaptchaNotConfiguredError")}</p>
-                  )}
                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!siteKey || !isRecaptchaReady}>{translate("signUpButton")}</Button>
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!isTrustedAccountsReady}>
+                    {translate("signUpButton")}
+                  </Button>
                 </CardFooter>
               </form>
             </Card>
