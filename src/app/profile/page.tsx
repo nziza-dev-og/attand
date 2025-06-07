@@ -5,7 +5,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { db, auth } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'; // Added setDoc
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, UserCircle, Save, Image as ImageIcon, Building, Settings, Phone, KeyRound, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Separator } from '@/components/ui/separator'; // Import Separator
+import { Separator } from '@/components/ui/separator';
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -83,13 +83,12 @@ export default function ProfilePage() {
           setAvatarUrl(user.photoURL || '');
           setCurrentAvatarDisplay(user.photoURL || '');
           toast({ variant: 'destructive', title: translate('errorTitle'), description: translate('profileDataMissing') });
-          // For a new admin, initialize fields if document doesn't exist (should be rare after login setup)
           if (role === 'Admin') {
             await setDoc(userDocRef, {
                 name: user.displayName || '',
                 email: user.email,
                 role: 'Admin',
-                schoolId: user.uid, // Admin's own UID is their schoolId
+                schoolId: user.uid,
                 schoolName: "",
                 phoneNumber: "",
                 schoolIdentifierCode: "",
@@ -155,7 +154,6 @@ export default function ProfilePage() {
     }
   };
 
-  // Admin-specific school settings handlers
   const handleSaveSchoolName = async () => {
     if (!user || role !== 'Admin') return;
     if (!schoolNameInput.trim()) {
@@ -220,7 +218,6 @@ export default function ProfilePage() {
     }
   };
 
-
   if (authLoading || loadingProfileData) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -231,20 +228,19 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-2xl">
+    <div className="container mx-auto py-8 max-w-2xl space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <UserCircle className="h-7 w-7" /> 
-            {role === 'Admin' ? translate('profileAndSchoolSettingsTitle') : translate('myProfileTitle')}
+            {translate('myProfileTitle')}
           </CardTitle>
           <CardDescription>
-            {role === 'Admin' ? translate('profileAndSchoolSettingsDesc') : translate('myProfileDesc')}
+            {translate('myProfileDesc')}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSaveProfile}>
           <CardContent className="space-y-6">
-            {/* General Profile Section */}
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-32 w-32 border-4 border-primary shadow-lg">
                 <AvatarImage src={currentAvatarDisplay} alt={name} />
@@ -290,93 +286,96 @@ export default function ProfilePage() {
               />
               <p className="text-xs text-muted-foreground">{translate('avatarUrlHint')}</p>
             </div>
+          </CardContent>
+          <CardFooter>
             <Button type="submit" disabled={isSaving} className="w-full text-lg py-3">
               {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
               {translate('saveChanges')}
             </Button>
-
-            {/* Admin-specific School Settings Section */}
-            {role === 'Admin' && (
-              <>
-                <Separator className="my-6" />
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold flex items-center gap-2">
-                    <Settings className="h-6 w-6 text-primary"/>
-                    {translate('schoolSettingsTitle')}
-                  </h3>
-                  
-                  {/* School Name Setting */}
-                  <div className="space-y-2">
-                      <Label htmlFor="schoolNameInput" className="text-base flex items-center gap-1"><Building className="h-5 w-5"/>{translate('setSchoolNameLabel')}</Label>
-                      <div className="flex items-center gap-2">
-                          <Input
-                          id="schoolNameInput"
-                          value={schoolNameInput}
-                          onChange={(e) => setSchoolNameInput(e.target.value)}
-                          placeholder={translate('enterSchoolNamePlaceholder')}
-                          className="flex-1 text-base"
-                          />
-                          <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !user} size="sm">
-                          {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                          {translate('saveSchoolNameButton')}
-                          </Button>
-                      </div>
-                  </div>
-                  {/* School Phone Number Setting */}
-                  <div className="space-y-2">
-                      <Label htmlFor="phoneNumberInput" className="text-base flex items-center gap-1"><Phone className="h-5 w-5"/>{translate('setSchoolPhoneNumberLabel')}</Label>
-                      <div className="flex items-center gap-2">
-                          <Input
-                          id="phoneNumberInput"
-                          type="tel" 
-                          value={phoneNumberInput}
-                          onChange={(e) => setPhoneNumberInput(e.target.value)}
-                          placeholder={translate('enterSchoolPhoneNumberPlaceholder')}
-                          className="flex-1 text-base"
-                          />
-                          <Button onClick={handleSavePhoneNumber} disabled={isSavingPhoneNumber || !user} size="sm">
-                          {isSavingPhoneNumber ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                          {translate('savePhoneNumberButton')}
-                          </Button>
-                      </div>
-                  </div>
-                  {/* School Identifier Code Setting */}
-                  <div className="space-y-2">
-                      <Label htmlFor="schoolCodeInput" className="text-base flex items-center gap-1"><KeyRound className="h-5 w-5"/>{translate('setSchoolCodeLabel')}</Label>
-                      <div className="flex items-center gap-2 mt-1">
-                      <Input
-                          id="schoolCodeInput"
-                          value={schoolCodeInput}
-                          onChange={(e) => setSchoolCodeInput(e.target.value)}
-                          placeholder={translate('enterSchoolCodePlaceholder')}
-                          className="flex-1 text-base"
-                      />
-                      <Button onClick={handleSaveSchoolCode} disabled={isSavingCode || !user} size="sm">
-                          {isSavingCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                          {translate('saveSchoolCodeButton')}
-                      </Button>
-                      </div>
-                  </div>
-                  {schoolIdentifierCode && (
-                      <div>
-                      <Label className="text-sm font-medium">{translate('currentSchoolCodeLabel')}</Label>
-                      <div className="flex items-center justify-between p-3 mt-1 border rounded-md bg-secondary">
-                          <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
-                          <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
-                          <Copy className="h-5 w-5" />
-                          </Button>
-                      </div>
-                      </div>
-                  )}
-                </div>
-              </>
-            )}
-          </CardContent>
-          {/* Footer is removed as save button is part of the form content now for general profile */}
-          {/* If Admin section had its own footer/save button, it would go inside the role === 'Admin' block */}
+          </CardFooter>
         </form>
       </Card>
+
+      {role === 'Admin' && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                    <Settings className="h-7 w-7 text-primary"/>
+                    {translate('schoolSettingsTitle')}
+                </CardTitle>
+                 <CardDescription>
+                    {translate('adminSchoolSettingsDesc')}
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* School Name Setting */}
+              <div className="space-y-2">
+                  <Label htmlFor="schoolNameInput" className="text-base flex items-center gap-1"><Building className="h-5 w-5"/>{translate('setSchoolNameLabel')}</Label>
+                  <div className="flex items-center gap-2">
+                      <Input
+                      id="schoolNameInput"
+                      value={schoolNameInput}
+                      onChange={(e) => setSchoolNameInput(e.target.value)}
+                      placeholder={translate('enterSchoolNamePlaceholder')}
+                      className="flex-1 text-base"
+                      />
+                      <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !user} size="sm">
+                      {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                      {translate('saveSchoolNameButton')}
+                      </Button>
+                  </div>
+              </div>
+              {/* School Phone Number Setting */}
+              <div className="space-y-2">
+                  <Label htmlFor="phoneNumberInput" className="text-base flex items-center gap-1"><Phone className="h-5 w-5"/>{translate('setSchoolPhoneNumberLabel')}</Label>
+                  <div className="flex items-center gap-2">
+                      <Input
+                      id="phoneNumberInput"
+                      type="tel" 
+                      value={phoneNumberInput}
+                      onChange={(e) => setPhoneNumberInput(e.target.value)}
+                      placeholder={translate('enterSchoolPhoneNumberPlaceholder')}
+                      className="flex-1 text-base"
+                      />
+                      <Button onClick={handleSavePhoneNumber} disabled={isSavingPhoneNumber || !user} size="sm">
+                      {isSavingPhoneNumber ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                      {translate('savePhoneNumberButton')}
+                      </Button>
+                  </div>
+              </div>
+              {/* School Identifier Code Setting */}
+              <div className="space-y-2">
+                  <Label htmlFor="schoolCodeInput" className="text-base flex items-center gap-1"><KeyRound className="h-5 w-5"/>{translate('setSchoolCodeLabel')}</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                  <Input
+                      id="schoolCodeInput"
+                      value={schoolCodeInput}
+                      onChange={(e) => setSchoolCodeInput(e.target.value)}
+                      placeholder={translate('enterSchoolCodePlaceholder')}
+                      className="flex-1 text-base"
+                  />
+                  <Button onClick={handleSaveSchoolCode} disabled={isSavingCode || !user} size="sm">
+                      {isSavingCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                      {translate('saveSchoolCodeButton')}
+                  </Button>
+                  </div>
+              </div>
+              {schoolIdentifierCode && (
+                  <div>
+                  <Label className="text-sm font-medium">{translate('currentSchoolCodeLabel')}</Label>
+                  <div className="flex items-center justify-between p-3 mt-1 border rounded-md bg-secondary">
+                      <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
+                      <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
+                      <Copy className="h-5 w-5" />
+                      </Button>
+                  </div>
+                  </div>
+              )}
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
+    

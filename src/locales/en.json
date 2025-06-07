@@ -263,7 +263,7 @@
   "platformStatisticsDesc": "An overview of key metrics for the AttendEase platform.",
   "saveProfilePictureButton": "Save Profile Picture",
   "schoolSettingsTitle": "School Settings",
-  "adminSchoolSettingsDesc": "Manage your school's name and unique identifier code for teacher registration.",
+  "adminSchoolSettingsDesc": "Manage your school's name, contact information, and unique identifier code for teacher registration.",
   "roleStudent": "Student",
   "studentManagementErrorNoSchoolId": "School ID not found for admin.",
   "studentManagementErrorLoadFailed": "Failed to load students or classes. Please try again.",
@@ -407,3 +407,4 @@
   "adminProfileSettingsMovedNotice": "Your profile and school settings (name, phone, identifier code) can be managed on your Profile page.",
   "goToProfilePage": "Go to Profile Page"
 }
+    
