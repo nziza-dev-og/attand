@@ -2,7 +2,8 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone } from "lucide-react"; // Removed KeyRound
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone } from "lucide-react";
+import Link from 'next/link'; // Added import for Link
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -225,9 +226,7 @@ export default function AdminDashboard() {
               </Button>
          </CardContent>
       </Card>
-
-      {/* Removed Admin Profile & School Settings Card from here */}
-      
     </div>
   );
 }
+
