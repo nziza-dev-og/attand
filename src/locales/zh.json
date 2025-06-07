@@ -403,6 +403,7 @@
   "adminPhoneNumberNotSet": "学校管理员未设置电话号码。",
   "errorLoadingAdminDetails": "加载学校管理员详细信息失败。",
   "profileAndSchoolSettingsTitle": "个人资料和学校设置",
-  "profileAndSchoolSettingsDesc": "更新您的显示名称、头像，并管理学校的常规设置，如名称、联系方式和注册码。"
+  "profileAndSchoolSettingsDesc": "更新您的显示名称、头像，并管理学校的常规设置，如名称、联系方式和注册码。",
+  "adminProfileSettingsMovedNotice": "您的个人资料和学校设置（名称、电话、识别码）可以在您的个人资料页面进行管理。",
+  "goToProfilePage": "转到个人资料页面"
 }
-

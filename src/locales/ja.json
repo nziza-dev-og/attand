@@ -403,6 +403,7 @@
   "adminPhoneNumberNotSet": "学校管理者は電話番号を設定していません。",
   "errorLoadingAdminDetails": "学校管理者の詳細情報の読み込みに失敗しました。",
   "profileAndSchoolSettingsTitle": "プロフィールと学校設定",
-  "profileAndSchoolSettingsDesc": "表示名、プロフィール写真を更新し、学校名、連絡先、登録コードなどの学校の一般設定を管理します。"
+  "profileAndSchoolSettingsDesc": "表示名、プロフィール写真を更新し、学校名、連絡先、登録コードなどの学校の一般設定を管理します。",
+  "adminProfileSettingsMovedNotice": "あなたのプロフィールと学校の設定（名前、電話番号、識別コード）は、あなたのプロフィールページで管理できます。",
+  "goToProfilePage": "プロフィールページへ移動"
 }
-

@@ -403,6 +403,7 @@
   "adminPhoneNumberNotSet": "The school administrator has not set a phone number.",
   "errorLoadingAdminDetails": "Failed to load school administrator details.",
   "profileAndSchoolSettingsTitle": "Profile & School Settings",
-  "profileAndSchoolSettingsDesc": "Update your display name, profile picture, and manage your school's general settings like name, contact, and registration code."
+  "profileAndSchoolSettingsDesc": "Update your display name, profile picture, and manage your school's general settings like name, contact, and registration code.",
+  "adminProfileSettingsMovedNotice": "Your profile and school settings (name, phone, identifier code) can be managed on your Profile page.",
+  "goToProfilePage": "Go to Profile Page"
 }
-

@@ -403,6 +403,7 @@
   "adminPhoneNumberNotSet": "Ubuyobozi bw'ishuri ntibwashyizeho nimero ya telefone.",
   "errorLoadingAdminDetails": "Kunanirwa gutwara amakuru y'ubuyobozi bw'ishuri.",
   "profileAndSchoolSettingsTitle": "Porofayili & Ibikoresho by'Ishuri",
-  "profileAndSchoolSettingsDesc": "Hindura izina ryawe, ifoto ya porofayili, kandi ucunge ibikoresho rusange by'ishuri ryawe nka izina, amakuru yo guhamagara, na kode yo kwiyandikisha."
+  "profileAndSchoolSettingsDesc": "Hindura izina ryawe, ifoto ya porofayili, kandi ucunge ibikoresho rusange by'ishuri ryawe nka izina, amakuru yo guhamagara, na kode yo kwiyandikisha.",
+  "adminProfileSettingsMovedNotice": "Porofayili yawe n'ibikoresho by'ishuri (izina, telefone, kode yo kumenyekanisha) bishobora gucungirwa ku rupapuro rwawe rwa Porofayili.",
+  "goToProfilePage": "Jya ku Rupapuro rwa Porofayili"
 }
-

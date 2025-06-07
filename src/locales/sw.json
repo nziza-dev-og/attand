@@ -403,6 +403,7 @@
   "adminPhoneNumberNotSet": "Msimamizi wa shule hajaweka nambari ya simu.",
   "errorLoadingAdminDetails": "Imeshindwa kupakia maelezo ya msimamizi wa shule.",
   "profileAndSchoolSettingsTitle": "Wasifu na Mipangilio ya Shule",
-  "profileAndSchoolSettingsDesc": "Sasisha jina lako la kuonyesha, picha ya wasifu, na udhibiti mipangilio ya jumla ya shule yako kama vile jina, mawasiliano, na nambari ya usajili."
+  "profileAndSchoolSettingsDesc": "Sasisha jina lako la kuonyesha, picha ya wasifu, na udhibiti mipangilio ya jumla ya shule yako kama vile jina, mawasiliano, na nambari ya usajili.",
+  "adminProfileSettingsMovedNotice": "Wasifu wako na mipangilio ya shule (jina, simu, nambari ya utambulisho) inaweza kudhibitiwa kwenye ukurasa wako wa Wasifu.",
+  "goToProfilePage": "Nenda kwenye Ukurasa wa Wasifu"
 }
-
