@@ -388,5 +388,18 @@
   "dismissAd": "Kwanga itangazo",
   "previousAd": "Itangazo ryabanje",
   "nextAd": "Itangazo rikurikira",
-  "redirectingText": "Woherejwe..."
+  "redirectingText": "Woherejwe...",
+  "phoneNumberLabel": "Nimero ya Telefone",
+  "setSchoolPhoneNumberLabel": "Shyiraho Nimero ya Telefone y'Ishuri",
+  "enterSchoolPhoneNumberPlaceholder": "Andika nimero ya telefone y'ishuri",
+  "savePhoneNumberButton": "Bika Nimero",
+  "phoneNumberSavedTitle": "Nimero ya Telefone Yabitswe",
+  "phoneNumberSavedDesc": "Nimero ya telefone y'ishuri yavuguruwe.",
+  "phoneNumberSaveFailed": "Kunanirwa kubika nimero ya telefone.",
+  "currentSchoolPhoneNumberLabel": "Nimero ya Telefone y'Ishuri Iriho",
+  "schoolAdminContactTitle": "Amakuru y'Ubuyobozi bw'Ishuri",
+  "schoolAdminContactDesc": "Amakuru y'ubuyobozi bw'ishuri ryawe.",
+  "schoolInfoContactDesc": "Amakuru y'ishuri ry'umwana wawe.",
+  "adminPhoneNumberNotSet": "Ubuyobozi bw'ishuri ntibwashyizeho nimero ya telefone.",
+  "errorLoadingAdminDetails": "Kunanirwa gutwara amakuru y'ubuyobozi bw'ishuri."
 }

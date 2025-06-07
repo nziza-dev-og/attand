@@ -388,5 +388,18 @@
   "dismissAd": "Rejeter la publicité",
   "previousAd": "Publicité précédente",
   "nextAd": "Publicité suivante",
-  "redirectingText": "Redirection en cours..."
+  "redirectingText": "Redirection en cours...",
+  "phoneNumberLabel": "Numéro de Téléphone",
+  "setSchoolPhoneNumberLabel": "Définir le Numéro de Téléphone de l'École",
+  "enterSchoolPhoneNumberPlaceholder": "Entrez le numéro de téléphone de l'école",
+  "savePhoneNumberButton": "Enregistrer le Numéro",
+  "phoneNumberSavedTitle": "Numéro de Téléphone Enregistré",
+  "phoneNumberSavedDesc": "Le numéro de téléphone de l'école a été mis à jour.",
+  "phoneNumberSaveFailed": "Échec de l'enregistrement du numéro de téléphone.",
+  "currentSchoolPhoneNumberLabel": "Numéro de Téléphone Actuel de l'École",
+  "schoolAdminContactTitle": "Contact Administrateur Scolaire",
+  "schoolAdminContactDesc": "Coordonnées de l'administrateur de votre école.",
+  "schoolInfoContactDesc": "Coordonnées de l'école de votre enfant.",
+  "adminPhoneNumberNotSet": "L'administrateur de l'école n'a pas défini de numéro de téléphone.",
+  "errorLoadingAdminDetails": "Échec du chargement des détails de l'administrateur de l'école."
 }

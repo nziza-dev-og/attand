@@ -388,5 +388,18 @@
   "dismissAd": "விளம்பரத்தை நிராகரி",
   "previousAd": "முந்தைய விளம்பரம்",
   "nextAd": "அடுத்த விளம்பரம்",
-  "redirectingText": "திருப்பிவிடப்படுகிறது..."
+  "redirectingText": "திருப்பிவிடப்படுகிறது...",
+  "phoneNumberLabel": "தொலைபேசி எண்",
+  "setSchoolPhoneNumberLabel": "பள்ளி தொலைபேசி எண்ணை அமைக்கவும்",
+  "enterSchoolPhoneNumberPlaceholder": "பள்ளி தொலைபேசி எண்ணை உள்ளிடவும்",
+  "savePhoneNumberButton": "எண்ணைச் சேமி",
+  "phoneNumberSavedTitle": "தொலைபேசி எண் சேமிக்கப்பட்டது",
+  "phoneNumberSavedDesc": "பள்ளி தொலைபேசி எண் புதுப்பிக்கப்பட்டது.",
+  "phoneNumberSaveFailed": "தொலைபேசி எண்ணைச் சேமிப்பதில் தோல்வி.",
+  "currentSchoolPhoneNumberLabel": "தற்போதைய பள்ளி தொலைபேசி எண்",
+  "schoolAdminContactTitle": "பள்ளி நிர்வாகி தொடர்பு",
+  "schoolAdminContactDesc": "உங்கள் பள்ளி நிர்வாகியின் தொடர்புத் தகவல்.",
+  "schoolInfoContactDesc": "உங்கள் குழந்தையின் பள்ளியின் தொடர்புத் தகவல்.",
+  "adminPhoneNumberNotSet": "பள்ளி நிர்வாகி தொலைபேசி எண்ணை அமைக்கவில்லை.",
+  "errorLoadingAdminDetails": "பள்ளி நிர்வாகி விவரங்களை ஏற்றுவதில் தோல்வி."
 }

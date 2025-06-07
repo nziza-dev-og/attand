@@ -388,5 +388,18 @@
   "dismissAd": "광고 닫기",
   "previousAd": "이전 광고",
   "nextAd": "다음 광고",
-  "redirectingText": "리디렉션 중..."
+  "redirectingText": "리디렉션 중...",
+  "phoneNumberLabel": "전화번호",
+  "setSchoolPhoneNumberLabel": "학교 전화번호 설정",
+  "enterSchoolPhoneNumberPlaceholder": "학교 전화번호 입력",
+  "savePhoneNumberButton": "전화번호 저장",
+  "phoneNumberSavedTitle": "전화번호 저장됨",
+  "phoneNumberSavedDesc": "학교 전화번호가 업데이트되었습니다.",
+  "phoneNumberSaveFailed": "전화번호 저장 실패.",
+  "currentSchoolPhoneNumberLabel": "현재 학교 전화번호",
+  "schoolAdminContactTitle": "학교 관리자 연락처",
+  "schoolAdminContactDesc": "학교 관리자 연락처 정보입니다.",
+  "schoolInfoContactDesc": "자녀 학교 연락처 정보입니다.",
+  "adminPhoneNumberNotSet": "학교 관리자가 전화번호를 설정하지 않았습니다.",
+  "errorLoadingAdminDetails": "학교 관리자 세부 정보 로드 실패."
 }

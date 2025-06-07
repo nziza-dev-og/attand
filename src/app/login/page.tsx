@@ -158,6 +158,8 @@ export default function LoginPage() {
       if (role === 'Admin') {
         userDocData.schoolId = user.uid; // Admin's own UID is their schoolId
         userDocData.schoolIdentifierCode = ""; // Initialize school code
+        userDocData.schoolName = ""; // Initialize school name
+        userDocData.phoneNumber = ""; // Initialize phone number
         userDocData.isSchoolCodeVerified = true; // Admins are auto-verified for their own school
       } else if (role === 'Teacher') {
         userDocData.enteredSchoolCode = teacherSchoolCode.trim();
@@ -410,3 +412,4 @@ export default function LoginPage() {
     </>
   );
 }
+

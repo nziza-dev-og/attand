@@ -388,5 +388,18 @@
   "dismissAd": "رفض الإعلان",
   "previousAd": "الإعلان السابق",
   "nextAd": "الإعلان التالي",
-  "redirectingText": "جاري إعادة التوجيه..."
+  "redirectingText": "جاري إعادة التوجيه...",
+  "phoneNumberLabel": "رقم الهاتف",
+  "setSchoolPhoneNumberLabel": "تعيين رقم هاتف المدرسة",
+  "enterSchoolPhoneNumberPlaceholder": "أدخل رقم هاتف المدرسة",
+  "savePhoneNumberButton": "حفظ الرقم",
+  "phoneNumberSavedTitle": "تم حفظ رقم الهاتف",
+  "phoneNumberSavedDesc": "تم تحديث رقم هاتف المدرسة.",
+  "phoneNumberSaveFailed": "فشل حفظ رقم الهاتف.",
+  "currentSchoolPhoneNumberLabel": "رقم هاتف المدرسة الحالي",
+  "schoolAdminContactTitle": "معلومات الاتصال بمسؤول المدرسة",
+  "schoolAdminContactDesc": "معلومات الاتصال بمسؤول مدرستك.",
+  "schoolInfoContactDesc": "معلومات الاتصال بمدرسة طفلك.",
+  "adminPhoneNumberNotSet": "لم يقم مسؤول المدرسة بتعيين رقم هاتف.",
+  "errorLoadingAdminDetails": "فشل تحميل تفاصيل مسؤول المدرسة."
 }

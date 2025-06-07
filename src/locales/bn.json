@@ -388,5 +388,18 @@
   "dismissAd": "বিজ্ঞাপন খারিজ করুন",
   "previousAd": "পূর্ববর্তী বিজ্ঞাপন",
   "nextAd": "পরবর্তী বিজ্ঞাপন",
-  "redirectingText": "পুনঃনির্দেশিত হচ্ছে..."
+  "redirectingText": "পুনঃনির্দেশিত হচ্ছে...",
+  "phoneNumberLabel": "ফোন নম্বর",
+  "setSchoolPhoneNumberLabel": "স্কুলের ফোন নম্বর সেট করুন",
+  "enterSchoolPhoneNumberPlaceholder": "স্কুলের ফোন নম্বর লিখুন",
+  "savePhoneNumberButton": "ফোন নম্বর সংরক্ষণ করুন",
+  "phoneNumberSavedTitle": "ফোন নম্বর সংরক্ষিত হয়েছে",
+  "phoneNumberSavedDesc": "স্কুলের ফোন নম্বর আপডেট করা হয়েছে।",
+  "phoneNumberSaveFailed": "ফোন নম্বর সংরক্ষণ করতে ব্যর্থ।",
+  "currentSchoolPhoneNumberLabel": "বর্তমান স্কুলের ফোন নম্বর",
+  "schoolAdminContactTitle": "স্কুল প্রশাসক যোগাযোগ",
+  "schoolAdminContactDesc": "আপনার স্কুল প্রশাসকের যোগাযোগের তথ্য।",
+  "schoolInfoContactDesc": "আপনার সন্তানের স্কুলের যোগাযোগের তথ্য।",
+  "adminPhoneNumberNotSet": "স্কুল প্রশাসক কোনো ফোন নম্বর সেট করেননি।",
+  "errorLoadingAdminDetails": "স্কুল প্রশাসক বিবরণ লোড করতে ব্যর্থ।"
 }

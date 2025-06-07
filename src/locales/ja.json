@@ -388,5 +388,18 @@
   "dismissAd": "広告を閉じる",
   "previousAd": "前の広告",
   "nextAd": "次の広告",
-  "redirectingText": "リダイレクト中..."
+  "redirectingText": "リダイレクト中...",
+  "phoneNumberLabel": "電話番号",
+  "setSchoolPhoneNumberLabel": "学校の電話番号を設定",
+  "enterSchoolPhoneNumberPlaceholder": "学校の電話番号を入力",
+  "savePhoneNumberButton": "電話番号を保存",
+  "phoneNumberSavedTitle": "電話番号が保存されました",
+  "phoneNumberSavedDesc": "学校の電話番号が更新されました。",
+  "phoneNumberSaveFailed": "電話番号の保存に失敗しました。",
+  "currentSchoolPhoneNumberLabel": "現在の学校の電話番号",
+  "schoolAdminContactTitle": "学校管理者連絡先",
+  "schoolAdminContactDesc": "学校の管理者の連絡先情報。",
+  "schoolInfoContactDesc": "お子様の学校の連絡先情報。",
+  "adminPhoneNumberNotSet": "学校管理者は電話番号を設定していません。",
+  "errorLoadingAdminDetails": "学校管理者の詳細情報の読み込みに失敗しました。"
 }

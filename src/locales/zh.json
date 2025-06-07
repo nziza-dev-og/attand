@@ -388,5 +388,18 @@
   "dismissAd": "关闭广告",
   "previousAd": "上一条广告",
   "nextAd": "下一条广告",
-  "redirectingText": "正在重定向..."
+  "redirectingText": "正在重定向...",
+  "phoneNumberLabel": "电话号码",
+  "setSchoolPhoneNumberLabel": "设置学校电话号码",
+  "enterSchoolPhoneNumberPlaceholder": "输入学校电话号码",
+  "savePhoneNumberButton": "保存电话号码",
+  "phoneNumberSavedTitle": "电话号码已保存",
+  "phoneNumberSavedDesc": "学校电话号码已更新。",
+  "phoneNumberSaveFailed": "保存电话号码失败。",
+  "currentSchoolPhoneNumberLabel": "当前学校电话号码",
+  "schoolAdminContactTitle": "学校管理员联系方式",
+  "schoolAdminContactDesc": "您学校管理员的联系信息。",
+  "schoolInfoContactDesc": "您孩子学校的联系信息。",
+  "adminPhoneNumberNotSet": "学校管理员未设置电话号码。",
+  "errorLoadingAdminDetails": "加载学校管理员详细信息失败。"
 }

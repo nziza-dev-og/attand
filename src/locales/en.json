@@ -388,5 +388,18 @@
   "dismissAd": "Dismiss advertisement",
   "previousAd": "Previous ad",
   "nextAd": "Next ad",
-  "redirectingText": "Redirecting..."
+  "redirectingText": "Redirecting...",
+  "phoneNumberLabel": "Phone Number",
+  "setSchoolPhoneNumberLabel": "Set School Phone Number",
+  "enterSchoolPhoneNumberPlaceholder": "Enter school phone number",
+  "savePhoneNumberButton": "Save Phone Number",
+  "phoneNumberSavedTitle": "Phone Number Saved",
+  "phoneNumberSavedDesc": "The school phone number has been updated.",
+  "phoneNumberSaveFailed": "Failed to save phone number.",
+  "currentSchoolPhoneNumberLabel": "Current School Phone Number",
+  "schoolAdminContactTitle": "School Administrator Contact",
+  "schoolAdminContactDesc": "Contact information for your school's administrator.",
+  "schoolInfoContactDesc": "Contact information for your child's school.",
+  "adminPhoneNumberNotSet": "The school administrator has not set a phone number.",
+  "errorLoadingAdminDetails": "Failed to load school administrator details."
 }

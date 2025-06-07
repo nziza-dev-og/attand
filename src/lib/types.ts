@@ -11,6 +11,7 @@ export interface UserProfile {
   role: Role;
   name?: string; // Optional: User's display name
   schoolName?: string; // Optional: For Admins to name their school
+  phoneNumber?: string; // Optional: For Admins to set their school's contact phone
   createdAt: Timestamp;
   avatarUrl?: string;
   schoolIdentifierCode?: string; // For Admins to set their school's code
@@ -105,3 +106,4 @@ export interface BehaviorReport {
   parentResponses?: ParentResponse[];
   schoolId: string; // schoolId of the school this report belongs to
 }
+

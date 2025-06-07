@@ -2,7 +2,7 @@
 "use client"; 
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings } from "lucide-react"; 
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone } from "lucide-react"; 
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -95,6 +95,10 @@ export default function AdminDashboard() {
   const [schoolNameInput, setSchoolNameInput] = useState<string>("");
   const [isSavingSchoolName, setIsSavingSchoolName] = useState(false);
 
+  const [adminPhoneNumber, setAdminPhoneNumber] = useState<string>("");
+  const [phoneNumberInput, setPhoneNumberInput] = useState<string>("");
+  const [isSavingPhoneNumber, setIsSavingPhoneNumber] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,6 +142,8 @@ export default function AdminDashboard() {
             setSchoolCodeInput(userData.schoolIdentifierCode || "");
             setAdminSchoolName(userData.schoolName || "");
             setSchoolNameInput(userData.schoolName || "");
+            setAdminPhoneNumber(userData.phoneNumber || "");
+            setPhoneNumberInput(userData.phoneNumber || "");
           } else {
              setAdminName(authUser.displayName || "Admin");
              setAdminAvatarUrl(authUser.photoURL || "");
@@ -150,12 +156,15 @@ export default function AdminDashboard() {
                avatarUrl: authUser.photoURL || "",
                schoolIdentifierCode: "", 
                schoolName: "",
+               phoneNumber: "",
                schoolId: authUser.uid, 
              }, { merge: true });
              setSchoolIdentifierCode("");
              setSchoolCodeInput("");
              setAdminSchoolName("");
              setSchoolNameInput("");
+             setAdminPhoneNumber("");
+             setPhoneNumberInput("");
           }
         } catch (error) {
           console.error("Error fetching admin profile/settings:", error);
@@ -240,6 +249,24 @@ export default function AdminDashboard() {
       toast({ variant: "destructive", title: translate('errorTitle'), description: translate('schoolNameSaveFailed') });
     } finally {
       setIsSavingSchoolName(false);
+    }
+  };
+
+  const handleSavePhoneNumber = async () => {
+    if (!authUser) return;
+    // Optional: Add phone number validation if needed
+    // e.g., if (!/^\+?[1-9]\d{1,14}$/.test(phoneNumberInput.trim())) { ... }
+    setIsSavingPhoneNumber(true);
+    try {
+      const userDocRef = doc(db, 'users', authUser.uid);
+      await updateDoc(userDocRef, { phoneNumber: phoneNumberInput.trim() || null });
+      setAdminPhoneNumber(phoneNumberInput.trim());
+      toast({ title: translate('phoneNumberSavedTitle'), description: translate('phoneNumberSavedDesc') });
+    } catch (error) {
+      console.error("Error saving phone number:", error);
+      toast({ variant: "destructive", title: translate('errorTitle'), description: translate('phoneNumberSaveFailed') });
+    } finally {
+      setIsSavingPhoneNumber(false);
     }
   };
 
@@ -348,7 +375,7 @@ export default function AdminDashboard() {
         <CardContent className="space-y-6">
           {/* School Name Setting */}
           <div className="space-y-2">
-             <Label htmlFor="schoolNameInput" className="text-sm font-medium">{translate('setSchoolNameLabel')}</Label>
+             <Label htmlFor="schoolNameInput" className="text-sm font-medium flex items-center gap-1"><Building className="h-4 w-4"/>{translate('setSchoolNameLabel')}</Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="schoolNameInput"
@@ -363,9 +390,27 @@ export default function AdminDashboard() {
                 </Button>
               </div>
           </div>
+          {/* School Phone Number Setting */}
+          <div className="space-y-2">
+             <Label htmlFor="phoneNumberInput" className="text-sm font-medium flex items-center gap-1"><Phone className="h-4 w-4"/>{translate('setSchoolPhoneNumberLabel')}</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="phoneNumberInput"
+                  type="tel" 
+                  value={phoneNumberInput}
+                  onChange={(e) => setPhoneNumberInput(e.target.value)}
+                  placeholder={translate('enterSchoolPhoneNumberPlaceholder')}
+                  className="flex-1"
+                />
+                <Button onClick={handleSavePhoneNumber} disabled={isSavingPhoneNumber || !authUser}>
+                  {isSavingPhoneNumber ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  {translate('savePhoneNumberButton')}
+                </Button>
+              </div>
+          </div>
           {/* School Identifier Code Setting */}
           <div className="space-y-2">
-            <Label htmlFor="schoolCodeInput" className="text-sm font-medium">{translate('setSchoolCodeLabel')}</Label>
+            <Label htmlFor="schoolCodeInput" className="text-sm font-medium flex items-center gap-1"><KeyRound className="h-4 w-4"/>{translate('setSchoolCodeLabel')}</Label>
             <div className="flex items-center gap-2 mt-1">
               <Input
                 id="schoolCodeInput"

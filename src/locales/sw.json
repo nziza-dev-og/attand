@@ -388,5 +388,18 @@
   "dismissAd": "Kataa tangazo",
   "previousAd": "Tangazo lililopita",
   "nextAd": "Tangazo linalofuata",
-  "redirectingText": "Inaelekeza..."
+  "redirectingText": "Inaelekeza...",
+  "phoneNumberLabel": "Nambari ya Simu",
+  "setSchoolPhoneNumberLabel": "Weka Nambari ya Simu ya Shule",
+  "enterSchoolPhoneNumberPlaceholder": "Weka nambari ya simu ya shule",
+  "savePhoneNumberButton": "Hifadhi Nambari",
+  "phoneNumberSavedTitle": "Nambari ya Simu Imehifadhiwa",
+  "phoneNumberSavedDesc": "Nambari ya simu ya shule imesasishwa.",
+  "phoneNumberSaveFailed": "Imeshindwa kuhifadhi nambari ya simu.",
+  "currentSchoolPhoneNumberLabel": "Nambari ya Simu ya Shule ya Sasa",
+  "schoolAdminContactTitle": "Mawasiliano ya Msimamizi wa Shule",
+  "schoolAdminContactDesc": "Maelezo ya mawasiliano ya msimamizi wa shule yako.",
+  "schoolInfoContactDesc": "Maelezo ya mawasiliano ya shule ya mtoto wako.",
+  "adminPhoneNumberNotSet": "Msimamizi wa shule hajaweka nambari ya simu.",
+  "errorLoadingAdminDetails": "Imeshindwa kupakia maelezo ya msimamizi wa shule."
 }

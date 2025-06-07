@@ -6,12 +6,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { User, CalendarDays, BarChart3, Loader2, ImageIcon, Save, UserCircle } from "lucide-react";
+import { User, CalendarDays, BarChart3, Loader2, ImageIcon, Save, UserCircle, Info } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { db, auth } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, getDoc, collectionGroup, Timestamp, updateDoc } from 'firebase/firestore';
 import { updateProfile } from "firebase/auth";
-import type { Student, AttendanceRecord, Parent } from '@/lib/types';
+import type { Student, AttendanceRecord, Parent, UserProfile } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,13 @@ interface ChildWithAttendance extends Student {
     attendancePercentage: number;
 }
 
+interface SchoolAdminDetails {
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  schoolName?: string;
+}
+
 
 export default function ParentDashboard() {
     const { user: authUser, loading: authLoading } = useAuth();
@@ -51,6 +58,9 @@ export default function ParentDashboard() {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [schoolAdminDetails, setSchoolAdminDetails] = useState<SchoolAdminDetails | null>(null);
+    const [loadingAdminDetails, setLoadingAdminDetails] = useState(false);
+
 
     useEffect(() => {
         const fetchParentAndChildrenData = async () => {
@@ -58,6 +68,7 @@ export default function ParentDashboard() {
                  if (!authLoading && !authUser) {
                     setLoadingData(false);
                     setLoadingProfile(false);
+                    setLoadingAdminDetails(false);
                  }
                 return;
             }
@@ -72,6 +83,7 @@ export default function ParentDashboard() {
                     setError(translate('parentProfileError') || "Parent profile not found or user is not a parent.");
                     setLoadingData(false);
                     setLoadingProfile(false);
+                    setLoadingAdminDetails(false);
                     return;
                 }
 
@@ -81,13 +93,47 @@ export default function ParentDashboard() {
                 setNewAvatarUrlInput(parentData.avatarUrl || authUser.photoURL || "");
                 setLoadingProfile(false);
 
+                // Fetch School Admin Details if parentData.schoolId exists
+                if (parentData.schoolId) {
+                  setLoadingAdminDetails(true);
+                  try {
+                    const adminDocRef = doc(db, 'users', parentData.schoolId);
+                    const adminDocSnap = await getDoc(adminDocRef);
+                    if (adminDocSnap.exists()) {
+                      const adminData = adminDocSnap.data() as UserProfile;
+                      setSchoolAdminDetails({
+                        name: adminData.name,
+                        email: adminData.email,
+                        phoneNumber: adminData.phoneNumber,
+                        schoolName: adminData.schoolName,
+                      });
+                    } else {
+                      console.warn(`Admin details not found for schoolId: ${parentData.schoolId}`);
+                      setSchoolAdminDetails(null);
+                    }
+                  } catch (adminError) {
+                    console.error("Error fetching school admin details for parent:", adminError);
+                    setSchoolAdminDetails(null);
+                    toast({ variant: "destructive", title: translate('errorTitle'), description: translate('errorLoadingAdminDetails')});
+                  } finally {
+                    setLoadingAdminDetails(false);
+                  }
+                } else {
+                    // If no schoolId on parent, try to get it from the first child's schoolId if children exist
+                    // This is a fallback if parent isn't directly associated via school code at signup
+                }
+
+
                 const childIds = parentData.childIds || [];
 
                 if (childIds.length === 0) {
                     setChildrenData([]);
                     setLoadingData(false);
+                    if (!parentData.schoolId) setLoadingAdminDetails(false); // Ensure admin loading stops if no children and no parent schoolId
                     return;
                 }
+
+                let firstChildSchoolId: string | null = null;
 
                 const childrenPromises = childIds.map(async (childId) => {
                     try {
@@ -99,7 +145,11 @@ export default function ParentDashboard() {
                              return null; 
                          }
 
-                         const studentData = studentDocSnap.data();
+                         const studentData = studentDocSnap.data() as Student; // Explicitly cast
+                         if (!firstChildSchoolId && studentData.schoolId) {
+                            firstChildSchoolId = studentData.schoolId;
+                         }
+
                          const attendanceQuery = query(
                              collection(db, 'attendanceRecords'),
                              where('studentId', '==', childId)
@@ -116,6 +166,7 @@ export default function ParentDashboard() {
                              createdAt: studentData.createdAt as Timestamp, 
                              avatarUrl: studentData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(studentData.name || 'U')}&background=random`, 
                              attendancePercentage: attendancePercentage,
+                             schoolId: studentData.schoolId, // Keep schoolId from student
                          } as ChildWithAttendance;
 
                     } catch (childError) {
@@ -127,15 +178,48 @@ export default function ParentDashboard() {
                  const resolvedChildren = (await Promise.all(childrenPromises)).filter(child => child !== null) as ChildWithAttendance[];
                  setChildrenData(resolvedChildren);
 
+                 // If admin details weren't fetched via parent.schoolId, try with first child's schoolId
+                 if (!parentData.schoolId && firstChildSchoolId && !schoolAdminDetails) {
+                    setLoadingAdminDetails(true);
+                    try {
+                        const adminDocRef = doc(db, 'users', firstChildSchoolId);
+                        const adminDocSnap = await getDoc(adminDocRef);
+                        if (adminDocSnap.exists()) {
+                          const adminData = adminDocSnap.data() as UserProfile;
+                          setSchoolAdminDetails({
+                            name: adminData.name,
+                            email: adminData.email,
+                            phoneNumber: adminData.phoneNumber,
+                            schoolName: adminData.schoolName,
+                          });
+                        } else {
+                          setSchoolAdminDetails(null);
+                        }
+                    } catch (adminError) {
+                        console.error("Error fetching admin details via child's schoolId:", adminError);
+                        setSchoolAdminDetails(null);
+                    } finally {
+                        setLoadingAdminDetails(false);
+                    }
+                 } else if (!parentData.schoolId && !firstChildSchoolId) {
+                    setLoadingAdminDetails(false); // No school ID from parent or children
+                 }
+
+
             } catch (err) {
                 console.error("Error fetching parent/children data:", err);
                 setError(translate('dashboardLoadError') || "Failed to load dashboard data.");
             } finally {
                 setLoadingData(false);
+                // Ensure loadingAdminDetails is set to false if not already handled
+                if (loadingAdminDetails && !schoolAdminDetails) { 
+                    setLoadingAdminDetails(false);
+                }
             }
         };
 
         fetchParentAndChildrenData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authUser, authLoading, translate]);
 
 
@@ -172,7 +256,7 @@ export default function ParentDashboard() {
         }
       };
 
-     const isLoading = authLoading || loadingData || loadingProfile; 
+     const isLoading = authLoading || loadingData || loadingProfile || loadingAdminDetails; 
 
      if (isLoading) { 
         return (
@@ -203,7 +287,7 @@ export default function ParentDashboard() {
 
 
     return (
-    <div className="grid gap-6">
+    <div className="grid auto-rows-auto gap-6">
        <Card>
            <CardHeader>
                <CardTitle>{translate('welcomeMessage', { name: parentName })}</CardTitle>
@@ -258,11 +342,29 @@ export default function ParentDashboard() {
          </Card>
         )}
 
+      {schoolAdminDetails && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> {translate('schoolAdminContactTitle')}</CardTitle>
+            <CardDescription>{translate('schoolInfoContactDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-1 text-sm">
+            <p><strong>{translate('schoolNameLabel')}:</strong> {schoolAdminDetails.schoolName || schoolAdminDetails.name || translate('notSetPlaceholder')}</p>
+            <p><strong>{translate('adminEmailLabel')}:</strong> {schoolAdminDetails.email || translate('notSetPlaceholder')}</p>
+            {schoolAdminDetails.phoneNumber ? (
+              <p><strong>{translate('phoneNumberLabel')}:</strong> {schoolAdminDetails.phoneNumber}</p>
+            ) : (
+              <p className="text-muted-foreground">{translate('adminPhoneNumberNotSet')}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Parent Profile Picture Update Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> Your Profile</CardTitle>
-          <CardDescription>Update your profile picture.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> {translate('myProfileTitle')}</CardTitle>
+          <CardDescription>{translate('myProfileDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
@@ -276,7 +378,7 @@ export default function ParentDashboard() {
                 </div>
             </div>
             <div className="space-y-2">
-                <Label htmlFor="avatarUrlInputParent" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> New Avatar URL</Label>
+                <Label htmlFor="avatarUrlInputParent" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> {translate('avatarUrlLabel')}</Label>
                 <Input
                     id="avatarUrlInputParent"
                     type="url"
@@ -284,13 +386,13 @@ export default function ParentDashboard() {
                     onChange={(e) => setNewAvatarUrlInput(e.target.value)}
                     placeholder="https://example.com/your-avatar.png"
                 />
-                 <p className="text-xs text-muted-foreground">Enter a valid image URL (e.g., ending in .png, .jpg).</p>
+                 <p className="text-xs text-muted-foreground">{translate('avatarUrlHint')}</p>
             </div>
         </CardContent>
         <CardFooter>
             <Button onClick={handleUpdateParentAvatar} disabled={isUpdatingAvatar || authLoading}>
                 {isUpdatingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <Save className="mr-2 h-4 w-4" /> Save Profile Picture
+                <Save className="mr-2 h-4 w-4" /> {translate('saveProfilePictureButton')}
             </Button>
         </CardFooter>
       </Card>
@@ -299,3 +401,4 @@ export default function ParentDashboard() {
 }
 
     
+
