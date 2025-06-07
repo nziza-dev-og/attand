@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "학교 관리자 연락처 정보입니다.",
   "schoolInfoContactDesc": "자녀 학교 연락처 정보입니다.",
   "adminPhoneNumberNotSet": "학교 관리자가 전화번호를 설정하지 않았습니다.",
-  "errorLoadingAdminDetails": "학교 관리자 세부 정보 로드 실패."
+  "errorLoadingAdminDetails": "학교 관리자 세부 정보 로드 실패.",
+  "profileAndSchoolSettingsTitle": "프로필 및 학교 설정",
+  "profileAndSchoolSettingsDesc": "표시 이름, 프로필 사진을 업데이트하고 학교 이름, 연락처, 등록 코드와 같은 일반적인 학교 설정을 관리합니다."
 }
+

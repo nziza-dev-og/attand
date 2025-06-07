@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "Coordonnées de l'administrateur de votre école.",
   "schoolInfoContactDesc": "Coordonnées de l'école de votre enfant.",
   "adminPhoneNumberNotSet": "L'administrateur de l'école n'a pas défini de numéro de téléphone.",
-  "errorLoadingAdminDetails": "Échec du chargement des détails de l'administrateur de l'école."
+  "errorLoadingAdminDetails": "Échec du chargement des détails de l'administrateur de l'école.",
+  "profileAndSchoolSettingsTitle": "Profil et Paramètres de l'École",
+  "profileAndSchoolSettingsDesc": "Mettez à jour votre nom d'affichage, votre photo de profil et gérez les paramètres généraux de votre école tels que le nom, les coordonnées et le code d'inscription."
 }
+

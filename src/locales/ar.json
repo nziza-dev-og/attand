@@ -279,7 +279,7 @@
   "studentManagementSuccessAvatarTitle": "نجاح",
   "studentManagementSuccessAvatarDesc": "تم تحديث صورة الطالب بنجاح.",
   "studentManagementErrorAvatarUpdateFailed": "فشل تحديث الصورة الرمزية.",
-  "studentManagementPageDesc": "إضافة أو عرض أو تعديل سجلات الطلاب لمدرستك.",
+  "studentManagementPageDesc": "إضافة أو عرض أو تعديل سجلات الطلاب لمدرستك。",
   "studentManagementPageDescClassified": "عرض الطلاب المصنفين حسب الفصل، إضافة طلاب جدد، أو استيرادهم.",
   "studentImportButtonTitle": "استيراد الطلاب",
   "studentManagementAddStudentButton": "إضافة طالب",
@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "معلومات الاتصال بمسؤول مدرستك.",
   "schoolInfoContactDesc": "معلومات الاتصال بمدرسة طفلك.",
   "adminPhoneNumberNotSet": "لم يقم مسؤول المدرسة بتعيين رقم هاتف.",
-  "errorLoadingAdminDetails": "فشل تحميل تفاصيل مسؤول المدرسة."
+  "errorLoadingAdminDetails": "فشل تحميل تفاصيل مسؤول المدرسة.",
+  "profileAndSchoolSettingsTitle": "الملف الشخصي وإعدادات المدرسة",
+  "profileAndSchoolSettingsDesc": "تحديث اسم العرض الخاص بك، صورة الملف الشخصي، وإدارة الإعدادات العامة لمدرستك مثل الاسم، معلومات الاتصال، ورمز التسجيل."
 }
+

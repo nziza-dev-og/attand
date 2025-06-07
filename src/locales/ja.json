@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "学校の管理者の連絡先情報。",
   "schoolInfoContactDesc": "お子様の学校の連絡先情報。",
   "adminPhoneNumberNotSet": "学校管理者は電話番号を設定していません。",
-  "errorLoadingAdminDetails": "学校管理者の詳細情報の読み込みに失敗しました。"
+  "errorLoadingAdminDetails": "学校管理者の詳細情報の読み込みに失敗しました。",
+  "profileAndSchoolSettingsTitle": "プロフィールと学校設定",
+  "profileAndSchoolSettingsDesc": "表示名、プロフィール写真を更新し、学校名、連絡先、登録コードなどの学校の一般設定を管理します。"
 }
+

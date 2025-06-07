@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; 
 import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -254,8 +255,6 @@ export default function AdminDashboard() {
 
   const handleSavePhoneNumber = async () => {
     if (!authUser) return;
-    // Optional: Add phone number validation if needed
-    // e.g., if (!/^\+?[1-9]\d{1,14}$/.test(phoneNumberInput.trim())) { ... }
     setIsSavingPhoneNumber(true);
     try {
       const userDocRef = doc(db, 'users', authUser.uid);
@@ -366,116 +365,115 @@ export default function AdminDashboard() {
          </CardContent>
       </Card>
 
-      {/* School Settings Card */}
-       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" /> {translate('schoolSettingsTitle') || 'School Settings'}</CardTitle>
-          <CardDescription>{translate('adminSchoolSettingsDesc') || "Manage your school's name and unique identifier code for teacher registration."}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* School Name Setting */}
-          <div className="space-y-2">
-             <Label htmlFor="schoolNameInput" className="text-sm font-medium flex items-center gap-1"><Building className="h-4 w-4"/>{translate('setSchoolNameLabel')}</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="schoolNameInput"
-                  value={schoolNameInput}
-                  onChange={(e) => setSchoolNameInput(e.target.value)}
-                  placeholder={translate('enterSchoolNamePlaceholder')}
-                  className="flex-1"
-                />
-                <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !authUser}>
-                  {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  {translate('saveSchoolNameButton')}
-                </Button>
-              </div>
-          </div>
-          {/* School Phone Number Setting */}
-          <div className="space-y-2">
-             <Label htmlFor="phoneNumberInput" className="text-sm font-medium flex items-center gap-1"><Phone className="h-4 w-4"/>{translate('setSchoolPhoneNumberLabel')}</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="phoneNumberInput"
-                  type="tel" 
-                  value={phoneNumberInput}
-                  onChange={(e) => setPhoneNumberInput(e.target.value)}
-                  placeholder={translate('enterSchoolPhoneNumberPlaceholder')}
-                  className="flex-1"
-                />
-                <Button onClick={handleSavePhoneNumber} disabled={isSavingPhoneNumber || !authUser}>
-                  {isSavingPhoneNumber ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  {translate('savePhoneNumberButton')}
-                </Button>
-              </div>
-          </div>
-          {/* School Identifier Code Setting */}
-          <div className="space-y-2">
-            <Label htmlFor="schoolCodeInput" className="text-sm font-medium flex items-center gap-1"><KeyRound className="h-4 w-4"/>{translate('setSchoolCodeLabel')}</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <Input
-                id="schoolCodeInput"
-                value={schoolCodeInput}
-                onChange={(e) => setSchoolCodeInput(e.target.value)}
-                placeholder={translate('enterSchoolCodePlaceholder')}
-                className="flex-1"
-              />
-              <Button onClick={handleSaveSchoolCode} disabled={isSavingCode || !authUser}>
-                {isSavingCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                {translate('saveSchoolCodeButton')}
-              </Button>
-            </div>
-          </div>
-          {schoolIdentifierCode && (
-            <div>
-              <Label className="text-sm font-medium">{translate('currentSchoolCodeLabel')}</Label>
-              <div className="flex items-center justify-between p-3 mt-1 border rounded-md bg-secondary">
-                <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
-                <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
-                  <Copy className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Admin Profile Card */}
+      {/* Admin Profile & School Settings Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> {translate('myProfileTitle') || 'Your Profile'}</CardTitle>
-          <CardDescription>{translate('myProfileDesc') || 'Update your display name and profile picture.'}</CardDescription>
+          <CardTitle className="flex items-center gap-2"><UserCircle className="h-6 w-6"/> {translate('profileAndSchoolSettingsTitle')}</CardTitle>
+          <CardDescription>{translate('profileAndSchoolSettingsDesc')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-                <Avatar className="h-20 w-20">
-                    <AvatarImage src={adminAvatarUrl} />
-                    <AvatarFallback>{getInitials(adminName)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                    <p className="text-xl font-medium">{adminName}</p>
-                    <p className="text-sm text-muted-foreground">{authUser?.email}</p>
+        <CardContent className="space-y-6">
+            {/* Profile Section */}
+            <div className="space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2"><UserCircle className="h-5 w-5 text-primary"/>{translate('myProfileTitle')}</h3>
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20">
+                        <AvatarImage src={adminAvatarUrl} />
+                        <AvatarFallback>{getInitials(adminName)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                        <p className="text-xl font-medium">{adminName}</p>
+                        <p className="text-sm text-muted-foreground">{authUser?.email}</p>
+                    </div>
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="avatarUrlInput" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> {translate('avatarUrlLabel') || 'New Avatar URL'}</Label>
+                    <Input
+                        id="avatarUrlInput"
+                        type="url"
+                        value={newAvatarUrlInput}
+                        onChange={(e) => setNewAvatarUrlInput(e.target.value)}
+                        placeholder="https://example.com/your-avatar.png"
+                    />
+                    <p className="text-xs text-muted-foreground">{translate('avatarUrlHint') || 'Enter a valid image URL (e.g., ending in .png, .jpg).'}</p>
+                </div>
+                 <Button onClick={handleUpdateAdminAvatar} disabled={isUpdatingAvatar || authLoading} size="sm">
+                    {isUpdatingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <Save className="mr-2 h-4 w-4" /> {translate('saveProfilePictureButton') || 'Save Profile Picture'}
+                </Button>
             </div>
-            <div className="space-y-2">
-                <Label htmlFor="avatarUrlInput" className="flex items-center gap-1"><ImageIcon className="h-4 w-4"/> {translate('avatarUrlLabel') || 'New Avatar URL'}</Label>
-                <Input
-                    id="avatarUrlInput"
-                    type="url"
-                    value={newAvatarUrlInput}
-                    onChange={(e) => setNewAvatarUrlInput(e.target.value)}
-                    placeholder="https://example.com/your-avatar.png"
-                />
-                 <p className="text-xs text-muted-foreground">{translate('avatarUrlHint') || 'Enter a valid image URL (e.g., ending in .png, .jpg).'}</p>
+
+            <Separator />
+
+            {/* School Settings Section */}
+             <div className="space-y-6">
+                <h3 className="text-lg font-medium flex items-center gap-2"><Settings className="h-5 w-5 text-primary"/>{translate('schoolSettingsTitle')}</h3>
+                {/* School Name Setting */}
+                <div className="space-y-2">
+                    <Label htmlFor="schoolNameInput" className="text-sm font-medium flex items-center gap-1"><Building className="h-4 w-4"/>{translate('setSchoolNameLabel')}</Label>
+                    <div className="flex items-center gap-2">
+                        <Input
+                        id="schoolNameInput"
+                        value={schoolNameInput}
+                        onChange={(e) => setSchoolNameInput(e.target.value)}
+                        placeholder={translate('enterSchoolNamePlaceholder')}
+                        className="flex-1"
+                        />
+                        <Button onClick={handleSaveSchoolName} disabled={isSavingSchoolName || !authUser} size="sm">
+                        {isSavingSchoolName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {translate('saveSchoolNameButton')}
+                        </Button>
+                    </div>
+                </div>
+                {/* School Phone Number Setting */}
+                <div className="space-y-2">
+                    <Label htmlFor="phoneNumberInput" className="text-sm font-medium flex items-center gap-1"><Phone className="h-4 w-4"/>{translate('setSchoolPhoneNumberLabel')}</Label>
+                    <div className="flex items-center gap-2">
+                        <Input
+                        id="phoneNumberInput"
+                        type="tel" 
+                        value={phoneNumberInput}
+                        onChange={(e) => setPhoneNumberInput(e.target.value)}
+                        placeholder={translate('enterSchoolPhoneNumberPlaceholder')}
+                        className="flex-1"
+                        />
+                        <Button onClick={handleSavePhoneNumber} disabled={isSavingPhoneNumber || !authUser} size="sm">
+                        {isSavingPhoneNumber ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {translate('savePhoneNumberButton')}
+                        </Button>
+                    </div>
+                </div>
+                {/* School Identifier Code Setting */}
+                <div className="space-y-2">
+                    <Label htmlFor="schoolCodeInput" className="text-sm font-medium flex items-center gap-1"><KeyRound className="h-4 w-4"/>{translate('setSchoolCodeLabel')}</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                    <Input
+                        id="schoolCodeInput"
+                        value={schoolCodeInput}
+                        onChange={(e) => setSchoolCodeInput(e.target.value)}
+                        placeholder={translate('enterSchoolCodePlaceholder')}
+                        className="flex-1"
+                    />
+                    <Button onClick={handleSaveSchoolCode} disabled={isSavingCode || !authUser} size="sm">
+                        {isSavingCode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {translate('saveSchoolCodeButton')}
+                    </Button>
+                    </div>
+                </div>
+                {schoolIdentifierCode && (
+                    <div>
+                    <Label className="text-sm font-medium">{translate('currentSchoolCodeLabel')}</Label>
+                    <div className="flex items-center justify-between p-3 mt-1 border rounded-md bg-secondary">
+                        <span className="text-lg font-mono tracking-wider">{schoolIdentifierCode}</span>
+                        <Button variant="ghost" size="icon" onClick={handleCopyCode} title={translate('copyCodeButton')}>
+                        <Copy className="h-5 w-5" />
+                        </Button>
+                    </div>
+                    </div>
+                )}
             </div>
         </CardContent>
-        <CardFooter>
-            <Button onClick={handleUpdateAdminAvatar} disabled={isUpdatingAvatar || authLoading}>
-                {isUpdatingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <Save className="mr-2 h-4 w-4" /> {translate('saveProfilePictureButton') || 'Save Profile Picture'}
-            </Button>
-        </CardFooter>
+        {/* No CardFooter needed for this combined card as save buttons are inline */}
       </Card>
     </div>
   );
 }
-

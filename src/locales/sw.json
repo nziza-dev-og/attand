@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "Maelezo ya mawasiliano ya msimamizi wa shule yako.",
   "schoolInfoContactDesc": "Maelezo ya mawasiliano ya shule ya mtoto wako.",
   "adminPhoneNumberNotSet": "Msimamizi wa shule hajaweka nambari ya simu.",
-  "errorLoadingAdminDetails": "Imeshindwa kupakia maelezo ya msimamizi wa shule."
+  "errorLoadingAdminDetails": "Imeshindwa kupakia maelezo ya msimamizi wa shule.",
+  "profileAndSchoolSettingsTitle": "Wasifu na Mipangilio ya Shule",
+  "profileAndSchoolSettingsDesc": "Sasisha jina lako la kuonyesha, picha ya wasifu, na udhibiti mipangilio ya jumla ya shule yako kama vile jina, mawasiliano, na nambari ya usajili."
 }
+

@@ -401,5 +401,8 @@
   "schoolAdminContactDesc": "Amakuru y'ubuyobozi bw'ishuri ryawe.",
   "schoolInfoContactDesc": "Amakuru y'ishuri ry'umwana wawe.",
   "adminPhoneNumberNotSet": "Ubuyobozi bw'ishuri ntibwashyizeho nimero ya telefone.",
-  "errorLoadingAdminDetails": "Kunanirwa gutwara amakuru y'ubuyobozi bw'ishuri."
+  "errorLoadingAdminDetails": "Kunanirwa gutwara amakuru y'ubuyobozi bw'ishuri.",
+  "profileAndSchoolSettingsTitle": "Porofayili & Ibikoresho by'Ishuri",
+  "profileAndSchoolSettingsDesc": "Hindura izina ryawe, ifoto ya porofayili, kandi ucunge ibikoresho rusange by'ishuri ryawe nka izina, amakuru yo guhamagara, na kode yo kwiyandikisha."
 }
+
