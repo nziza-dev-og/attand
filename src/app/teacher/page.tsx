@@ -12,6 +12,7 @@ import { db } from '@/lib/firebase';
 import type { Teacher, UserProfile } from '@/lib/types'; 
 import { useLanguage } from '@/contexts/LanguageContext'; 
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast"; // Added missing import
 
 interface SchoolAdminDetails {
   name?: string;
@@ -74,7 +75,7 @@ export default function TeacherDashboard() {
               } catch (adminError) {
                 console.error("Error fetching school admin details:", adminError);
                 setSchoolAdminDetails(null);
-                toast({ variant: "destructive", title: translate('errorTitle'), description: translate('errorLoadingAdminDetails') });
+                toast({ variant: "destructive", title: translate('errorTitle'), description: translate('errorLoadingAdminDetails')});
               } finally {
                 setLoadingAdminDetails(false);
               }
