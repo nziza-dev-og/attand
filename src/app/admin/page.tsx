@@ -1,9 +1,9 @@
 
 "use client"; 
 
+import Link from 'next/link'; // Ensured Link is imported
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone } from "lucide-react";
-import Link from 'next/link'; // Added import for Link
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone, KeyRound, Info } from "lucide-react"; // Added KeyRound
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -14,13 +14,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button"; 
 import { Input } from "@/components/ui/input"; 
 import { Label } from "@/components/ui/label"; 
-import { useToast } from "@/hooks/use-toast"; 
+import { useToast } from "@/hooks/use-toast"; // Ensured useToast is imported
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; 
 import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-// Removed getInitials as it's not used directly here anymore
 
 async function getCollectionCountForSchool(collectionName: string, schoolId: string, role?: 'Student' | 'Teacher' | 'Parent' | 'Admin'): Promise<number> {
   try {
@@ -77,11 +76,11 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const { translate } = useLanguage();
   const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth(); 
-  const { toast } = useToast();
+  const { toast } = useToast(); // Ensured useToast is called correctly
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
-  const [adminSchoolName, setAdminSchoolName] = useState<string>(""); // Only need to display school name
+  const [adminSchoolName, setAdminSchoolName] = useState<string>(""); 
   const [loadingSchoolName, setLoadingSchoolName] = useState(true);
   
 
@@ -113,10 +112,10 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchAdminSchoolName = async () => {
-      if (authUser && adminSchoolId) { // Ensure adminSchoolId is also available (it should be if authUser is Admin)
+      if (authUser && adminSchoolId) { 
         setLoadingSchoolName(true);
         try {
-          const userDocRef = doc(db, 'users', authUser.uid); // Admin's doc
+          const userDocRef = doc(db, 'users', authUser.uid); 
           const userDocSnap = await getDoc(userDocRef);
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
@@ -124,7 +123,6 @@ export default function AdminDashboard() {
           }
         } catch (error) {
           console.error("Error fetching admin school name:", error);
-          // Toast handled by profile page if settings load fails there
         } finally {
           setLoadingSchoolName(false);
         }
