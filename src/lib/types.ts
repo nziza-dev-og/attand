@@ -107,3 +107,23 @@ export interface BehaviorReport {
   schoolId: string; // schoolId of the school this report belongs to
 }
 
+export interface Advertisement {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  linkUrl?: string;
+  isActive: boolean;
+  createdAt: Timestamp;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  creatorId: string;
+  creatorName: string; 
+  creatorRole: Role;
+  isActive: boolean;
+  createdAt: Timestamp;
+}

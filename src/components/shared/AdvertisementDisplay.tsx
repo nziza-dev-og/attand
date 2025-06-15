@@ -9,9 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Megaphone, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react'; // Added Chevron icons
+import { Megaphone, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 interface Advertisement {
@@ -29,23 +29,27 @@ export function AdvertisementDisplay() {
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const { translate } = useLanguage();
 
   useEffect(() => {
     const fetchAds = async () => {
       setLoading(true);
-      setIsVisible(true); 
+      setIsVisible(true);
       try {
         const q = query(
           collection(db, "advertisements"),
           where("isActive", "==", true),
           orderBy("createdAt", "desc")
-          // Removed limit(1) to fetch all active ads
         );
         const querySnapshot = await getDocs(q);
-        const fetchedAds = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Advertisement));
+        const fetchedAds = querySnapshot.docs.map(doc => ({ 
+            id: doc.id, 
+            ...doc.data(),
+            createdAt: doc.data().createdAt as Timestamp // Ensure correct type
+        } as Advertisement));
         setAds(fetchedAds);
-        setCurrentAdIndex(0); // Reset to first ad
+        setCurrentAdIndex(0);
       } catch (error) {
         console.error("Error fetching advertisements:", error);
         setAds([]);
@@ -57,17 +61,42 @@ export function AdvertisementDisplay() {
     fetchAds();
   }, []);
 
+  useEffect(() => {
+    if (ads.length <= 1) return; // No need to cycle if 0 or 1 ad
+
+    const cycleInterval = setInterval(() => {
+      setIsFadingOut(true);
+      setTimeout(() => {
+        setCurrentAdIndex((prevIndex) => (prevIndex + 1) % ads.length);
+        setIsFadingOut(false);
+      }, 500); // Match fade-out duration
+    }, 7000); // Change ad every 7 seconds (500ms fade + 6.5s display)
+
+    return () => clearInterval(cycleInterval);
+  }, [ads]);
+
   const handleDismiss = () => {
     setIsVisible(false);
   };
 
   const handleNextAd = () => {
-    setCurrentAdIndex((prevIndex) => (prevIndex + 1) % ads.length);
+     if (ads.length === 0) return;
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setCurrentAdIndex((prevIndex) => (prevIndex + 1) % ads.length);
+      setIsFadingOut(false);
+    }, 300); // Shorter duration for manual navigation
   };
 
   const handlePrevAd = () => {
-    setCurrentAdIndex((prevIndex) => (prevIndex - 1 + ads.length) % ads.length);
+    if (ads.length === 0) return;
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setCurrentAdIndex((prevIndex) => (prevIndex - 1 + ads.length) % ads.length);
+      setIsFadingOut(false);
+    }, 300);
   };
+
 
   if (loading) {
     return (
@@ -79,12 +108,12 @@ export function AdvertisementDisplay() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-32 w-full" /> {/* Placeholder for image */}
+          <Skeleton className="h-4 w-full" /> {/* Placeholder for description line 1 */}
+          <Skeleton className="h-4 w-2/3" /> {/* Placeholder for description line 2 */}
         </CardContent>
         <CardFooter className="pt-0">
-          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-24" /> {/* Placeholder for button */}
         </CardFooter>
       </Card>
     );
@@ -97,7 +126,10 @@ export function AdvertisementDisplay() {
   const currentAd = ads[currentAdIndex];
 
   return (
-    <Card className="relative mb-6 border-primary/50 bg-primary/5 shadow-lg animate-in fade-in-50 slide-in-from-top-10 duration-500">
+    <Card className={cn(
+        "relative mb-6 border-primary/50 bg-primary/5 shadow-lg overflow-hidden",
+        `transition-opacity duration-500 ease-in-out ${isFadingOut ? 'opacity-0' : 'opacity-100'}`
+      )}>
       <Button
         variant="ghost"
         size="icon"
@@ -123,12 +155,13 @@ export function AdvertisementDisplay() {
               fill
               className="object-cover"
               data-ai-hint="advertisement image"
+              priority={currentAdIndex === 0} // Prioritize loading the first image
             />
           </div>
         )}
-        <p className="text-sm text-foreground/80">{currentAd.description}</p>
+        <p className="text-sm text-foreground/80 min-h-[40px]">{currentAd.description}</p>
       </CardContent>
-      <CardFooter className={cn("pt-0", ads.length > 1 ? "flex justify-between items-center" : "")}>
+      <CardFooter className={cn("pt-3 pb-4", ads.length > 1 ? "flex justify-between items-center" : "flex justify-start")}>
         {currentAd.linkUrl && (
           <Button asChild variant="outline" size="sm">
             <Link href={currentAd.linkUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
@@ -136,17 +169,16 @@ export function AdvertisementDisplay() {
             </Link>
           </Button>
         )}
-         {ads.length > 1 && <div className={!currentAd.linkUrl ? "ml-auto" : ""}></div>} 
-         {/* Spacer if only nav buttons */}
+        {ads.length > 1 && <div className={!currentAd.linkUrl ? "ml-auto" : ""}></div>} {/* Spacer if only nav buttons */}
         {ads.length > 1 && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={handlePrevAd} aria-label={translate('previousAd') || 'Previous ad'}>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={handlePrevAd} aria-label={translate('previousAd') || 'Previous ad'} className="h-8 w-8">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground mx-1">
               {currentAdIndex + 1} / {ads.length}
             </span>
-            <Button variant="outline" size="icon" onClick={handleNextAd} aria-label={translate('nextAd') || 'Next ad'}>
+            <Button variant="ghost" size="icon" onClick={handleNextAd} aria-label={translate('nextAd') || 'Next ad'} className="h-8 w-8">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

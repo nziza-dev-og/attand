@@ -8,7 +8,8 @@ import {
   Users,
   UserCircle,
   ShieldAlert,
-  Megaphone // Added for Advertisements
+  Megaphone, // Added for Advertisements
+  Speaker, // Icon for Announcements
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -33,7 +34,8 @@ export function SuperAdminSidebar({ isMobileSheet = false }: SuperAdminSidebarPr
     { href: "/superadmin", icon: LayoutDashboard, labelKey: "dashboard", srOnlyKey: "dashboard" },
     { href: "/superadmin/schools", icon: School, labelKey: "manageSchools", srOnlyKey: "manageSchools" },
     { href: "/superadmin/users", icon: Users, labelKey: "manageAllUsers", srOnlyKey: "manageAllUsers" },
-    { href: "/superadmin/advertisements", icon: Megaphone, labelKey: "manageAdvertisements", srOnlyKey: "manageAdvertisements" }, // New Ad Management Link
+    { href: "/superadmin/advertisements", icon: Megaphone, labelKey: "manageAdvertisements", srOnlyKey: "manageAdvertisements" }, 
+    { href: "/superadmin/announcements", icon: Speaker, labelKey: "manageAnnouncements", srOnlyKey: "manageAnnouncements" },
     { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"},
   ];
 
