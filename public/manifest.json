@@ -1,4 +1,3 @@
-
 {
   "name": "AttendEase",
   "short_name": "AttendEase",
@@ -17,9 +16,10 @@
       "purpose": "any maskable"
     }
   ],
+  "theme_color": "#E0F7FA",
+  "background_color": "#F5F5F5",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#E0F7FA",
-  "theme_color": "#008080",
+  "orientation": "portrait",
   "scope": "/"
 }

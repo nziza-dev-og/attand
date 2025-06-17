@@ -16,11 +16,25 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   title: 'AttendEase',
   description: 'Streamlined attendance tracking for schools.',
-  icons: {
-    icon: '/favicon.ico', // Explicitly point to favicon.ico in the public directory
-    // apple: '/apple-icon.png', // Example for Apple touch icon
+  manifest: "/manifest.json",
+  themeColor: [ // Support for light and dark mode theme-color
+    { media: '(prefers-color-scheme: light)', color: '#E0F7FA' }, // Light Blue for light mode
+    { media: '(prefers-color-scheme: dark)', color: '#005060' }, // A darker teal/blue for dark mode status bar
+  ],
+  appleWebApp: {
+    capable: true,
+    title: "AttendEase",
+    statusBarStyle: "default", // You can also use "black" or "black-translucent"
   },
-  manifest: "/manifest.json", // Add this for PWA capabilities / Service Worker
+  icons: {
+    icon: '/favicon.ico', // Standard favicon
+    apple: '/icons/apple-touch-icon.png', // Apple touch icon
+  },
+  // Helps prevent issues with touch delays on some mobile browsers
+  // viewport: 'width=device-width, initial-scale=1, viewport-fit=cover', // Already good practice in Next.js
+  // For PWA, it's good to ensure mobile-web-app-capable is set
+  // This is handled by appleWebApp.capable for iOS.
+  // For Android, the manifest's display: "standalone" handles this.
 };
 
 export default function RootLayout({
