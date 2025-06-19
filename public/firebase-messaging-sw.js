@@ -1,69 +1,60 @@
+// public/firebase-messaging-sw.js
+// Scripts for firebase and firebase messaging
+import { initializeApp } from "firebase/app";
+import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 
-// Scripts for Firebase and Firebase Messaging
-// IMPORTANT: Use specific versions matching your project's Firebase SDK version
-// For example, if your project uses Firebase v9.x.x, use compat scripts for v9.x.x.
-// If using v10 or later, the SDK setup is slightly different.
-// Assuming compat scripts for wide compatibility as per current firebase.ts structure.
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
-
-// Initialize the Firebase app in the service worker.
-// IMPORTANT: These values MUST be hardcoded or fetched from a config file.
-// They CANNOT use process.env at runtime in the browser's service worker.
-// Using the fallback values from your src/lib/firebase.ts as an example.
-// REPLACE THESE WITH YOUR ACTUAL FIREBASE CONFIG VALUES.
+// Your web app's Firebase configuration
+// Fallbacks are provided if environment variables are not set or replaced at build time.
 const firebaseConfig = {
-  apiKey: "AIzaSyCG5PTHBhiIr3kGoB_Ip0CWpnydmEgriok",
-  authDomain: "attandence-ce454.firebaseapp.com",
-  projectId: "attandence-ce454",
-  storageBucket: "attandence-ce454.appspot.com", // Corrected: .appspot.com is common
-  messagingSenderId: "190465524423",
-  appId: "1:190465524423:web:16f8338841b549853934e2",
-  measurementId: "G-6TQ4PRYWNL"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCG5PTHBhiIr3kGoB_Ip0CWpnydmEgriok",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "attandence-ce454.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "attandence-ce454",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "attandence-ce454.appspot.com",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "190465524423",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:190465524423:web:16f8338841b549853934e2",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-6TQ4PRYWNL"
 };
 
-firebase.initializeApp(firebaseConfig);
+try {
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
 
-// Retrieve an instance of Firebase Messaging so that it can handle background messages.
-if (firebase.messaging.isSupported()) {
-  const messaging = firebase.messaging();
-
-  messaging.onBackgroundMessage((payload) => {
+  onBackgroundMessage(messaging, (payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    
-    const notificationTitle = payload.notification?.title || 'AttendEase Notification';
+    // Customize notification here
+    const notificationTitle = payload.notification?.title || 'New Message';
     const notificationOptions = {
       body: payload.notification?.body || 'You have a new message.',
-      icon: '/icons/icon-192x192.png', // Default icon for notifications
-      // You can add more options like badge, image, actions, etc.
+      icon: payload.notification?.icon || '/icons/icon-192x192.png' // Default icon
     };
 
-    // self.registration is a ServiceWorkerRegistration object
-    if (self.registration) {
-      self.registration.showNotification(notificationTitle, notificationOptions);
-    } else {
-      console.error("[firebase-messaging-sw.js] self.registration is not available. Cannot show notification.");
-    }
+    self.registration.showNotification(notificationTitle, notificationOptions);
   });
-} else {
-  console.log('[firebase-messaging-sw.js] Firebase Messaging is not supported in this browser.');
+} catch (error) {
+  console.error("[firebase-messaging-sw.js] Error initializing Firebase or setting up background message handler:", error);
 }
 
-// Basic no-op fetch handler to help make the PWA installable.
-// This does NOT provide offline functionality.
-// For full offline support, you'd implement caching strategies here.
+// Fetch handler: This is crucial for PWA installability.
 self.addEventListener('fetch', (event) => {
-  // event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
-  // For now, just let the network handle it to keep it simple.
-  return;
+  // For installability, simply responding to the fetch event is key.
+  // A network-first or cache-first strategy can be implemented here for offline capabilities.
+  // For now, a basic pass-through to the network.
+  event.respondWith(fetch(event.request).catch(() => {
+    // Optional: Fallback to a generic offline page or resource if fetch fails
+    // For example: return caches.match('/offline.html');
+    // For basic installability, simply catching the error is fine if no offline page.
+  }));
 });
 
 self.addEventListener('install', (event) => {
   console.log('[firebase-messaging-sw.js] Service worker installed');
-  // event.waitUntil(self.skipWaiting()); // Optional: activate new SW immediately
+  // Optional: Force the waiting service worker to become the active service worker.
+  // event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
   console.log('[firebase-messaging-sw.js] Service worker activated');
-  // event.waitUntil(self.clients.claim()); // Optional: take control of open clients immediately
+  // Optional: When the service worker is activated, claim clients.
+  // This ensures that the service worker controls any open clients as soon as it's activated.
+  // event.waitUntil(self.clients.claim());
 });
