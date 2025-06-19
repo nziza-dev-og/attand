@@ -438,5 +438,12 @@
   "deleteAnnouncementConfirmationDesc": "您确定要删除标题为“{{title}}”的公告吗？此操作无法撤销。",
   "activate": "激活",
   "deactivate": "停用",
-  "createdAt": "创建于"
+  "createdAt": "创建于",
+  "installAppButton": "安装应用",
+  "appInstallAcceptedTitle": "应用已安装",
+  "appInstallAcceptedDesc": "AttendEase 已添加到您的设备！",
+  "appInstallDismissedTitle": "安装已取消",
+  "appInstallDismissedDesc": "您可以稍后从浏览器菜单安装 AttendEase。",
+  "appInstallErrorDesc": "无法启动应用安装。"
 }
+

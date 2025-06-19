@@ -1,83 +1,65 @@
+// public/firebase-messaging-sw.js
+// Scripts for firebase and firebase messaging
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
 
-// Ensure this is the very first line
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
-  // Skip waiting to activate the new service worker immediately
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
-  // Claim clients to ensure the new service worker takes control immediately
-  event.waitUntil(self.clients.claim());
-});
-
-// Import Firebase app and messaging scripts
-try {
-  importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
-  importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
-} catch (e) {
-  console.error('Service Worker: Error importing Firebase scripts.', e);
-}
-
-// Your web app's Firebase configuration
-// IMPORTANT: These values should match your project's configuration.
-// Using the fallback values from your src/lib/firebase.ts as an example.
-// Ensure these are correct for your Firebase project.
+// This is the same as in src/lib/firebase.ts, hardcoded for SW reliability
 const firebaseConfig = {
   apiKey: "AIzaSyCG5PTHBhiIr3kGoB_Ip0CWpnydmEgriok",
   authDomain: "attandence-ce454.firebaseapp.com",
   projectId: "attandence-ce454",
-  storageBucket: "attandence-ce454.appspot.com", // Corrected to .appspot.com
+  storageBucket: "attandence-ce454.appspot.com", // Standard appspot.com domain for storage bucket
   messagingSenderId: "190465524423",
   appId: "1:190465524423:web:16f8338841b549853934e2",
   measurementId: "G-6TQ4PRYWNL"
 };
 
-let app;
-if (firebase.apps.length === 0) {
-  try {
-    app = firebase.initializeApp(firebaseConfig);
-    console.log('Service Worker: Firebase app initialized.');
-  } catch (e) {
-    console.error('Service Worker: Firebase app initialization error.', e);
+try {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase SW Initialized");
   }
-} else {
-  app = firebase.app(); // if already initialized, use that one
-  console.log('Service Worker: Firebase app already initialized.');
+  const messaging = firebase.messaging();
+  messaging.onBackgroundMessage((payload) => {
+    console.log(
+      "[firebase-messaging-sw.js] Received background message ",
+      payload
+    );
+    const notificationTitle = payload.notification?.title || "AttendEase Notification";
+    const notificationOptions = {
+      body: payload.notification?.body || "You have a new message.",
+      icon: "/icons/icon-192x192.png", // Ensure this icon exists in public/icons
+    };
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+} catch (e) {
+  console.error("Firebase SW Initialization Error", e);
 }
 
-let messaging;
-if (app && typeof firebase.messaging === 'function') {
-  try {
-    messaging = firebase.messaging();
-    console.log('Service Worker: Firebase Messaging initialized.');
-
-    messaging.onBackgroundMessage((payload) => {
-      console.log('[firebase-messaging-sw.js] Received background message ', payload);
-      // Customize notification here
-      const notificationTitle = payload.notification?.title || 'AttendEase Notification';
-      const notificationOptions = {
-        body: payload.notification?.body || 'You have a new message.',
-        icon: payload.notification?.icon || '/icons/icon-192x192.png', // Default icon
-      };
-
-      self.registration.showNotification(notificationTitle, notificationOptions);
-    });
-  } catch (e) {
-    console.error('Service Worker: Firebase Messaging initialization error.', e);
-  }
-} else {
-  console.log('Service Worker: Firebase Messaging not available or app not initialized.');
-}
-
-
-// Basic fetch handler to make the PWA installable
-self.addEventListener('fetch', (event) => {
-  // console.log('Service Worker: Fetching:', event.request.url);
-  // You can add more sophisticated caching strategies here if needed.
-  // For now, just respond from the network.
-  event.respondWith(fetch(event.request));
+self.addEventListener('install', (event) => {
+  console.log('Service Worker: Install event');
+  // Force the waiting service worker to become the active service worker.
+  self.skipWaiting();
 });
 
-console.log('Service Worker: Script loaded and event listeners attached.');
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activate event');
+  // Take control of all clients as soon as the SW is activated.
+  event.waitUntil(clients.claim());
+});
+
+self.addEventListener('fetch', (event) => {
+  // A basic fetch handler is required for PWA installability.
+  // This simple pass-through is often sufficient.
+  // For offline capabilities, this would need to be more sophisticated.
+  if (event.request.method === 'GET' && event.request.url.startsWith(self.location.origin)) {
+    event.respondWith(
+      fetch(event.request).catch((error) => {
+        console.warn('Service Worker: Fetch failed for', event.request.url, error);
+        // Optionally, return a custom offline page or simple error response
+        // return new Response("Network error occurred", { status: 408, headers: { 'Content-Type': 'text/plain' } });
+      })
+    );
+  }
+  // For non-GET requests or cross-origin requests, let the browser handle them normally
+});

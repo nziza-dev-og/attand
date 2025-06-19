@@ -438,5 +438,12 @@
   "deleteAnnouncementConfirmationDesc": "Are you sure you want to delete the announcement titled '{{title}}'? This action cannot be undone.",
   "activate": "Activate",
   "deactivate": "Deactivate",
-  "createdAt": "Created At"
+  "createdAt": "Created At",
+  "installAppButton": "Install App",
+  "appInstallAcceptedTitle": "App Installed",
+  "appInstallAcceptedDesc": "AttendEase has been added to your device!",
+  "appInstallDismissedTitle": "Install Dismissed",
+  "appInstallDismissedDesc": "You can install AttendEase later from the browser menu.",
+  "appInstallErrorDesc": "Could not initiate app installation."
 }
+

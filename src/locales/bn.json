@@ -438,8 +438,11 @@
   "deleteAnnouncementConfirmationDesc": "আপনি কি নিশ্চিত যে আপনি '{{title}}' শিরোনামের ঘোষণাটি মুছে ফেলতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।",
   "activate": "সক্রিয় করুন",
   "deactivate": "নিষ্ক্রিয় করুন",
-  "createdAt": "তৈরি হয়েছে"
+  "createdAt": "তৈরি হয়েছে",
+  "installAppButton": "অ্যাপ ইনস্টল করুন",
+  "appInstallAcceptedTitle": "অ্যাপ ইনস্টল করা হয়েছে",
+  "appInstallAcceptedDesc": "AttendEase আপনার ডিভাইসে যোগ করা হয়েছে!",
+  "appInstallDismissedTitle": "ইনস্টলেশন বাতিল করা হয়েছে",
+  "appInstallDismissedDesc": "আপনি ব্রাউজার মেনু থেকে পরে AttendEase ইনস্টল করতে পারেন।",
+  "appInstallErrorDesc": "অ্যাপ ইনস্টলেশন শুরু করা যায়নি।"
 }
-```
-  </change>
-  <change

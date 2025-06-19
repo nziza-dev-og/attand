@@ -376,7 +376,7 @@
   "adStatusActive": "Rikora",
   "adStatusInactive": "Ntibigikora",
   "activateAdButton": "Koresha",
-  "deactivateAdButton": "Hagarika",
+  "deactivateAdButton": "Dakatar",
   "adStatusUpdatedTitle": "Imiterere y'Itangazo Yavuguruwe",
   "adStatusUpdatedDesc": "Imiterere y'itangazo yavuguruwe.",
   "deleteAdConfirmTitle": "Gusiba Itangazo?",
@@ -437,6 +437,14 @@
   "deleteAnnouncementConfirmationTitle": "Emeza Gusiba",
   "deleteAnnouncementConfirmationDesc": "Uremeza ko ushaka gusiba itangazo ryitwa '{{title}}'? Iki gikorwa ntigishobora guhindurwa.",
   "activate": "Koresha",
-  "deactivate": "Hagarika",
-  "createdAt": "Byakozwe Ku wa"
+  "deactivate": "Dakatar",
+  "createdAt": "Lokacin Ƙirƙira",
+  "installAppButton": "Shigar da App",
+  "appInstallAcceptedTitle": "App An Shigar",
+  "appInstallAcceptedDesc": "An ƙara AttendEase zuwa na'urarka!",
+  "appInstallDismissedTitle": "An Yi Watsi da Shigarwa",
+  "appInstallDismissedDesc": "Za ka iya shigar da AttendEase daga baya daga menu na burauzar.",
+  "appInstallErrorDesc": "Ba a iya fara shigar da app ba."
 }
+
+    

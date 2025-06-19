@@ -437,5 +437,12 @@
   "deleteAnnouncementConfirmationDesc": "「{{title}}」というタイトルのお知らせを本当に削除しますか？この操作は元に戻せません。",
   "activate": "有効化",
   "deactivate": "無効化",
-  "createdAt": "作成日時"
+  "createdAt": "作成日時",
+  "installAppButton": "アプリをインストール",
+  "appInstallAcceptedTitle": "アプリがインストールされました",
+  "appInstallAcceptedDesc": "AttendEaseがお使いのデバイスに追加されました！",
+  "appInstallDismissedTitle": "インストールがキャンセルされました",
+  "appInstallDismissedDesc": "後でブラウザメニューからAttendEaseをインストールできます。",
+  "appInstallErrorDesc": "アプリのインストールを開始できませんでした。"
 }
+

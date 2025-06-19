@@ -438,6 +438,11 @@
   "deleteAnnouncementConfirmationDesc": "'{{title}}' என்ற தலைப்பில் உள்ள அறிவிப்பை நீக்க விரும்புகிறீர்களா? இந்தச் செயலை செயல்தவிர்க்க முடியாது.",
   "activate": "செயல்படுத்து",
   "deactivate": "செயலிழக்கச் செய்",
-  "createdAt": "உருவாக்கப்பட்டது"
+  "createdAt": "உருவாக்கப்பட்டது",
+  "installAppButton": "செயலியை நிறுவவும்",
+  "appInstallAcceptedTitle": "செயலி நிறுவப்பட்டது",
+  "appInstallAcceptedDesc": "AttendEase உங்கள் சாதனத்தில் சேர்க்கப்பட்டுள்ளது!",
+  "appInstallDismissedTitle": "நிறுவல் நிராகரிக்கப்பட்டது",
+  "appInstallDismissedDesc": "நீங்கள் பின்னர் உலாவி மெனுவிலிருந்து AttendEase ஐ நிறுவலாம்.",
+  "appInstallErrorDesc": "செயலி நிறுவலைத் தொடங்க முடியவில்லை."
 }
-```

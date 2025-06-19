@@ -215,7 +215,7 @@
   "invalidSuperAdminCodeError": "Code secret invalide pour l'inscription Super Admin.",
   "superAdminDashboardTitle": "Tableau de Bord Super Admin",
   "superAdminDashboardDesc": "Superviser toutes les écoles, gérer les utilisateurs et maintenir l'intégrité du système.",
-  "manageSchools": "Gérer les Écoles (Admins)",
+  "manageSchools": "Gérer les Écoles (Administrateurs)",
   "manageAllUsers": "Gérer Tous les Utilisateurs",
   "totalSchoolsManaged": "Total des Écoles Gérées",
   "totalAdminAccounts": "Représente le nombre de comptes Admin",
@@ -378,7 +378,7 @@
   "activateAdButton": "Activer",
   "deactivateAdButton": "Désactiver",
   "adStatusUpdatedTitle": "Statut de la Publicité Mis à Jour",
-  "adStatusUpdatedDesc": "Le statut de la publicité a été mis à jour.",
+  "adStatusUpdatedDesc": "Le statut de la Publicité a été mis à jour.",
   "deleteAdConfirmTitle": "Supprimer la Publicité ?",
   "deleteAdConfirmDesc": "Êtes-vous sûr de vouloir supprimer la publicité intitulée '{{title}}' ? Cette action ne peut pas être annulée.",
   "adDeletedSuccessTitle": "Publicité Supprimée",
@@ -438,5 +438,12 @@
   "deleteAnnouncementConfirmationDesc": "Êtes-vous sûr de vouloir supprimer l'annonce intitulée '{{title}}' ? Cette action ne peut pas être annulée.",
   "activate": "Activer",
   "deactivate": "Désactiver",
-  "createdAt": "Créé le"
+  "createdAt": "Créé le",
+  "installAppButton": "Installer l'App",
+  "appInstallAcceptedTitle": "App Installée",
+  "appInstallAcceptedDesc": "AttendEase a été ajouté à votre appareil !",
+  "appInstallDismissedTitle": "Installation Annulée",
+  "appInstallDismissedDesc": "Vous pouvez installer AttendEase plus tard depuis le menu de votre navigateur.",
+  "appInstallErrorDesc": "Impossible de lancer l'installation de l'application."
 }
+
