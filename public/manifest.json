@@ -1,25 +1,25 @@
 {
-  "name": "AttendEase",
   "short_name": "AttendEase",
+  "name": "AttendEase - Attendance Platform",
   "description": "Streamlined attendance tracking for schools.",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
       "type": "image/png",
+      "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
       "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "theme_color": "#E0F7FA",
-  "background_color": "#F5F5F5",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "scope": "/"
+  "background_color": "#ffffff",
+  "theme_color": "#E0F7FA",
+  "orientation": "portrait-primary"
 }

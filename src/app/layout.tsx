@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: 'Streamlined attendance tracking for schools.',
   manifest: "/manifest.json",
   themeColor: [ // Support for light and dark mode theme-color
-    { media: '(prefers-color-scheme: light)', color: '#E0F7FA' }, // Light Blue for light mode
+    { media: '(prefers-color-scheme: light)', color: '#E0F7FA' }, // Light Blue for light mode (matches manifest)
     { media: '(prefers-color-scheme: dark)', color: '#005060' }, // A darker teal/blue for dark mode status bar
   ],
   appleWebApp: {
