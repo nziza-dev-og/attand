@@ -331,6 +331,7 @@
   "deleteButtonLabel": "削除",
   "studentDeleteSuccessTitle": "生徒が削除されました",
   "studentDeleteSuccessDesc": "{{name}} は正常に削除されました。",
+  "studentDeleteFailedDesc": "生徒の削除に失敗しました。もう一度お試しください。",
   "studentManagementErrorDeleteSchoolMismatch": "あなたの学校に属していない生徒を削除することはできません。",
   "students": "名",
   "unassignedStudentsTitle": "未割り当ての生徒",
@@ -407,9 +408,6 @@
   "goToProfilePage": "プロフィールページへ移動",
   "manageAnnouncements": "お知らせ管理",
   "manageAnnouncementsDesc": "プラットフォーム全体のお知らせを作成、表示、管理します。",
-  "addAnnouncementButton": "お知らせを追加",
-  "addAnnouncement": "お知らせを追加",
-  "addAnnouncementDescription": "新しいお知らせの詳細を入力してください。",
   "title": "タイトル",
   "content": "内容",
   "active": "アクティブ",
@@ -438,11 +436,10 @@
   "activate": "有効化",
   "deactivate": "無効化",
   "createdAt": "作成日時",
-  "installAppButton": "アプリをインストール",
-  "appInstallAcceptedTitle": "アプリがインストールされました",
-  "appInstallAcceptedDesc": "AttendEaseがお使いのデバイスに追加されました！",
-  "appInstallDismissedTitle": "インストールがキャンセルされました",
-  "appInstallDismissedDesc": "後でブラウザメニューからAttendEaseをインストールできます。",
-  "appInstallErrorDesc": "アプリのインストールを開始できませんでした。"
+  "appInstallFallbackAlert": "このアプリをインストールするには、ブラウザのメニューにある「ホーム画面に追加」オプションを使用してください。",
+  "installAppName": "{{appName}}をインストール",
+  "installAppBenefit": "オフラインアクセスと通知で完全な体験を",
+  "installButtonLabel": "アプリをインストール",
+  "installButtonText": "インストール",
+  "dismissButtonLabel": "閉じる"
 }
-

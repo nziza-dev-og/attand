@@ -439,10 +439,10 @@
   "activate": "সক্রিয় করুন",
   "deactivate": "নিষ্ক্রিয় করুন",
   "createdAt": "তৈরি হয়েছে",
-  "installAppButton": "অ্যাপ ইনস্টল করুন",
-  "appInstallAcceptedTitle": "অ্যাপ ইনস্টল করা হয়েছে",
-  "appInstallAcceptedDesc": "AttendEase আপনার ডিভাইসে যোগ করা হয়েছে!",
-  "appInstallDismissedTitle": "ইনস্টলেশন বাতিল করা হয়েছে",
-  "appInstallDismissedDesc": "আপনি ব্রাউজার মেনু থেকে পরে AttendEase ইনস্টল করতে পারেন।",
-  "appInstallErrorDesc": "অ্যাপ ইনস্টলেশন শুরু করা যায়নি।"
+  "appInstallFallbackAlert": "এই অ্যাপটি ইনস্টল করতে, আপনার ব্রাউজারের মেনুতে \"হোম স্ক্রিনে যোগ করুন\" বিকল্পটি ব্যবহার করুন।",
+  "installAppName": "{{appName}} ইনস্টল করুন",
+  "installAppBenefit": "অফলাইন অ্যাক্সেস এবং বিজ্ঞপ্তি সহ সম্পূর্ণ অভিজ্ঞতা পান",
+  "installButtonLabel": "অ্যাপ ইনস্টল করুন",
+  "installButtonText": "ইনস্টল করুন",
+  "dismissButtonLabel": "খারিজ করুন"
 }

@@ -408,9 +408,6 @@
   "goToProfilePage": "转到个人资料页面",
   "manageAnnouncements": "管理公告",
   "manageAnnouncementsDesc": "创建、查看和管理平台范围内的公告。",
-  "addAnnouncementButton": "添加公告",
-  "addAnnouncement": "添加公告",
-  "addAnnouncementDescription": "填写新公告的详细信息。",
   "title": "标题",
   "content": "内容",
   "active": "活动",
@@ -439,11 +436,10 @@
   "activate": "激活",
   "deactivate": "停用",
   "createdAt": "创建于",
-  "installAppButton": "安装应用",
-  "appInstallAcceptedTitle": "应用已安装",
-  "appInstallAcceptedDesc": "AttendEase 已添加到您的设备！",
-  "appInstallDismissedTitle": "安装已取消",
-  "appInstallDismissedDesc": "您可以稍后从浏览器菜单安装 AttendEase。",
-  "appInstallErrorDesc": "无法启动应用安装。"
+  "appInstallFallbackAlert": "要安装此应用，请在浏览器菜单中使用“添加到主屏幕”选项。",
+  "installAppName": "安装 {{appName}}",
+  "installAppBenefit": "通过离线访问和通知获得完整体验",
+  "installButtonLabel": "安装应用",
+  "installButtonText": "安装",
+  "dismissButtonLabel": "关闭"
 }
-

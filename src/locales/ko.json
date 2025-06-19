@@ -408,9 +408,6 @@
   "goToProfilePage": "프로필 페이지로 이동",
   "manageAnnouncements": "공지사항 관리",
   "manageAnnouncementsDesc": "플랫폼 전체 공지사항 생성, 보기 및 관리.",
-  "addAnnouncementButton": "공지사항 추가",
-  "addAnnouncement": "공지사항 추가",
-  "addAnnouncementDescription": "새 공지사항의 세부 정보 입력.",
   "title": "제목",
   "content": "내용",
   "active": "활성",
@@ -439,11 +436,10 @@
   "activate": "활성화",
   "deactivate": "비활성화",
   "createdAt": "생성일",
-  "installAppButton": "앱 설치",
-  "appInstallAcceptedTitle": "앱 설치됨",
-  "appInstallAcceptedDesc": "AttendEase가 기기에 추가되었습니다!",
-  "appInstallDismissedTitle": "설치 취소됨",
-  "appInstallDismissedDesc": "나중에 브라우저 메뉴에서 AttendEase를 설치할 수 있습니다.",
-  "appInstallErrorDesc": "앱 설치를 시작할 수 없습니다."
+  "appInstallFallbackAlert": "이 앱을 설치하려면 브라우저 메뉴에서 '홈 화면에 추가' 옵션을 사용하십시오.",
+  "installAppName": "{{appName}} 설치",
+  "installAppBenefit": "오프라인 액세스 및 알림으로 전체 경험을 얻으십시오",
+  "installButtonLabel": "앱 설치",
+  "installButtonText": "설치",
+  "dismissButtonLabel": "닫기"
 }
-

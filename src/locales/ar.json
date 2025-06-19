@@ -439,12 +439,10 @@
   "activate": "تفعيل",
   "deactivate": "إلغاء التفعيل",
   "createdAt": "تم الإنشاء في",
-  "installAppButton": "تثبيت التطبيق",
-  "appInstallAcceptedTitle": "تم تثبيت التطبيق",
-  "appInstallAcceptedDesc": "تمت إضافة AttendEase إلى جهازك!",
-  "appInstallDismissedTitle": "تم رفض التثبيت",
-  "appInstallDismissedDesc": "يمكنك تثبيت AttendEase لاحقًا من قائمة المتصفح.",
-  "appInstallErrorDesc": "تعذر بدء تثبيت التطبيق."
+  "appInstallFallbackAlert": "لتثبيت هذا التطبيق، استخدم خيار \"إضافة إلى الشاشة الرئيسية\" في قائمة متصفحك.",
+  "installAppName": "تثبيت {{appName}}",
+  "installAppBenefit": "احصل على التجربة الكاملة مع الوصول دون اتصال بالإنترنت والإشعارات",
+  "installButtonLabel": "تثبيت التطبيق",
+  "installButtonText": "تثبيت",
+  "dismissButtonLabel": "تجاهل"
 }
-
-    

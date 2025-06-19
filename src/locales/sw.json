@@ -439,11 +439,10 @@
   "activate": "Koresha",
   "deactivate": "Hagarika",
   "createdAt": "Byakozwe Ku wa",
-  "installAppButton": "Shyiramo Porogaramu",
-  "appInstallAcceptedTitle": "Porogaramu Yashyizwemo",
-  "appInstallAcceptedDesc": "AttendEase yashyizwe ku gikoresho cyawe!",
-  "appInstallDismissedTitle": "Kwinjiza Byahagaritswe",
-  "appInstallDismissedDesc": "Ushobora gushyiramo AttendEase nyuma ukoresheje menu ya mushakisha.",
-  "appInstallErrorDesc": "Ntibishoboka gutangiza kwinjiza porogaramu."
+  "appInstallFallbackAlert": "Ili kusakinisha programu hii, tumia chaguo la \"Ongeza kwenye Skrini ya Nyumbani\" kwenye menyu ya kivinjari chako.",
+  "installAppName": "Sakinisha {{appName}}",
+  "installAppBenefit": "Pata uzoefu kamili na ufikiaji nje ya mtandao na arifa",
+  "installButtonLabel": "Sakinisha Programu",
+  "installButtonText": "Sakinisha",
+  "dismissButtonLabel": "Ondoa"
 }
-

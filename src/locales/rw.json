@@ -439,11 +439,10 @@
   "activate": "Koresha",
   "deactivate": "Hagarika",
   "createdAt": "Byakozwe Ku wa",
-  "installAppButton": "Shyiramo Porogaramu",
-  "appInstallAcceptedTitle": "Porogaramu Yashyizwemo",
-  "appInstallAcceptedDesc": "AttendEase yashyizwe ku gikoresho cyawe!",
-  "appInstallDismissedTitle": "Kwinjiza Byahagaritswe",
-  "appInstallDismissedDesc": "Ushobora gushyiramo AttendEase nyuma ukoresheje menu ya mushakisha.",
-  "appInstallErrorDesc": "Ntibishoboka gutangiza kwinjiza porogaramu."
+  "appInstallFallbackAlert": "Kugira ngo ushyiremo iyi porogaramu, koresha uburyo bwa \"Ongeraho ku Isakoshi y'Urugo\" muri menu ya mushakisha yawe.",
+  "installAppName": "Shyiramo {{appName}}",
+  "installAppBenefit": "Bona ubunararibonye bwuzuye hamwe no kugera kuri porogaramu udafite interineti n'amenyesha",
+  "installButtonLabel": "Shyiramo Porogaramu",
+  "installButtonText": "Shyiramo",
+  "dismissButtonLabel": "Hagarika"
 }
-

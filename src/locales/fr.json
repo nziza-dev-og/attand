@@ -1,4 +1,3 @@
-
 {
   "appName": "AttendEase",
   "logout": "Déconnexion",
@@ -439,11 +438,10 @@
   "activate": "Activer",
   "deactivate": "Désactiver",
   "createdAt": "Créé le",
-  "installAppButton": "Installer l'App",
-  "appInstallAcceptedTitle": "App Installée",
-  "appInstallAcceptedDesc": "AttendEase a été ajouté à votre appareil !",
-  "appInstallDismissedTitle": "Installation Annulée",
-  "appInstallDismissedDesc": "Vous pouvez installer AttendEase plus tard depuis le menu de votre navigateur.",
-  "appInstallErrorDesc": "Impossible de lancer l'installation de l'application."
+  "appInstallFallbackAlert": "Pour installer cette application, utilisez l'option \"Ajouter à l'écran d'accueil\" de votre navigateur dans le menu.",
+  "installAppName": "Installer {{appName}}",
+  "installAppBenefit": "Profitez de l'expérience complète avec accès hors ligne et notifications",
+  "installButtonLabel": "Installer l'application",
+  "installButtonText": "Installer",
+  "dismissButtonLabel": "Ignorer"
 }
-

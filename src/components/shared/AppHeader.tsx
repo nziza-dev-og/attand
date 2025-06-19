@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { LogOut, PanelLeft, Languages, Check, Download } from "lucide-react"; 
+import { LogOut, PanelLeft, Languages, Check } from "lucide-react"; 
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useState } from 'react';
+// Removed useEffect and useState for installPromptEvent as it's handled by InstallPrompt.tsx and AppContext now
 
 interface AppHeaderProps {
   title: string;
@@ -33,59 +33,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
   const { toast } = useToast();
   const { language, setLanguage, translate } = useLanguage();
 
-  const [installPromptEvent, setInstallPromptEvent] = useState<Event | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault(); // Prevent the mini-infobar from appearing on mobile
-      setInstallPromptEvent(event);
-      setIsInstallable(true); // Show the install button
-      console.log('beforeinstallprompt event fired and captured by AppHeader.');
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    console.log('AppHeader: beforeinstallprompt event listener added.');
-
-    // Check if app is already installed
-    if (typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches) {
-      console.log('App is already running in standalone mode.');
-      setIsInstallable(false); // Don't show install button if already installed
-    }
-
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      console.log('AppHeader: beforeinstallprompt event listener removed.');
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!installPromptEvent) {
-      console.log('Install prompt event not available.');
-      return;
-    }
-    // Cast to any to access .prompt() and .userChoice if TypeScript complains
-    // In modern browsers, Event has these properties when it's a BeforeInstallPromptEvent
-    const promptEvent = installPromptEvent as any; 
-    try {
-      promptEvent.prompt(); // Show the install prompt
-      const { outcome } = await promptEvent.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      if (outcome === 'accepted') {
-        toast({ title: translate("appInstallAcceptedTitle") || "App Installed", description: translate("appInstallAcceptedDesc") || "AttendEase has been added to your device!" });
-      } else {
-        toast({ title: translate("appInstallDismissedTitle") || "Install Dismissed", description: translate("appInstallDismissedDesc") || "You can install AttendEase later from the browser menu." });
-      }
-    } catch (error) {
-      console.error('Error during app install prompt:', error);
-      toast({ variant: "destructive", title: translate("errorTitle") || "Error", description: translate("appInstallErrorDesc") || "Could not initiate app installation." });
-    } finally {
-      // We've used the prompt, and can't use it again, discard it
-      setInstallPromptEvent(null);
-      setIsInstallable(false);
-    }
-  };
+  // Removed install prompt logic from here
 
   const handleLogout = async () => {
     try {
@@ -152,21 +100,10 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
       <h1 className="text-lg font-semibold sm:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">{title}</h1>
       
       <div className="flex items-center gap-2">
-        {isInstallable && (
-          <Button variant="outline" size="sm" onClick={handleInstallClick} title={translate('installAppButton') || 'Install App'} className="hidden sm:flex">
-            <Download className="mr-2 h-4 w-4" />
-            {translate('installAppButton') || 'Install'}
-          </Button>
-        )}
-         {isInstallable && (
-          <Button variant="outline" size="icon" onClick={handleInstallClick} title={translate('installAppButton') || 'Install App'} className="sm:hidden">
-            <Download className="h-4 w-4" />
-            <span className="sr-only">{translate('installAppButton') || 'Install App'}</span>
-          </Button>
-        )}
+        {/* Install button logic removed from here, handled by InstallPrompt.tsx */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" aria-label={translate('selectLanguage')}>
               <Languages className="h-4 w-4" />
               <span className="sr-only">{translate('selectLanguage')}</span>
             </Button>
@@ -183,7 +120,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
           </DropdownMenuContent>
         </DropdownMenu>
 
-         <Button variant="outline" size="icon" onClick={handleLogout} title={translate('logout')}>
+         <Button variant="outline" size="icon" onClick={handleLogout} title={translate('logout')} aria-label={translate('logout')}>
            <LogOut className="h-4 w-4" />
            <span className="sr-only">{translate('logout')}</span>
          </Button>

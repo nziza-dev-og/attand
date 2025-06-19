@@ -1,39 +1,37 @@
 
-"use client"; // Mark this component as a Client Component
+"use client"; 
 
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { requestNotificationPermission, onMessageListener } from '@/lib/firebase'; // Import FCM functions
+import { requestNotificationPermission, onMessageListener } from '@/lib/firebase'; 
 
-// Client component to handle FCM logic
 export function FirebaseMessagingInitializer() {
-  const { user } = useAuth(); // Get user from AuthContext
+  const { user } = useAuth(); 
   const { toast } = useToast();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.Worker) {
-      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      // Register the new sw.js
+      navigator.serviceWorker.register('/sw.js') // Updated path
         .then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
-          // Request permission only if user is logged in
-          if (user) {
+          console.log('Service Worker (sw.js) registered with scope:', registration.scope);
+          // Request permission only if user is logged in for FCM (if still using FCM with this SW)
+          if (user && registration.active) { // Check if SW is active before requesting token
             requestNotificationPermission().then(token => {
               if (token) {
-                // TODO: Send this token to your backend server associated with the user
                 console.log('FCM Token obtained:', token);
               }
-            });
+            }).catch(err => console.error('Error requesting notification permission or getting token:', err));
           }
         }).catch((err) => {
-          console.error('Service Worker registration failed:', err);
+          console.error('Service Worker (sw.js) registration failed:', err);
         });
     }
-  }, [user]); // Re-run when user state changes
+  }, [user]); 
 
   useEffect(() => {
-    // Listen for foreground messages
-    if (user) { // Only listen if user is logged in
+    if (user) { 
       const unsubscribePromise = onMessageListener()
         .then((payload: any) => {
             toast({
@@ -43,14 +41,11 @@ export function FirebaseMessagingInitializer() {
         })
         .catch(err => console.error('failed to listen for foreground message', err));
       
-      // This part handles the potential promise that resolves to an unsubscribe function
-      // or a direct unsubscribe function.
       let unsubscribeFunction: (() => void) | null = null;
 
       if (typeof unsubscribePromise === 'function') {
         unsubscribeFunction = unsubscribePromise as unknown as () => void;
       } else {
-        // If it's a promise, resolve it to get the unsubscribe function
         Promise.resolve(unsubscribePromise).then(unsub => {
           if (typeof unsub === 'function') {
             unsubscribeFunction = unsub as unknown as () => void;
@@ -66,5 +61,5 @@ export function FirebaseMessagingInitializer() {
     }
   }, [user, toast]);
 
-  return null; // This component does not render anything
+  return null; 
 }

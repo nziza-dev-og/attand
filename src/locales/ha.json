@@ -439,12 +439,10 @@
   "activate": "Koresha",
   "deactivate": "Dakatar",
   "createdAt": "Lokacin Ƙirƙira",
-  "installAppButton": "Shigar da App",
-  "appInstallAcceptedTitle": "App An Shigar",
-  "appInstallAcceptedDesc": "An ƙara AttendEase zuwa na'urarka!",
-  "appInstallDismissedTitle": "An Yi Watsi da Shigarwa",
-  "appInstallDismissedDesc": "Za ka iya shigar da AttendEase daga baya daga menu na burauzar.",
-  "appInstallErrorDesc": "Ba a iya fara shigar da app ba."
+  "appInstallFallbackAlert": "Ili kusakinisha programu hii, tumia chaguo la \"Ongeza kwenye Skrini ya Nyumbani\" kwenye menyu ya kivinjari chako.",
+  "installAppName": "Sakinisha {{appName}}",
+  "installAppBenefit": "Pata uzoefu kamili na ufikiaji nje ya mtandao na arifa",
+  "installButtonLabel": "Sakinisha Programu",
+  "installButtonText": "Sakinisha",
+  "dismissButtonLabel": "Ondoa"
 }
-
-    
