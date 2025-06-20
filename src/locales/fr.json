@@ -1,3 +1,4 @@
+
 {
   "appName": "AttendEase",
   "logout": "Déconnexion",
@@ -443,5 +444,6 @@
   "installAppBenefit": "Profitez de l'expérience complète avec accès hors ligne et notifications",
   "installButtonLabel": "Installer l'application",
   "installButtonText": "Installer",
-  "dismissButtonLabel": "Ignorer"
+  "dismissButtonLabel": "Ignorer",
+  "goToHomePageButton": "Aller à l'Accueil"
 }

@@ -441,5 +441,6 @@
   "installAppBenefit": "オフラインアクセスと通知で完全な体験を",
   "installButtonLabel": "アプリをインストール",
   "installButtonText": "インストール",
-  "dismissButtonLabel": "閉じる"
+  "dismissButtonLabel": "閉じる",
+  "goToHomePageButton": "ホームへ移動"
 }

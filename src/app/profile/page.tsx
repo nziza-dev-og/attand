@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UserCircle, Save, Image as ImageIcon, Building, Settings, Phone, KeyRound, Copy } from 'lucide-react';
+import { Loader2, UserCircle, Save, Image as ImageIcon, Building, Settings, Phone, KeyRound, Copy, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Separator } from '@/components/ui/separator';
 
@@ -233,10 +234,10 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <UserCircle className="h-7 w-7" /> 
-            {translate('myProfileTitle')}
+            {role === 'Admin' ? translate('profileAndSchoolSettingsTitle') : translate('myProfileTitle')}
           </CardTitle>
           <CardDescription>
-            {translate('myProfileDesc')}
+            {role === 'Admin' ? translate('profileAndSchoolSettingsDesc') : translate('myProfileDesc')}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSaveProfile}>
@@ -287,10 +288,16 @@ export default function ProfilePage() {
               <p className="text-xs text-muted-foreground">{translate('avatarUrlHint')}</p>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isSaving} className="w-full text-lg py-3">
+          <CardFooter className="flex justify-between">
+            <Button type="submit" disabled={isSaving} className="text-lg py-3">
               {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
               {translate('saveChanges')}
+            </Button>
+            <Button asChild variant="outline" className="text-lg py-3">
+              <Link href="/">
+                <Home className="mr-2 h-5 w-5" />
+                {translate('goToHomePageButton')}
+              </Link>
             </Button>
           </CardFooter>
         </form>
@@ -372,10 +379,17 @@ export default function ProfilePage() {
                   </div>
               )}
             </CardContent>
+            <CardFooter className="flex justify-end">
+                 <Button asChild variant="outline" className="text-lg py-3">
+                   <Link href="/">
+                     <Home className="mr-2 h-5 w-5" />
+                     {translate('goToHomePageButton')}
+                   </Link>
+                 </Button>
+            </CardFooter>
         </Card>
       )}
     </div>
   );
 }
-
     

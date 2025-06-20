@@ -441,5 +441,6 @@
   "installAppBenefit": "通过离线访问和通知获得完整体验",
   "installButtonLabel": "安装应用",
   "installButtonText": "安装",
-  "dismissButtonLabel": "关闭"
+  "dismissButtonLabel": "关闭",
+  "goToHomePageButton": "返回主页"
 }

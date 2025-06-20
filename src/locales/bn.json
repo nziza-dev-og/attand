@@ -444,5 +444,6 @@
   "installAppBenefit": "অফলাইন অ্যাক্সেস এবং বিজ্ঞপ্তি সহ সম্পূর্ণ অভিজ্ঞতা পান",
   "installButtonLabel": "অ্যাপ ইনস্টল করুন",
   "installButtonText": "ইনস্টল করুন",
-  "dismissButtonLabel": "খারিজ করুন"
+  "dismissButtonLabel": "খারিজ করুন",
+  "goToHomePageButton": "হোম পেজে যান"
 }

@@ -437,12 +437,13 @@
   "deleteAnnouncementConfirmationTitle": "Emeza Gusiba",
   "deleteAnnouncementConfirmationDesc": "Uremeza ko ushaka gusiba itangazo ryitwa '{{title}}'? Iki gikorwa ntigishobora guhindurwa.",
   "activate": "Koresha",
-  "deactivate": "Hagarika",
+  "deactivate": "Dakatar",
   "createdAt": "Byakozwe Ku wa",
   "appInstallFallbackAlert": "Kugira ngo ushyiremo iyi porogaramu, koresha uburyo bwa \"Ongeraho ku Isakoshi y'Urugo\" muri menu ya mushakisha yawe.",
   "installAppName": "Shyiramo {{appName}}",
   "installAppBenefit": "Bona ubunararibonye bwuzuye hamwe no kugera kuri porogaramu udafite interineti n'amenyesha",
   "installButtonLabel": "Shyiramo Porogaramu",
   "installButtonText": "Shyiramo",
-  "dismissButtonLabel": "Hagarika"
+  "dismissButtonLabel": "Hagarika",
+  "goToHomePageButton": "Jya Ahabanza"
 }

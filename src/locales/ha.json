@@ -439,10 +439,11 @@
   "activate": "Koresha",
   "deactivate": "Dakatar",
   "createdAt": "Lokacin Ƙirƙira",
-  "appInstallFallbackAlert": "Ili kusakinisha programu hii, tumia chaguo la \"Ongeza kwenye Skrini ya Nyumbani\" kwenye menyu ya kivinjari chako.",
-  "installAppName": "Sakinisha {{appName}}",
-  "installAppBenefit": "Pata uzoefu kamili na ufikiaji nje ya mtandao na arifa",
-  "installButtonLabel": "Sakinisha Programu",
-  "installButtonText": "Sakinisha",
-  "dismissButtonLabel": "Ondoa"
+  "appInstallFallbackAlert": "Kugira ngo ushyiremo iyi porogaramu, koresha uburyo bwa \"Ongeraho ku Isakoshi y'Urugo\" muri menu ya mushakisha yawe.",
+  "installAppName": "Shyiramo {{appName}}",
+  "installAppBenefit": "Bona ubunararibonye bwuzuye hamwe no kugera kuri porogaramu udafite interineti n'amenyesha",
+  "installButtonLabel": "Shyiramo Porogaramu",
+  "installButtonText": "Shyiramo",
+  "dismissButtonLabel": "Hagarika",
+  "goToHomePageButton": "Jya Ahabanza"
 }

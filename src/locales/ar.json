@@ -444,5 +444,6 @@
   "installAppBenefit": "احصل على التجربة الكاملة مع الوصول دون اتصال بالإنترنت والإشعارات",
   "installButtonLabel": "تثبيت التطبيق",
   "installButtonText": "تثبيت",
-  "dismissButtonLabel": "تجاهل"
+  "dismissButtonLabel": "تجاهل",
+  "goToHomePageButton": "الذهاب إلى الصفحة الرئيسية"
 }
