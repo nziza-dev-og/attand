@@ -1,4 +1,3 @@
-
 // src/app/admin/classes/page.tsx
 "use client";
 
@@ -18,7 +17,7 @@ import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit } from "lucide-react";
+import { Loader2, PlusCircle, Edit, Users } from "lucide-react";
 import type { Class } from "@/lib/types";
 
 const classSchema = z.object({
@@ -282,6 +281,7 @@ export default function ManageClassesPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Grade</TableHead>
                     <TableHead>Teacher</TableHead>
+                    <TableHead>Students</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -292,6 +292,12 @@ export default function ManageClassesPage() {
                         <TableCell className="font-medium">{cls.name}</TableCell>
                         <TableCell>{cls.gradeLevel || 'N/A'}</TableCell>
                         <TableCell>{teachers.find(t => t.id === cls.teacherId)?.name || (cls.teacherId ? 'Unknown Teacher' : 'N/A')}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                             <Users className="h-4 w-4 text-muted-foreground" />
+                             {cls.studentIds?.length || 0}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-right">
                           <Button variant="outline" size="sm" onClick={() => handleOpenEditDialog(cls)} className="gap-1">
                             <Edit className="h-3 w-3" /> Edit
@@ -301,7 +307,7 @@ export default function ManageClassesPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-24 text-center">
+                      <TableCell colSpan={5} className="h-24 text-center">
                         No classes found for your school. Add one using the button above.
                       </TableCell>
                     </TableRow>

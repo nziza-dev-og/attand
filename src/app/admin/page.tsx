@@ -1,24 +1,25 @@
 
 "use client"; 
 
-import Link from 'next/link'; // Ensured Link is imported
+import Link from 'next/link'; 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone, KeyRound, Info } from "lucide-react"; // Added KeyRound
-import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone, KeyRound, Info, CheckCircle, XCircle, Clock } from "lucide-react"; 
+import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { useLanguage } from "@/contexts/LanguageContext"; 
 import { useEffect, useState } from "react"; 
 import { useAuth } from "@/hooks/useAuth"; 
 import { Button } from "@/components/ui/button"; 
 import { Input } from "@/components/ui/input"; 
 import { Label } from "@/components/ui/label"; 
-import { useToast } from "@/hooks/use-toast"; // Ensured useToast is imported
+import { useToast } from "@/hooks/use-toast"; 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; 
 import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import type { AttendanceRecord } from '@/lib/types';
 
 
 async function getCollectionCountForSchool(collectionName: string, schoolId: string, role?: 'Student' | 'Teacher' | 'Parent' | 'Admin'): Promise<number> {
@@ -45,23 +46,50 @@ async function getCollectionCountForSchool(collectionName: string, schoolId: str
   }
 }
 
-async function getAttendanceMarkedTodayCountForSchool(schoolId: string): Promise<number> {
+interface DailySummary {
+    present: number;
+    absent: number;
+    late: number;
+    total: number;
+}
+
+async function getDailyAttendanceSummaryForSchool(schoolId: string): Promise<DailySummary> {
     try {
-        const todayStr = format(new Date(), 'yyyy-MM-dd');
-        const startOfDay = Timestamp.fromDate(new Date(todayStr + 'T00:00:00'));
-        const endOfDay = Timestamp.fromDate(new Date(todayStr + 'T23:59:59'));
+        const today = new Date();
+        const start = startOfDay(today);
+        const end = endOfDay(today);
+
+        const startTimestamp = Timestamp.fromDate(start);
+        const endTimestamp = Timestamp.fromDate(end);
 
         const q = query(
             collection(db, "attendanceRecords"),
             where("schoolId", "==", schoolId),
-            where("timestamp", ">=", startOfDay),
-            where("timestamp", "<=", endOfDay)
+            where("timestamp", ">=", startTimestamp),
+            where("timestamp", "<=", endTimestamp)
         );
-        const snapshot = await getCountFromServer(q);
-        return snapshot.data().count;
+        const querySnapshot = await getDocs(q);
+        const summary: DailySummary = { present: 0, absent: 0, late: 0, total: querySnapshot.size };
+
+        querySnapshot.forEach(doc => {
+            const record = doc.data() as AttendanceRecord;
+            switch(record.status) {
+                case 'present':
+                    summary.present++;
+                    break;
+                case 'absent':
+                    summary.absent++;
+                    break;
+                case 'late':
+                    summary.late++;
+                    break;
+            }
+        });
+
+        return summary;
     } catch (error) {
-        console.error("Error fetching attendance marked today for school " + schoolId + ":", error);
-        return 0;
+        console.error("Error fetching daily attendance summary for school " + schoolId + ":", error);
+        return { present: 0, absent: 0, late: 0, total: 0 };
     }
 }
 
@@ -70,13 +98,13 @@ interface DashboardStats {
   totalClasses: number;
   totalStudents: number;
   totalTeachers: number;
-  attendanceMarkedTodayCount: number;
+  dailySummary: DailySummary;
 }
 
 export default function AdminDashboard() {
   const { translate } = useLanguage();
   const { user: authUser, schoolId: adminSchoolId, loading: authLoading } = useAuth(); 
-  const { toast } = useToast(); // Ensured useToast is called correctly
+  const { toast } = useToast(); 
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -91,15 +119,17 @@ export default function AdminDashboard() {
         return;
       }
       setLoadingStats(true);
-      const classesCount = await getCollectionCountForSchool('classes', adminSchoolId);
-      const studentsCount = await getCollectionCountForSchool('users', adminSchoolId, 'Student');
-      const teachersCount = await getCollectionCountForSchool('users', adminSchoolId, 'Teacher');
-      const attendanceToday = await getAttendanceMarkedTodayCountForSchool(adminSchoolId);
+      const [classesCount, studentsCount, teachersCount, summary] = await Promise.all([
+          getCollectionCountForSchool('classes', adminSchoolId),
+          getCollectionCountForSchool('users', adminSchoolId, 'Student'),
+          getCollectionCountForSchool('users', adminSchoolId, 'Teacher'),
+          getDailyAttendanceSummaryForSchool(adminSchoolId)
+      ]);
       setStats({
         totalClasses: classesCount,
         totalStudents: studentsCount,
         totalTeachers: teachersCount,
-        attendanceMarkedTodayCount: attendanceToday,
+        dailySummary: summary,
       });
       setLoadingStats(false);
     };
@@ -164,8 +194,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="grid auto-rows-min gap-6">
-      {/* Statistics Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* School Statistics Row */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{translate('totalClasses') || 'Total Classes'}</CardTitle>
@@ -196,17 +226,55 @@ export default function AdminDashboard() {
             <p className="text-xs text-muted-foreground">{translate('registeredTeachers') || 'Registered teachers'}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{translate('attendanceToday') || 'Attendance Today'}</CardTitle>
-            <ClipboardList className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.attendanceMarkedTodayCount ?? 0}</div>
-            <p className="text-xs text-muted-foreground">{translate('recordsMarkedToday') || 'Records marked today'}</p>
-          </CardContent>
-        </Card>
       </div>
+
+       {/* Daily Attendance Summary Row */}
+       <Card>
+         <CardHeader>
+            <CardTitle>{translate('attendanceToday', 'Attendance Today')} ({format(new Date(), 'PPP')})</CardTitle>
+            <CardDescription>{translate('dailyAttendanceSummary', 'A summary of attendance records marked today.')}</CardDescription>
+         </CardHeader>
+         <CardContent>
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Present</CardTitle>
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.dailySummary.present ?? 0}</div>
+                  </CardContent>
+                </Card>
+                 <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Absent</CardTitle>
+                    <XCircle className="h-4 w-4 text-red-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.dailySummary.absent ?? 0}</div>
+                  </CardContent>
+                </Card>
+                 <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Late</CardTitle>
+                    <Clock className="h-4 w-4 text-yellow-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.dailySummary.late ?? 0}</div>
+                  </CardContent>
+                </Card>
+                 <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Marked</CardTitle>
+                    <ClipboardList className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.dailySummary.total ?? 0}</div>
+                  </CardContent>
+                </Card>
+             </div>
+         </CardContent>
+       </Card>
       
       {/* Welcome and School Info Card */}
       <Card>
@@ -227,4 +295,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

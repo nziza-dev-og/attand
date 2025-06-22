@@ -1,10 +1,11 @@
-"use client"; // Ensure this is the very first line
+
+"use client";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar"; // Assuming Calendar component exists
+import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
@@ -23,10 +24,10 @@ type AttendanceStatus = 'present' | 'absent' | 'late';
 
 
 export default function MarkAttendancePage() {
- const { user, loading: authLoading } = useAuth();
+ const { user, loading: authLoading, schoolId } = useAuth();
  const [teacherClasses, setTeacherClasses] = React.useState<SelectClassType[]>([]);
  const [classStudents, setClassStudents] = React.useState<SelectStudentType[]>([]);
- const [selectedClass, setSelectedClass] = React.useState<string>(''); // Keep empty for controlled component
+ const [selectedClass, setSelectedClass] = React.useState<string>('');
  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
  const [attendance, setAttendance] = React.useState<Record<string, AttendanceStatus>>({});
  const [loadingClasses, setLoadingClasses] = React.useState(true);
@@ -34,21 +35,17 @@ export default function MarkAttendancePage() {
  const [isSubmitting, setIsSubmitting] = React.useState(false);
  const { toast } = useToast();
 
- // Fetch teacher's classes
  React.useEffect(() => {
     const fetchClasses = async () => {
         if (!user || authLoading) return;
         setLoadingClasses(true);
         try {
-            // Assuming teacher's assignedClassIds are stored on the user document
             const teacherDocRef = doc(db, 'users', user.uid);
             const teacherDocSnap = await getDoc(teacherDocRef);
 
             if (teacherDocSnap.exists() && teacherDocSnap.data().role === 'Teacher') {
                 const assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
                 if (assignedClassIds.length > 0) {
-                    // Fetch class details based on IDs
-                    // Using 'in' query (max 30 IDs per query in Firestore v9+)
                      if (assignedClassIds.length > 30) console.warn("Teacher assigned to more than 30 classes, query might need batching.");
 
                      const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', assignedClassIds.slice(0, 30)));
@@ -75,20 +72,17 @@ export default function MarkAttendancePage() {
  }, [user, authLoading, toast]);
 
 
- // Fetch students when class selection changes
  React.useEffect(() => {
      const fetchStudents = async () => {
-         // Only fetch if a class is selected (and it's not the placeholder value)
-         if (!selectedClass || selectedClass === 'none') {
+         if (!selectedClass) {
              setClassStudents([]);
-             setAttendance({}); // Clear previous attendance when class changes
+             setAttendance({});
              return;
          }
 
          setLoadingStudents(true);
-         setAttendance({}); // Clear previous attendance
+         setAttendance({});
          try {
-             // Fetch the class document to get studentIds
              const classDocRef = doc(db, "classes", selectedClass);
              const classDocSnap = await getDoc(classDocRef);
 
@@ -97,8 +91,6 @@ export default function MarkAttendancePage() {
                  const studentIds = classData.studentIds || [];
 
                  if (studentIds.length > 0) {
-                      // Fetch student details based on IDs
-                      // Using 'in' query (max 30 IDs) - Ensure you have Firestore indexes!
                        if (studentIds.length > 30) console.warn("Class has more than 30 students, query might need batching.");
 
                        const studentsQuery = query(collection(db, 'users'), where('__name__', 'in', studentIds.slice(0, 30)), where('role', '==', 'Student'));
@@ -106,9 +98,8 @@ export default function MarkAttendancePage() {
                        const students = studentSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name || 'Unnamed Student' } as SelectStudentType));
                        setClassStudents(students);
 
-                       // Initialize attendance state for fetched students (e.g., default to 'present')
                        const initialAttendance = students.reduce((acc, student) => {
-                           acc[student.id] = 'present'; // Default to present
+                           acc[student.id] = 'present';
                            return acc;
                        }, {} as Record<string, AttendanceStatus>);
                        setAttendance(initialAttendance);
@@ -138,7 +129,7 @@ export default function MarkAttendancePage() {
 
  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedClass || selectedClass === 'none') {
+    if (!selectedClass) {
        toast({ variant: "destructive", title: "Error", description: "Please select a class." });
        return;
     }
@@ -150,31 +141,32 @@ export default function MarkAttendancePage() {
          toast({ variant: "destructive", title: "Error", description: "No students to mark attendance for in this class." });
          return;
      }
+     if (!schoolId) {
+         toast({ variant: "destructive", title: "Error", description: "Your account is not associated with a school. Cannot submit attendance." });
+         return;
+     }
 
      setIsSubmitting(true);
      const dateStr = format(selectedDate, 'yyyy-MM-dd');
      const submissionTimestamp = Timestamp.now();
 
     try {
-        // Submit attendance records to Firebase
-        // Consider using a batch write for efficiency
         const promises = Object.entries(attendance).map(([studentId, status]) => {
            return addDoc(collection(db, "attendanceRecords"), {
                classId: selectedClass,
                studentId: studentId,
-               date: dateStr, // Store date as YYYY-MM-DD string
+               date: dateStr,
                status: status,
-               markedBy: user?.uid, // Store teacher's UID
-               timestamp: submissionTimestamp, // Firestore timestamp
-               notes: "" // Add notes field if needed later
-           } as Omit<AttendanceRecord, 'id'>); // Type assertion for Firestore data
+               markedBy: user?.uid,
+               timestamp: submissionTimestamp,
+               schoolId: schoolId, // CRITICAL: Add schoolId to the record
+               notes: ""
+           } as Omit<AttendanceRecord, 'id'>);
         });
 
         await Promise.all(promises);
 
         toast({ title: "Success", description: `Attendance for ${dateStr} submitted successfully.` });
-        // Optionally clear form or redirect
-        // setAttendance({}); // Maybe keep the state to allow quick edits?
 
     } catch (error) {
          console.error("Error submitting attendance:", error);
@@ -194,17 +186,13 @@ export default function MarkAttendancePage() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Class Selector */}
              <div className="space-y-2">
                 <Label htmlFor="class-select">Select Class</Label>
                 <Select value={selectedClass} onValueChange={setSelectedClass} disabled={loadingClasses || !user}>
                   <SelectTrigger id="class-select" disabled={loadingClasses}>
-                    {/* Placeholder updated */}
                     <SelectValue placeholder={loadingClasses ? "Loading classes..." : "Choose a class..."} />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Use a non-empty value like 'none' for the placeholder item */}
-                    <SelectItem value="none" disabled>Choose a class...</SelectItem>
                     {teacherClasses.map(cls => (
                       <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                     ))}
@@ -215,7 +203,6 @@ export default function MarkAttendancePage() {
                 </Select>
               </div>
 
-              {/* Date Picker */}
               <div className="space-y-2">
                  <Label htmlFor="date-picker">Select Date</Label>
                   <Popover>
@@ -238,22 +225,19 @@ export default function MarkAttendancePage() {
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                         initialFocus
-                        // Optional: Disable future dates?
-                        // disabled={(date) => date > new Date()}
                       />
                     </PopoverContent>
                   </Popover>
               </div>
            </div>
 
-           {/* Student List */}
             {loadingStudents && (
                  <div className="flex justify-center items-center py-10">
                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                      <span className="ml-2">Loading students...</span>
                  </div>
             )}
-           {!loadingStudents && selectedClass && selectedClass !== 'none' && classStudents.length > 0 && (
+           {!loadingStudents && selectedClass && classStudents.length > 0 && (
              <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-lg font-medium">Students in {teacherClasses.find(c => c.id === selectedClass)?.name}</h3>
                 <div className="space-y-3">
@@ -266,7 +250,6 @@ export default function MarkAttendancePage() {
                                 variant={attendance[student.id] === 'present' ? 'default' : 'outline'}
                                 size="sm"
                                 onClick={() => handleAttendanceChange(student.id, 'present')}
-                                // Use explicit colors matching theme or desired look
                                 className={attendance[student.id] === 'present' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
                               >
                                 Present
@@ -284,7 +267,6 @@ export default function MarkAttendancePage() {
                                variant={attendance[student.id] === 'late' ? 'default' : 'outline'}
                                size="sm"
                                onClick={() => handleAttendanceChange(student.id, 'late')}
-                               // Use explicit colors matching theme or desired look
                                className={attendance[student.id] === 'late' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : ''}
                              >
                                Late
@@ -296,12 +278,12 @@ export default function MarkAttendancePage() {
              </div>
            )}
 
-          {!loadingStudents && selectedClass && selectedClass !== 'none' && classStudents.length === 0 && (
+          {!loadingStudents && selectedClass && classStudents.length === 0 && (
              <p className="text-muted-foreground pt-4 border-t text-center">No students found enrolled in this class.</p>
           )}
 
 
-           {!loadingStudents && selectedClass && selectedClass !== 'none' && classStudents.length > 0 && (
+           {!loadingStudents && selectedClass && classStudents.length > 0 && (
               <div className="flex justify-end pt-4 border-t">
                  <Button type="submit" disabled={isSubmitting || authLoading}>
                       {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -309,7 +291,6 @@ export default function MarkAttendancePage() {
                  </Button>
               </div>
            )}
-
         </form>
       </CardContent>
     </Card>

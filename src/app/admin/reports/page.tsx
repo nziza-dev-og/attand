@@ -1,4 +1,3 @@
-
 // src/app/admin/reports/page.tsx
 "use client";
 
@@ -18,9 +17,9 @@ import { CalendarIcon, Loader2, Search, FileDown } from "lucide-react";
 import { format, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import Papa from 'papaparse'; // Import papaparse
-import type { Class, Student, AttendanceRecord, UserProfile, AttendanceStatus } from "@/lib/types"; // Import types
-import { useAuth } from "@/hooks/useAuth"; // Import useAuth
+import Papa from 'papaparse';
+import type { Class, Student, AttendanceRecord, UserProfile, AttendanceStatus } from "@/lib/types";
+import { useAuth } from "@/hooks/useAuth";
 
 // Extended type for display including names
 interface AttendanceRecordDisplay extends AttendanceRecord {
@@ -43,12 +42,12 @@ const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 
 
 
 export default function AttendanceReportsPage() {
-  const { schoolId: adminSchoolId, loading: authLoading } = useAuth(); // Get adminSchoolId
+  const { schoolId: adminSchoolId, loading: authLoading } = useAuth();
   const [classes, setClasses] = useState<SelectItemType[]>([]);
   const [students, setStudents] = useState<SelectItemType[]>([]);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
 
-  // Filter state - Use 'all' as the default value instead of ''
+  // Filter state
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedStudent, setSelectedStudent] = useState<string>('all');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -65,7 +64,7 @@ export default function AttendanceReportsPage() {
    // Fetch classes and students for dropdowns
   useEffect(() => {
     const fetchDropdownData = async () => {
-      if (!adminSchoolId && !authLoading) { // Check if adminSchoolId is available
+      if (!adminSchoolId && !authLoading) {
         setLoadingDropdowns(false);
         toast({ variant: "destructive", title: "Error", description: "Admin school context missing. Cannot load filters." });
         return;
@@ -104,44 +103,40 @@ export default function AttendanceReportsPage() {
     setReportData([]);
 
     try {
-      let attendanceQuery = query(
-        collection(db, "attendanceRecords"), 
-        where("schoolId", "==", adminSchoolId), // Filter by admin's schoolId
-        orderBy("timestamp", "desc")
-      );
+      let qConstraints = [
+          where("schoolId", "==", adminSchoolId),
+      ];
 
-      // Apply filters - check against 'all' instead of truthiness
-      if (selectedClass && selectedClass !== 'all') {
-        attendanceQuery = query(attendanceQuery, where("classId", "==", selectedClass));
+      if (selectedClass !== 'all') {
+          qConstraints.push(where("classId", "==", selectedClass));
       }
-      if (selectedStudent && selectedStudent !== 'all') {
-        attendanceQuery = query(attendanceQuery, where("studentId", "==", selectedStudent));
+      if (selectedStudent !== 'all') {
+          qConstraints.push(where("studentId", "==", selectedStudent));
       }
       if (startDate) {
-        const startTimestamp = Timestamp.fromDate(startOfDay(startDate));
-        attendanceQuery = query(attendanceQuery, where("timestamp", ">=", startTimestamp));
+          qConstraints.push(where("timestamp", ">=", Timestamp.fromDate(startOfDay(startDate))));
       }
-       if (endDate) {
-           const endTimestamp = Timestamp.fromDate(endOfDay(endDate));
-           attendanceQuery = query(attendanceQuery, where("timestamp", "<=", endTimestamp));
-       }
+      if (endDate) {
+          qConstraints.push(where("timestamp", "<=", Timestamp.fromDate(endOfDay(endDate))));
+      }
 
-
+      const attendanceQuery = query(
+        collection(db, "attendanceRecords"), 
+        ...qConstraints,
+        orderBy("timestamp", "desc")
+      );
+      
       const attendanceSnap = await getDocs(attendanceQuery);
       const records = attendanceSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 
-      // Fetch all class and student names once for enrichment (optimization)
-      // These are already filtered by schoolId from the useEffect hook
       const studentMap = new Map(students.map(s => [s.id, s.name]));
       const classMap = new Map(classes.map(c => [c.id, c.name]));
 
-      // Enrich records with names
       const enrichedData: AttendanceRecordDisplay[] = records.map(record => {
          const studentName = studentMap.get(record.studentId) || 'Unknown Student';
          const className = classMap.get(record.classId) || 'Unknown Class';
          return { ...record, studentName, className };
       });
-
 
       setReportData(enrichedData);
       setReportGenerated(true);
@@ -152,14 +147,13 @@ export default function AttendanceReportsPage() {
 
     } catch (err: any) {
       console.error("Error generating report:", err);
-      setReportError(`Failed to generate report: ${err.message}`);
-      toast({ variant: "destructive", title: "Error", description: "Failed to generate report." });
+      setReportError(`Failed to generate report: ${err.message}. Ensure Firestore indexes are built if prompted.`);
+      toast({ variant: "destructive", title: "Error", description: "Failed to generate report. Check console for details." });
     } finally {
       setLoadingReport(false);
     }
   };
 
-   // Export functionality
   const handleExport = () => {
       if (!reportData || reportData.length === 0) {
           toast({ variant: "destructive", title: "No Data", description: "Generate a report first before exporting." });
@@ -216,7 +210,6 @@ export default function AttendanceReportsPage() {
       <CardContent className="space-y-6">
         {/* Filter Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 border rounded-lg">
-          {/* Class Filter */}
           <div className="space-y-1">
             <Label htmlFor="class-filter">Class</Label>
             <Select value={selectedClass} onValueChange={setSelectedClass} disabled={loadingDropdowns}>
@@ -232,7 +225,6 @@ export default function AttendanceReportsPage() {
             </Select>
           </div>
 
-          {/* Student Filter */}
           <div className="space-y-1">
              <Label htmlFor="student-filter">Student</Label>
              <Select value={selectedStudent} onValueChange={setSelectedStudent} disabled={loadingDropdowns}>
@@ -294,7 +286,6 @@ export default function AttendanceReportsPage() {
             </div>
         </div>
 
-        {/* Report Results Section */}
         {loadingReport && (
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -319,6 +310,7 @@ export default function AttendanceReportsPage() {
                       <TableHead>Date</TableHead>
                       <TableHead>Student</TableHead>
                       <TableHead>Class</TableHead>
+                      <TableHead>Notes</TableHead>
                       <TableHead className="text-right">Status</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -326,16 +318,16 @@ export default function AttendanceReportsPage() {
                     {reportData.length > 0 ? (
                       reportData.map((record) => (
                         <TableRow key={record.id}>
-                          <TableCell>{record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd') : record.date}</TableCell>
+                          <TableCell>{record.timestamp ? format(record.timestamp.toDate(), 'yyyy-MM-dd HH:mm') : record.date}</TableCell>
                           <TableCell>{record.studentName}</TableCell>
                           <TableCell>{record.className}</TableCell>
+                          <TableCell className="max-w-[200px] truncate">{record.notes || 'N/A'}</TableCell>
                           <TableCell className="text-right">
                            <Badge variant={getBadgeVariant(record.status)}
                                className={cn(
                                 'capitalize',
                                 record.status === 'present' ? 'bg-green-600 text-white hover:bg-green-700' : '',
-                                record.status === 'late' ? 'bg-yellow-500 text-white hover:bg-yellow-600' : '',
-                                record.status === 'absent' ? '' : ''
+                                record.status === 'late' ? 'bg-yellow-500 text-white hover:bg-yellow-600' : ''
                                )}
                              >
                                {record.status}
@@ -345,7 +337,7 @@ export default function AttendanceReportsPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center">
+                        <TableCell colSpan={5} className="h-24 text-center">
                           No attendance records found matching your criteria.
                         </TableCell>
                       </TableRow>
@@ -362,4 +354,3 @@ export default function AttendanceReportsPage() {
     </Card>
   );
 }
-
