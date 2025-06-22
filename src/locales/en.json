@@ -60,6 +60,7 @@
   "totalTeachers": "Total Teachers",
   "registeredTeachers": "Registered teachers",
   "attendanceToday": "Attendance Today",
+  "dailyAttendanceSummary": "A summary of attendance records marked today.",
   "recordsMarkedToday": "Records marked today",
   "welcomeAdminTitle": "Welcome, Admin!",
   "adminDashboardDescription": "Use the sidebar to manage classes, students, teachers, parents, assignments, and view reports.",
@@ -445,5 +446,16 @@
   "installButtonLabel": "Install App",
   "installButtonText": "Install",
   "dismissButtonLabel": "Dismiss",
-  "goToHomePageButton": "Go to Home"
+  "goToHomePageButton": "Go to Home",
+  "classesReportedToday": "Classes Reported Today",
+  "classesMarkedOutOfTotal": "Classes that have marked attendance",
+  "linkedParents": "Linked Parents",
+  "noLinkedParentsTitle": "No Linked Parents",
+  "noLinkedParentsDesc": "This student does not have any parents linked.",
+  "errorLoadingParentDetails": "Failed to load parent details.",
+  "parentDetailsForStudent": "Parent Details for {{studentName}}",
+  "listOfLinkedParentsDesc": "The following parents are linked to this student.",
+  "loadingParentDetails": "Loading parent details...",
+  "noLinkedParents": "No parents found for this student.",
+  "closeButton": "Close"
 }

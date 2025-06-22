@@ -60,6 +60,7 @@
   "totalTeachers": "Jumla ya Walimu",
   "registeredTeachers": "Walimu waliosajiliwa",
   "attendanceToday": "Mahudhurio Leo",
+  "dailyAttendanceSummary": "Muhtasari wa rekodi za mahudhurio zilizowekwa leo.",
   "recordsMarkedToday": "Rekodi zilizowekwa leo",
   "welcomeAdminTitle": "Karibu, Msimamizi!",
   "adminDashboardDescription": "Tumia upau wa pembeni kudhibiti madarasa, wanafunzi, walimu, wazazi, majukumu, na kutazama ripoti.",
@@ -445,5 +446,16 @@
   "installButtonLabel": "Shyiramo Porogaramu",
   "installButtonText": "Shyiramo",
   "dismissButtonLabel": "Hagarika",
-  "goToHomePageButton": "Jya Ahabanza"
+  "goToHomePageButton": "Jya Ahabanza",
+  "classesReportedToday": "Madarasa Yaliyoripoti Leo",
+  "classesMarkedOutOfTotal": "Madarasa ambayo yameweka mahudhurio",
+  "linkedParents": "Wazazi WalioUnganishwa",
+  "noLinkedParentsTitle": "Hakuna Wazazi WalioUnganishwa",
+  "noLinkedParentsDesc": "Mwanafunzi huyu hana wazazi wowote walioUnganishwa.",
+  "errorLoadingParentDetails": "Imeshindwa kupakia maelezo ya mzazi.",
+  "parentDetailsForStudent": "Maelezo ya Mzazi kwa {{studentName}}",
+  "listOfLinkedParentsDesc": "Wazazi wafuatao wameUnganishwa na mwanafunzi huyu.",
+  "loadingParentDetails": "Inapakia maelezo ya mzazi...",
+  "noLinkedParents": "Hakuna wazazi waliopatikana kwa mwanafunzi huyu.",
+  "closeButton": "Funga"
 }

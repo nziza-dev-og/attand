@@ -60,6 +60,7 @@
   "totalTeachers": "总教师数",
   "registeredTeachers": "注册教师",
   "attendanceToday": "今日考勤",
+  "dailyAttendanceSummary": "今日已标记考勤记录的摘要。",
   "recordsMarkedToday": "今日已记录",
   "welcomeAdminTitle": "欢迎，管理员！",
   "adminDashboardDescription": "使用侧边栏管理班级、学生、教师、家长、作业并查看报告。",
@@ -442,5 +443,16 @@
   "installButtonLabel": "安装应用",
   "installButtonText": "安装",
   "dismissButtonLabel": "关闭",
-  "goToHomePageButton": "返回主页"
+  "goToHomePageButton": "返回主页",
+  "classesReportedToday": "今日已报告班级",
+  "classesMarkedOutOfTotal": "已标记考勤的班级",
+  "linkedParents": "关联家长",
+  "noLinkedParentsTitle": "无关联家长",
+  "noLinkedParentsDesc": "此学生没有关联任何家长。",
+  "errorLoadingParentDetails": "加载家长详细信息失败。",
+  "parentDetailsForStudent": "{{studentName}}的家长详细信息",
+  "listOfLinkedParentsDesc": "以下家长与此学生关联。",
+  "loadingParentDetails": "正在加载家长详细信息...",
+  "noLinkedParents": "未找到此学生的家长。",
+  "closeButton": "关闭"
 }

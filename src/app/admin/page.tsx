@@ -3,7 +3,7 @@
 
 import Link from 'next/link'; 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone, KeyRound, Info, CheckCircle, XCircle, Clock } from "lucide-react"; 
+import { Activity, Users, School, ClipboardList, UserCircle, ImageIcon, Save, RefreshCw, Copy, Edit, Building, Settings, Phone, KeyRound, Info, CheckCircle, XCircle, Clock, ClipboardCheck } from "lucide-react"; 
 import { collection, getCountFromServer, query, where, Timestamp, doc, updateDoc, getDoc, setDoc, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
@@ -19,7 +19,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton"; 
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import type { AttendanceRecord } from '@/lib/types';
+import type { AttendanceRecord, UserProfile } from '@/lib/types';
 
 
 async function getCollectionCountForSchool(collectionName: string, schoolId: string, role?: 'Student' | 'Teacher' | 'Parent' | 'Admin'): Promise<number> {
@@ -50,7 +50,8 @@ interface DailySummary {
     present: number;
     absent: number;
     late: number;
-    total: number;
+    totalRecords: number;
+    markedClassesCount: number;
 }
 
 async function getDailyAttendanceSummaryForSchool(schoolId: string): Promise<DailySummary> {
@@ -69,10 +70,13 @@ async function getDailyAttendanceSummaryForSchool(schoolId: string): Promise<Dai
             where("timestamp", "<=", endTimestamp)
         );
         const querySnapshot = await getDocs(q);
-        const summary: DailySummary = { present: 0, absent: 0, late: 0, total: querySnapshot.size };
+        
+        const summary: Omit<DailySummary, 'markedClassesCount'> = { present: 0, absent: 0, late: 0, totalRecords: querySnapshot.size };
+        const markedClassIds = new Set<string>();
 
         querySnapshot.forEach(doc => {
             const record = doc.data() as AttendanceRecord;
+            markedClassIds.add(record.classId);
             switch(record.status) {
                 case 'present':
                     summary.present++;
@@ -86,10 +90,10 @@ async function getDailyAttendanceSummaryForSchool(schoolId: string): Promise<Dai
             }
         });
 
-        return summary;
+        return { ...summary, markedClassesCount: markedClassIds.size };
     } catch (error) {
         console.error("Error fetching daily attendance summary for school " + schoolId + ":", error);
-        return { present: 0, absent: 0, late: 0, total: 0 };
+        return { present: 0, absent: 0, late: 0, totalRecords: 0, markedClassesCount: 0 };
     }
 }
 
@@ -263,14 +267,17 @@ export default function AdminDashboard() {
                     <div className="text-2xl font-bold">{stats?.dailySummary.late ?? 0}</div>
                   </CardContent>
                 </Card>
-                 <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Marked</CardTitle>
-                    <ClipboardList className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stats?.dailySummary.total ?? 0}</div>
-                  </CardContent>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{translate('classesReportedToday', 'Classes Reported Today')}</CardTitle>
+                        <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">
+                            {stats?.dailySummary.markedClassesCount ?? 0} / {stats?.totalClasses ?? 0}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{translate('classesMarkedOutOfTotal', 'Classes that have marked attendance')}</p>
+                    </CardContent>
                 </Card>
              </div>
          </CardContent>

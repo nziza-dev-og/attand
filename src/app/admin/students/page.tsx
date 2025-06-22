@@ -66,6 +66,12 @@ export default function ManageStudentsPage() {
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); 
+  
+  // State for viewing parent details
+  const [isViewParentsDialogOpen, setIsViewParentsDialogOpen] = useState(false);
+  const [selectedStudentForParents, setSelectedStudentForParents] = useState<StudentDisplay | null>(null);
+  const [linkedParentsDetails, setLinkedParentsDetails] = useState<UserProfile[]>([]);
+  const [loadingParentDetails, setLoadingParentDetails] = useState(false);
 
   const { toast } = useToast();
 
@@ -85,7 +91,6 @@ export default function ManageStudentsPage() {
     setLoadingData(true);
     setError(null);
     try {
-      // Fetch students
       const studentsQuery = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
       const studentsSnapshot = await getDocs(studentsQuery);
       const studentList = studentsSnapshot.docs.map(doc => ({
@@ -102,7 +107,6 @@ export default function ManageStudentsPage() {
       })) as StudentDisplay[];
       setAllStudents(studentList);
 
-      // Fetch classes
       const classesQuery = query(collection(db, "classes"), where("schoolId", "==", adminSchoolId));
       const classesSnapshot = await getDocs(classesQuery);
       const classListItems = classesSnapshot.docs.map(doc => ({
@@ -127,11 +131,7 @@ export default function ManageStudentsPage() {
   const groupedStudents = useMemo(() => {
     const byClass: Record<string, StudentDisplay[]> = {};
     const unassigned: StudentDisplay[] = [];
-
-    allClasses.forEach(cls => {
-      byClass[cls.id] = [];
-    });
-
+    allClasses.forEach(cls => { byClass[cls.id] = []; });
     allStudents.forEach(student => {
       let assigned = false;
       if (student.classIds && student.classIds.length > 0) {
@@ -142,13 +142,10 @@ export default function ManageStudentsPage() {
           }
         });
       }
-      if (!assigned) {
-        unassigned.push(student);
-      }
+      if (!assigned) { unassigned.push(student); }
     });
     return { byClass, unassigned };
   }, [allStudents, allClasses]);
-
 
   const onAddSubmit: SubmitHandler<StudentFormData> = async (data) => {
     if (!adminSchoolId) {
@@ -157,35 +154,23 @@ export default function ManageStudentsPage() {
     }
     try {
       const studentData: any = {
-        name: data.name,
-        email: data.email || null,
-        role: "Student",
-        studentInfo: data.studentInfo || null,
-        avatarUrl: data.avatarUrl || null,
-        createdAt: Timestamp.now(),
+        name: data.name, email: data.email || null, role: "Student", studentInfo: data.studentInfo || null,
+        avatarUrl: data.avatarUrl || null, createdAt: Timestamp.now(), 
         classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
-        parentIds: [],
-        schoolId: adminSchoolId, 
+        parentIds: [], schoolId: adminSchoolId, 
       };
-
       const docRef = await addDoc(collection(db, "users"), studentData);
-      
       if (data.classId && data.classId !== 'none_class_option') {
         const classRef = doc(db, "classes", data.classId);
         const classSnap = await getDoc(classRef);
         if(classSnap.exists() && classSnap.data().schoolId === adminSchoolId) {
-            await updateDoc(classRef, {
-              studentIds: arrayUnion(docRef.id)
-            });
+            await updateDoc(classRef, { studentIds: arrayUnion(docRef.id) });
         } else {
             toast({ variant: "warning", title: translate("studentManagementWarningClassMismatchTitle"), description: translate("studentManagementWarningClassMismatchDesc") });
         }
       }
-
       toast({ title: translate("studentManagementSuccessAddTitle"), description: translate("studentManagementSuccessAddDesc") });
-      reset();
-      setIsAddDialogOpen(false);
-      fetchData(); // Refresh data
+      reset(); setIsAddDialogOpen(false); fetchData();
     } catch (err: any) {
       console.error("Error adding student:", err);
       toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAddFailed") });
@@ -205,25 +190,18 @@ export default function ManageStudentsPage() {
         return;
     }
      if (newAvatarUrl.trim() !== "" ) {
-      try {
-          new URL(newAvatarUrl.trim());
-      } catch (_) {
+      try { new URL(newAvatarUrl.trim()); } catch (_) {
          if(newAvatarUrl.trim() !== "") {
-            toast({ variant: "destructive", title: "Invalid URL", description: translate("invalidUrlDesc") });
-            return;
+            toast({ variant: "destructive", title: "Invalid URL", description: translate("invalidUrlDesc") }); return;
          }
       }
     }
     setIsSubmittingAvatar(true);
     try {
       const studentRef = doc(db, "users", currentEditingStudent!.id);
-      await updateDoc(studentRef, {
-        avatarUrl: newAvatarUrl.trim() === "" ? null : newAvatarUrl.trim(),
-      });
+      await updateDoc(studentRef, { avatarUrl: newAvatarUrl.trim() === "" ? null : newAvatarUrl.trim() });
       toast({ title: translate("studentManagementSuccessAvatarTitle"), description: translate("studentManagementSuccessAvatarDesc") });
-      setIsEditAvatarDialogOpen(false);
-      setCurrentEditingStudent(null);
-      fetchData(); // Refresh data
+      setIsEditAvatarDialogOpen(false); setCurrentEditingStudent(null); fetchData();
     } catch (err: any) {
       console.error("Error updating avatar:", err);
       toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorAvatarUpdateFailed") });
@@ -236,19 +214,16 @@ export default function ManageStudentsPage() {
     if (!studentToDelete || !adminSchoolId) return;
     if (studentToDelete.schoolId !== adminSchoolId) {
         toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentManagementErrorDeleteSchoolMismatch") });
-        setStudentToDelete(null);
-        return;
+        setStudentToDelete(null); return;
     }
     setIsDeletingStudent(true);
     try {
         const studentDocRef = doc(db, "users", studentToDelete.id);
         const studentDocSnap = await getDoc(studentDocRef);
         if (!studentDocSnap.exists()) throw new Error("Student document not found.");
-        
         const studentData = studentDocSnap.data() as Student;
         const batch = writeBatch(db);
         batch.delete(studentDocRef);
-
         if (studentData.classIds && studentData.classIds.length > 0) {
             for (const classId of studentData.classIds) {
                 const classRef = doc(db, "classes", classId);
@@ -266,13 +241,33 @@ export default function ManageStudentsPage() {
         }
         await batch.commit();
         toast({ title: translate("studentDeleteSuccessTitle"), description: translate("studentDeleteSuccessDesc", { name: studentToDelete.name }) });
-        fetchData(); // Refresh data
+        fetchData();
     } catch (err: any) {
         console.error("Error deleting student:", err);
         toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentDeleteFailedDesc") });
     } finally {
-        setIsDeletingStudent(false);
-        setStudentToDelete(null);
+        setIsDeletingStudent(false); setStudentToDelete(null);
+    }
+  };
+
+  const handleViewParents = async (student: StudentDisplay) => {
+    if (!student.parentIds || student.parentIds.length === 0) {
+        toast({ title: translate("noLinkedParentsTitle") || "No Linked Parents", description: translate("noLinkedParentsDesc") || "This student does not have any parents linked." });
+        return;
+    }
+    setSelectedStudentForParents(student);
+    setIsViewParentsDialogOpen(true);
+    setLoadingParentDetails(true);
+    setLinkedParentsDetails([]);
+    try {
+        const parentsQuery = query(collection(db, "users"), where("__name__", "in", student.parentIds.slice(0, 30)));
+        const querySnapshot = await getDocs(parentsQuery);
+        const parentList = querySnapshot.docs.map(doc => ({ ...(doc.data() as UserProfile), uid: doc.id }));
+        setLinkedParentsDetails(parentList);
+    } catch (err: any) {
+        toast({ variant: "destructive", title: translate("errorTitle"), description: translate("errorLoadingParentDetails") });
+    } finally {
+        setLoadingParentDetails(false);
     }
   };
 
@@ -285,6 +280,7 @@ export default function ManageStudentsPage() {
             <TableHead>{translate("nameLabel")}</TableHead>
             <TableHead>{translate("emailLabel")}</TableHead>
             <TableHead>{translate("studentManagementStudentInfoLabel")}</TableHead>
+            <TableHead>{translate("linkedParents")}</TableHead>
             <TableHead className="text-right">{translate("actionsLabel")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -301,6 +297,11 @@ export default function ManageStudentsPage() {
                 <TableCell className="font-medium">{student.name}</TableCell>
                 <TableCell>{student.email || 'N/A'}</TableCell>
                 <TableCell>{student.studentInfo || 'N/A'}</TableCell>
+                <TableCell>
+                  <Button variant="outline" size="sm" onClick={() => handleViewParents(student)} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0}>
+                    <Users className="h-4 w-4" /> {student.parentIds?.length || 0}
+                  </Button>
+                </TableCell>
                 <TableCell className="text-right space-x-2">
                    <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                       <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton")}
@@ -334,7 +335,7 @@ export default function ManageStudentsPage() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={6} className="h-24 text-center">
                 {translate("studentManagementNoStudentsInClass") || "No students in this class."}
               </TableCell>
             </TableRow>
@@ -343,7 +344,6 @@ export default function ManageStudentsPage() {
       </Table>
     </div>
   );
-
 
   if (authLoading) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -375,7 +375,6 @@ export default function ManageStudentsPage() {
                   <DialogDescription>{translate("studentManagementAddDialogDesc")}</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
-                   {/* Form fields same as before */}
                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">{translate("nameLabel")}</Label>
                       <div className="col-span-3">
@@ -412,7 +411,7 @@ export default function ManageStudentsPage() {
                               render={({ field }) => (
                                   <Select
                                       onValueChange={field.onChange}
-                                      value={field.value || 'none_class_option'} // Ensure a default value for controlled component
+                                      value={field.value || 'none_class_option'}
                                       disabled={loadingData || allClasses.length === 0}
                                   >
                                       <SelectTrigger id="classId">
@@ -545,7 +544,45 @@ export default function ManageStudentsPage() {
             </DialogFooter>
         </DialogContent>
     </Dialog>
+    
+    <Dialog open={isViewParentsDialogOpen} onOpenChange={setIsViewParentsDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{translate('parentDetailsForStudent', { studentName: selectedStudentForParents?.name || "Student" })}</DialogTitle>
+          <DialogDescription>{translate('listOfLinkedParentsDesc', 'The following parents are linked to this student.')}</DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          {loadingParentDetails ? (
+            <div className="flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2">{translate('loadingParentDetails', 'Loading parent details...')}</span>
+            </div>
+          ) : linkedParentsDetails.length > 0 ? (
+            <ul className="space-y-3">
+              {linkedParentsDetails.map(parent => (
+                <li key={parent.uid} className="flex items-center gap-4 p-2 border rounded-md">
+                  <Avatar>
+                    <AvatarImage src={parent.avatarUrl || undefined} alt={parent.name} />
+                    <AvatarFallback>{getInitials(parent.name || "P")}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{parent.name}</p>
+                    <p className="text-sm text-muted-foreground">{parent.email}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-muted-foreground">{translate('noLinkedParents', 'No parents found for this student.')}</p>
+          )}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">{translate('closeButton', 'Close')}</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }
-

@@ -60,6 +60,7 @@
   "totalTeachers": "மொத்த ஆசிரியர்கள்",
   "registeredTeachers": "பதிவுசெய்யப்பட்ட ஆசிரியர்கள்",
   "attendanceToday": "இன்றைய வருகை",
+  "dailyAttendanceSummary": "இன்று குறிக்கப்பட்ட வருகைப் பதிவுகளின் சுருக்கம்.",
   "recordsMarkedToday": "இன்று குறிக்கப்பட்ட பதிவுகள்",
   "welcomeAdminTitle": "வருக, நிர்வாகி!",
   "adminDashboardDescription": "வகுப்புகள், மாணவர்கள், ஆசிரியர்கள், பெற்றோர், பணிகள் ஆகியவற்றை நிர்வகிக்கவும், அறிக்கைகளைப் பார்க்கவும் பக்கப்பட்டியைப் பயன்படுத்தவும்.",
@@ -442,5 +443,16 @@
   "installButtonLabel": "செயலியை நிறுவவும்",
   "installButtonText": "நிறுவு",
   "dismissButtonLabel": "நிராகரி",
-  "goToHomePageButton": "முகப்புக்குச் செல்லவும்"
+  "goToHomePageButton": "முகப்புக்குச் செல்லவும்",
+  "classesReportedToday": "இன்று அறிக்கை செய்த வகுப்புகள்",
+  "classesMarkedOutOfTotal": "வருகை குறிக்கப்பட்ட வகுப்புகள்",
+  "linkedParents": "இணைக்கப்பட்ட பெற்றோர்",
+  "noLinkedParentsTitle": "இணைக்கப்பட்ட பெற்றோர் இல்லை",
+  "noLinkedParentsDesc": "இந்த மாணவருக்கு எந்த பெற்றோரும் இணைக்கப்படவில்லை.",
+  "errorLoadingParentDetails": "பெற்றோர் விவரங்களை ஏற்றுவதில் தோல்வி.",
+  "parentDetailsForStudent": "{{studentName}} க்கான பெற்றோர் விவரங்கள்",
+  "listOfLinkedParentsDesc": "பின்வரும் பெற்றோர் இந்த மாணவருடன் இணைக்கப்பட்டுள்ளனர்.",
+  "loadingParentDetails": "பெற்றோர் விவரங்கள் ஏற்றப்படுகின்றன...",
+  "noLinkedParents": "இந்த மாணவருக்கு பெற்றோர் யாரும் இல்லை.",
+  "closeButton": "மூடு"
 }

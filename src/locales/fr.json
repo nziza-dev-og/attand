@@ -60,6 +60,7 @@
   "totalTeachers": "Total des Enseignants",
   "registeredTeachers": "Enseignants inscrits",
   "attendanceToday": "Présence Aujourd'hui",
+  "dailyAttendanceSummary": "Un résumé des registres de présence marqués aujourd'hui.",
   "recordsMarkedToday": "Enregistrements marqués aujourd'hui",
   "welcomeAdminTitle": "Bienvenue, Admin !",
   "adminDashboardDescription": "Utilisez la barre latérale pour gérer les classes, étudiants, enseignants, parents, affectations et voir les rapports.",
@@ -445,5 +446,16 @@
   "installButtonLabel": "Installer l'application",
   "installButtonText": "Installer",
   "dismissButtonLabel": "Ignorer",
-  "goToHomePageButton": "Aller à l'Accueil"
+  "goToHomePageButton": "Aller à l'Accueil",
+  "classesReportedToday": "Classes ayant fait un rapport aujourd'hui",
+  "classesMarkedOutOfTotal": "Classes ayant marqué la présence",
+  "linkedParents": "Parents liés",
+  "noLinkedParentsTitle": "Aucun parent lié",
+  "noLinkedParentsDesc": "Cet étudiant n'a aucun parent lié.",
+  "errorLoadingParentDetails": "Échec du chargement des détails du parent.",
+  "parentDetailsForStudent": "Détails du parent pour {{studentName}}",
+  "listOfLinkedParentsDesc": "Les parents suivants sont liés à cet étudiant.",
+  "loadingParentDetails": "Chargement des détails du parent...",
+  "noLinkedParents": "Aucun parent trouvé pour cet étudiant.",
+  "closeButton": "Fermer"
 }

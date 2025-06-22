@@ -60,6 +60,7 @@
   "totalTeachers": "Àpapọ̀ Àwọn Olùkọ́",
   "registeredTeachers": "Àwọn olùkọ́ tí wọ́n ti forúkọsílẹ̀",
   "attendanceToday": "Wíwàsí Lónìí",
+  "dailyAttendanceSummary": "Àkópọ̀ àwọn àkọsílẹ̀ wíwàsí tí a sàmì sí lónìí.",
   "recordsMarkedToday": "Àwọn àkọsílẹ̀ tí a sàmì sí lónìí",
   "welcomeAdminTitle": "Bienvenue, Admin!",
   "adminDashboardDescription": "Koresha uruhande rw'ibumoso mu gucunga amashuri, abanyeshuri, abarimu, ababyeyi, imikoro, no kureba raporo.",
@@ -445,5 +446,16 @@
   "installButtonLabel": "Shyiramo Porogaramu",
   "installButtonText": "Shyiramo",
   "dismissButtonLabel": "Hagarika",
-  "goToHomePageButton": "Jya Ahabanza"
+  "goToHomePageButton": "Jya Ahabanza",
+  "classesReportedToday": "Àwọn Kílásì Tí Wọ́n Ròyìn Lónìí",
+  "classesMarkedOutOfTotal": "Àwọn kílásì tí wọ́n ti sàmì sí wíwàsí",
+  "linkedParents": "Àwọn Òbí Tí A Sopọ̀",
+  "noLinkedParentsTitle": "Kò sí Òbí Tí A Sopọ̀",
+  "noLinkedParentsDesc": "Akẹ́kọ̀ọ́ yìí kò ní òbí kankan tí a sopọ̀ mọ́.",
+  "errorLoadingParentDetails": "Kò lè gba àwọn àlàyé òbí.",
+  "parentDetailsForStudent": "Àwọn Àlàyé Òbí fún {{studentName}}",
+  "listOfLinkedParentsDesc": "Àwọn òbí wọ̀nyí ni a sopọ̀ mọ́ akẹ́kọ̀ọ́ yìí.",
+  "loadingParentDetails": "Ń gba àwọn àlàyé òbí...",
+  "noLinkedParents": "Kò sí òbí kan tí a rí fún akẹ́kọ̀ọ́ yìí.",
+  "closeButton": "Tìpa"
 }
