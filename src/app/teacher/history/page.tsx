@@ -1,3 +1,4 @@
+
 // src/app/teacher/history/page.tsx
 "use client";
 
@@ -68,47 +69,59 @@ export default function AttendanceHistoryPage() {
 
       setLoadingDropdowns(true);
       try {
-        // 1. Fetch Teacher's assigned class IDs
         const teacherDocRef = doc(db, 'users', user.uid);
         const teacherDocSnap = await getDoc(teacherDocRef);
-        let assignedClassIds: string[] = [];
-        if (teacherDocSnap.exists() && teacherDocSnap.data().role === 'Teacher') {
-          assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
-        } else {
-          throw new Error("Teacher profile not found or invalid role.");
+        
+        if (!teacherDocSnap.exists() || teacherDocSnap.data().role !== 'Teacher') {
+            throw new Error("Teacher profile not found or invalid role.");
         }
 
-        if (assignedClassIds.length === 0) {
-          setTeacherClasses([]);
-          setStudents([]);
-          setLoadingDropdowns(false);
-          toast({ variant: "destructive", title: "No Classes", description: "You are not assigned to any classes." });
-          return;
+        const assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
+        if (!Array.isArray(assignedClassIds) || assignedClassIds.length === 0) {
+            setTeacherClasses([]);
+            setStudents([]);
+            toast({ variant: "destructive", title: "No Classes", description: "You are not assigned to any classes." });
+            setLoadingDropdowns(false);
+            return;
         }
 
-        // 2. Fetch Class Details
-        if (assignedClassIds.length > 30) console.warn("Teacher assigned to more than 30 classes, query might need batching.");
-        const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', assignedClassIds.slice(0, 30)));
-        const classSnap = await getDocs(classesQuery);
-        const classes = classSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name } as SelectItemType));
+        // Batch fetch Class Details
+        const classPromises = [];
+        for (let i = 0; i < assignedClassIds.length; i += 30) {
+            const batchIds = assignedClassIds.slice(i, i + 30);
+            const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', batchIds));
+            classPromises.push(getDocs(classesQuery));
+        }
+        const classSnapshots = await Promise.all(classPromises);
+        const classes: SelectItemType[] = [];
+        const allStudentIds: string[] = [];
+        classSnapshots.forEach(snapshot => {
+            snapshot.docs.forEach(doc => {
+                classes.push({ id: doc.id, name: doc.data().name } as SelectItemType);
+                allStudentIds.push(...(doc.data().studentIds || []));
+            });
+        });
         setTeacherClasses(classes);
 
-        // 3. Fetch All Students in those Classes
-        let allStudentIds: string[] = [];
-        classSnap.docs.forEach(doc => {
-          allStudentIds = [...allStudentIds, ...(doc.data().studentIds || [])];
-        });
-        const uniqueStudentIds = [...new Set(allStudentIds)]; // Get unique student IDs
-
+        // Fetch All Students in those Classes
+        const uniqueStudentIds = [...new Set(allStudentIds)];
         if (uniqueStudentIds.length > 0) {
-           // Fetch student details (batching if > 30 students)
-          if (uniqueStudentIds.length > 30) console.warn("Fetching details for > 30 students, consider batching.");
-          const studentsQuery = query(collection(db, 'users'), where('__name__', 'in', uniqueStudentIds.slice(0, 30)), where('role', '==', 'Student'));
-          const studentSnap = await getDocs(studentsQuery);
-          const studentList = studentSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name || 'Unnamed Student' } as SelectItemType));
-          setStudents(studentList);
+            const studentPromises = [];
+            for (let i = 0; i < uniqueStudentIds.length; i += 30) {
+                const batchIds = uniqueStudentIds.slice(i, i + 30);
+                const studentsQuery = query(collection(db, 'users'), where('__name__', 'in', batchIds), where('role', '==', 'Student'));
+                studentPromises.push(getDocs(studentsQuery));
+            }
+            const studentSnapshots = await Promise.all(studentPromises);
+            const studentList: SelectItemType[] = [];
+            studentSnapshots.forEach(snapshot => {
+                snapshot.docs.forEach(doc => {
+                    studentList.push({ id: doc.id, name: doc.data().name || 'Unnamed Student' } as SelectItemType);
+                });
+            });
+            setStudents(studentList);
         } else {
-          setStudents([]);
+            setStudents([]);
         }
 
       } catch (err: any) {
@@ -133,27 +146,29 @@ export default function AttendanceHistoryPage() {
 
     try {
         // Start with base query for records marked by this teacher
-        let attendanceQuery = query(
-            collection(db, "attendanceRecords"),
-            where("markedBy", "==", user.uid), // Filter by current teacher
-            orderBy("timestamp", "desc") // Order by most recent first
-        );
+        let qConstraints = [
+          where("markedBy", "==", user.uid),
+        ];
 
         // Apply filters
         if (selectedClass && selectedClass !== 'all') {
-            attendanceQuery = query(attendanceQuery, where("classId", "==", selectedClass));
+            qConstraints.push(where("classId", "==", selectedClass));
         }
         if (selectedStudent && selectedStudent !== 'all') {
-            attendanceQuery = query(attendanceQuery, where("studentId", "==", selectedStudent));
+            qConstraints.push(where("studentId", "==", selectedStudent));
         }
         if (startDate) {
-            const startTimestamp = Timestamp.fromDate(startOfDay(startDate));
-            attendanceQuery = query(attendanceQuery, where("timestamp", ">=", startTimestamp));
+            qConstraints.push(where("timestamp", ">=", Timestamp.fromDate(startOfDay(startDate))));
         }
         if (endDate) {
-            const endTimestamp = Timestamp.fromDate(endOfDay(endDate));
-            attendanceQuery = query(attendanceQuery, where("timestamp", "<=", endTimestamp));
+            qConstraints.push(where("timestamp", "<=", Timestamp.fromDate(endOfDay(endDate))));
         }
+
+        const attendanceQuery = query(
+            collection(db, "attendanceRecords"),
+            ...qConstraints,
+            orderBy("timestamp", "desc") // Order by most recent first
+        );
 
         const attendanceSnap = await getDocs(attendanceQuery);
         const records = attendanceSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));

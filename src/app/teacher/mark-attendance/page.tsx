@@ -45,17 +45,28 @@ export default function MarkAttendancePage() {
 
             if (teacherDocSnap.exists() && teacherDocSnap.data().role === 'Teacher') {
                 const assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
-                if (assignedClassIds.length > 0) {
-                     if (assignedClassIds.length > 30) console.warn("Teacher assigned to more than 30 classes, query might need batching.");
-
-                     const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', assignedClassIds.slice(0, 30)));
-                     const classSnap = await getDocs(classesQuery);
-                     const classes = classSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name } as SelectClassType));
-                     setTeacherClasses(classes);
-                 } else {
+                
+                if (Array.isArray(assignedClassIds) && assignedClassIds.length > 0) {
+                    const classPromises = [];
+                    // Firestore 'in' query has a limit of 30. Batch if necessary.
+                    for (let i = 0; i < assignedClassIds.length; i += 30) {
+                        const batchIds = assignedClassIds.slice(i, i + 30);
+                        const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', batchIds));
+                        classPromises.push(getDocs(classesQuery));
+                    }
+                    
+                    const classSnapshots = await Promise.all(classPromises);
+                    const classes: SelectClassType[] = [];
+                    classSnapshots.forEach(snapshot => {
+                        snapshot.docs.forEach(doc => {
+                            classes.push({ id: doc.id, name: doc.data().name } as SelectClassType);
+                        });
+                    });
+                    setTeacherClasses(classes);
+                } else {
                     setTeacherClasses([]);
                     toast({ variant: "destructive", title: "No Classes", description: "You are not assigned to any classes." });
-                 }
+                }
             } else {
                  setTeacherClasses([]);
                  toast({ variant: "destructive", title: "Error", description: "Could not find teacher profile." });

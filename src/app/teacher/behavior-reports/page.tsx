@@ -66,10 +66,23 @@ export default function TeacherBehaviorReportsPage() {
         if (teacherDocSnap.exists() && teacherDocSnap.data().role === 'Teacher') {
           const assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
           if (Array.isArray(assignedClassIds) && assignedClassIds.length > 0) {
-            if (assignedClassIds.length > 30) console.warn("Teacher assigned to >30 classes");
-            const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', assignedClassIds.slice(0, 30)));
-            const classSnap = await getDocs(classesQuery);
-            setTeacherClasses(classSnap.docs.map(d => ({ id: d.id, name: d.data().name })));
+            
+            const classPromises = [];
+            // Firestore 'in' query has a limit of 30. Batch if necessary.
+            for (let i = 0; i < assignedClassIds.length; i += 30) {
+                const batchIds = assignedClassIds.slice(i, i + 30);
+                const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', batchIds));
+                classPromises.push(getDocs(classesQuery));
+            }
+            const classSnapshots = await Promise.all(classPromises);
+            const classes: ClassSelectItem[] = [];
+            classSnapshots.forEach(snapshot => {
+                snapshot.docs.forEach(doc => {
+                    classes.push({ id: doc.id, name: doc.data().name });
+                });
+            });
+            setTeacherClasses(classes);
+
           } else {
             toast({ variant: "default", title: "No Classes", description: "You are not assigned to any classes to create reports for." });
             setTeacherClasses([]);
