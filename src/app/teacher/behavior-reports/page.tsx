@@ -1,3 +1,4 @@
+
 // src/app/teacher/behavior-reports/page.tsx
 "use client";
 
@@ -38,7 +39,7 @@ interface StudentSelectItem { id: string; name: string; }
 interface ClassSelectItem { id: string; name: string; }
 
 export default function TeacherBehaviorReportsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, schoolId, loading: authLoading } = useAuth();
   const [teacherClasses, setTeacherClasses] = useState<ClassSelectItem[]>([]);
   const [studentsInClass, setStudentsInClass] = useState<StudentSelectItem[]>([]);
   const [loadingInitialData, setLoadingInitialData] = useState(true);
@@ -64,16 +65,18 @@ export default function TeacherBehaviorReportsPage() {
         const teacherDocSnap = await getDoc(teacherDocRef);
         if (teacherDocSnap.exists() && teacherDocSnap.data().role === 'Teacher') {
           const assignedClassIds = teacherDocSnap.data().assignedClassIds || [];
-          if (assignedClassIds.length > 0) {
+          if (Array.isArray(assignedClassIds) && assignedClassIds.length > 0) {
             if (assignedClassIds.length > 30) console.warn("Teacher assigned to >30 classes");
             const classesQuery = query(collection(db, 'classes'), where('__name__', 'in', assignedClassIds.slice(0, 30)));
             const classSnap = await getDocs(classesQuery);
             setTeacherClasses(classSnap.docs.map(d => ({ id: d.id, name: d.data().name })));
           } else {
-            toast({ variant: "destructive", title: "No Classes", description: "You are not assigned to any classes." });
+            toast({ variant: "default", title: "No Classes", description: "You are not assigned to any classes to create reports for." });
+            setTeacherClasses([]);
           }
         }
       } catch (err) {
+        console.error("Error fetching teacher's classes:", err);
         toast({ variant: "destructive", title: "Error", description: "Failed to load your classes." });
       } finally {
         setLoadingInitialData(false);
@@ -119,6 +122,11 @@ export default function TeacherBehaviorReportsPage() {
   const onSubmit: SubmitHandler<ReportFormData> = async (data) => {
     if (!user || !user.email) return;
 
+    if (!schoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Your account is not linked to a school. Cannot submit report." });
+      return;
+    }
+
     const selectedStudent = studentsInClass.find(s => s.id === data.studentId);
     if (!selectedStudent) {
         toast({ variant: "destructive", title: "Error", description: "Selected student not found." });
@@ -138,6 +146,7 @@ export default function TeacherBehaviorReportsPage() {
         description: data.description,
         severity: data.severity || null,
         createdAt: Timestamp.now(),
+        schoolId: schoolId,
       });
       toast({ title: "Success", description: "Behavior report submitted successfully." });
       reset({ reportDate: new Date(), title: "", description: "", classId: data.classId, studentId: "", severity: undefined });
