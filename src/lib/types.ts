@@ -40,7 +40,7 @@ export interface Class {
 
 export interface Student extends UserProfile {
   role: 'Student';
-  studentInfo?: string; // e.g., Roll number, Admission ID
+  studentIdInfo?: string; // e.g., Roll number, Admission ID
   classIds?: string[]; // IDs of classes the student is enrolled in
   parentIds?: string[]; // UIDs of linked parents
   schoolId: string; // Students must belong to a school

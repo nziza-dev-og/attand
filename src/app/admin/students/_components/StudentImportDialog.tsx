@@ -27,7 +27,7 @@ interface StudentImportDialogProps {
 interface CsvStudent {
   Name?: string | number | boolean;
   Email?: string | number | boolean;
-  StudentInfo?: string | number | boolean;
+  StudentIdInfo?: string | number | boolean;
   AvatarURL?: string | number | boolean;
   ClassName?: string | number | boolean; // New optional column for class name
 }
@@ -112,7 +112,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
           name: studentNameStr,
           email: String(csvStudent.Email || "").trim() || null,
           role: "Student",
-          studentInfo: String(csvStudent.StudentInfo || "").trim() || null,
+          studentIdInfo: String(csvStudent.StudentIdInfo || "").trim() || null,
           avatarUrl: String(csvStudent.AvatarURL || "").trim() || null,
           createdAt: Timestamp.now(),
           schoolId: adminSchoolId,
@@ -253,7 +253,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentInfo', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
+            {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentIdInfo', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -306,4 +306,3 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     </Dialog>
   );
 }
-

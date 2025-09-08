@@ -25,7 +25,7 @@ interface ParentDisplay extends Omit<UserProfile, 'role' | 'uid' | 'createdAt'>,
     enteredSchoolCode?: string;
 }
 
-interface StudentSelectItem extends Pick<Student, 'id' | 'name' | 'studentInfo' | 'schoolId'> {}
+interface StudentSelectItem extends Pick<Student, 'id' | 'name' | 'studentIdInfo' | 'schoolId'> {}
 
 export default function ManageParentsPage() {
   const { schoolId: adminSchoolId, user: adminUser, loading: authLoading } = useAuth();
@@ -79,7 +79,7 @@ export default function ManageParentsPage() {
         const schoolStudentList = studentsSnapshot.docs.map(docSnap => ({
             id: docSnap.id,
             name: docSnap.data().name || 'Unnamed Student',
-            studentInfo: docSnap.data().studentInfo || 'N/A',
+            studentIdInfo: docSnap.data().studentIdInfo || 'N/A',
             schoolId: docSnap.data().schoolId,
         } as StudentSelectItem));
         setStudentsInSchool(schoolStudentList);
@@ -368,7 +368,7 @@ export default function ManageParentsPage() {
                                             onCheckedChange={(checked) => handleStudentSelectionChange(student.id, checked)}
                                         />
                                         <Label htmlFor={`linked-student-${student.id}`} className="flex-1 cursor-pointer">
-                                            {student.name} <span className="text-xs text-muted-foreground">({student.studentInfo || 'No Info'})</span>
+                                            {student.name} <span className="text-xs text-muted-foreground">({student.studentIdInfo || 'No Info'})</span>
                                         </Label>
                                     </div>
                                 ))}
@@ -407,7 +407,7 @@ export default function ManageParentsPage() {
                                              onCheckedChange={(checked) => handleStudentSelectionChange(student.id, checked)}
                                          />
                                          <Label htmlFor={`available-student-${student.id}`} className="flex-1 cursor-pointer">
-                                             {student.name} <span className="text-xs text-muted-foreground">({student.studentInfo || 'No Info'})</span>
+                                             {student.name} <span className="text-xs text-muted-foreground">({student.studentIdInfo || 'No Info'})</span>
                                          </Label>
                                      </div>
                                  ))}
