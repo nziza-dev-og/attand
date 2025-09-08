@@ -1,4 +1,3 @@
-
 // src/app/admin/students/page.tsx
 "use client";
 
@@ -25,6 +24,7 @@ import type { Student, UserProfile, Class } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -61,12 +61,12 @@ export default function ManageStudentsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditAvatarDialogOpen, setIsEditAvatarDialogOpen] = useState(false);
   const [currentEditingStudent, setCurrentEditingStudent] = useState<StudentDisplay | null>(null);
-  const [studentToDelete, setStudentToDelete] = useState<StudentDisplay | null>(null);
-  const [isDeletingStudent, setIsDeletingStudent] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); 
-  
+  const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
+
   // State for viewing parent details
   const [isViewParentsDialogOpen, setIsViewParentsDialogOpen] = useState(false);
   const [selectedStudentForParents, setSelectedStudentForParents] = useState<StudentDisplay | null>(null);
@@ -127,7 +127,7 @@ export default function ManageStudentsPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
+  
   const groupedStudents = useMemo(() => {
     const byClass: Record<string, StudentDisplay[]> = {};
     const unassigned: StudentDisplay[] = [];
@@ -210,46 +210,60 @@ export default function ManageStudentsPage() {
     }
   };
 
-  const handleDeleteStudent = async () => {
-    if (!studentToDelete || !adminSchoolId) return;
-    if (studentToDelete.schoolId !== adminSchoolId) {
-        toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentManagementErrorDeleteSchoolMismatch") });
-        setStudentToDelete(null); return;
-    }
-    setIsDeletingStudent(true);
+  const handleDeleteSelected = async () => {
+    if (selectedStudents.size === 0 || !adminSchoolId) return;
+    setIsDeleting(true);
     try {
-        const studentDocRef = doc(db, "users", studentToDelete.id);
-        const studentDocSnap = await getDoc(studentDocRef);
-        if (!studentDocSnap.exists()) throw new Error("Student document not found.");
-        const studentData = studentDocSnap.data() as Student;
         const batch = writeBatch(db);
-        batch.delete(studentDocRef);
-        if (studentData.classIds && studentData.classIds.length > 0) {
-            for (const classId of studentData.classIds) {
-                const classRef = doc(db, "classes", classId);
-                const classSnap = await getDoc(classRef);
-                if (classSnap.exists() && classSnap.data()?.schoolId === adminSchoolId) {
-                    batch.update(classRef, { studentIds: arrayRemove(studentToDelete.id) });
-                }
+        const studentDocs = new Map<string, Student>();
+        
+        // Fetch student data to find out their class and parent links
+        for (const studentId of Array.from(selectedStudents)) {
+            const studentDocRef = doc(db, "users", studentId);
+            const studentDocSnap = await getDoc(studentDocRef);
+            if (studentDocSnap.exists() && studentDocSnap.data()?.schoolId === adminSchoolId) {
+                studentDocs.set(studentId, studentDocSnap.data() as Student);
+                batch.delete(studentDocRef);
             }
         }
-        if (studentData.parentIds && studentData.parentIds.length > 0) {
-            for (const parentId of studentData.parentIds) {
-                const parentRef = doc(db, "users", parentId);
-                batch.update(parentRef, { childIds: arrayRemove(studentToDelete.id) });
-            }
-        }
+
+        const classUpdates = new Map<string, string[]>();
+        const parentUpdates = new Map<string, string[]>();
+
+        studentDocs.forEach((studentData, studentId) => {
+            studentData.classIds?.forEach(classId => {
+                if (!classUpdates.has(classId)) classUpdates.set(classId, []);
+                classUpdates.get(classId)?.push(studentId);
+            });
+            studentData.parentIds?.forEach(parentId => {
+                 if (!parentUpdates.has(parentId)) parentUpdates.set(parentId, []);
+                 parentUpdates.get(parentId)?.push(studentId);
+            });
+        });
+
+        classUpdates.forEach((studentIds, classId) => {
+            const classRef = doc(db, "classes", classId);
+            batch.update(classRef, { studentIds: arrayRemove(...studentIds) });
+        });
+
+        parentUpdates.forEach((studentIds, parentId) => {
+            const parentRef = doc(db, "users", parentId);
+            batch.update(parentRef, { childIds: arrayRemove(...studentIds) });
+        });
+
         await batch.commit();
-        toast({ title: translate("studentDeleteSuccessTitle"), description: translate("studentDeleteSuccessDesc", { name: studentToDelete.name }) });
-        fetchData();
+
+        toast({ title: translate("studentDeleteSuccessTitle"), description: `${selectedStudents.size} students deleted.` });
+        fetchData(); // Refresh data
+        setSelectedStudents(new Set()); // Clear selection
     } catch (err: any) {
-        console.error("Error deleting student:", err);
+        console.error("Error deleting students:", err);
         toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentDeleteFailedDesc") });
     } finally {
-        setIsDeletingStudent(false); setStudentToDelete(null);
+        setIsDeleting(false);
     }
   };
-
+  
   const handleViewParents = async (student: StudentDisplay) => {
     if (!student.parentIds || student.parentIds.length === 0) {
         toast({ title: translate("noLinkedParentsTitle") || "No Linked Parents", description: translate("noLinkedParentsDesc") || "This student does not have any parents linked." });
@@ -271,11 +285,35 @@ export default function ManageStudentsPage() {
     }
   };
 
-  const renderStudentTable = (studentsToRender: StudentDisplay[]) => (
+  const toggleSelectAll = (studentIds: string[], isSelected: boolean) => {
+      setSelectedStudents(prev => {
+          const newSet = new Set(prev);
+          if (isSelected) {
+              studentIds.forEach(id => newSet.add(id));
+          } else {
+              studentIds.forEach(id => newSet.delete(id));
+          }
+          return newSet;
+      });
+  };
+
+  const renderStudentTable = (studentsToRender: StudentDisplay[]) => {
+      const allInGroupSelected = studentsToRender.length > 0 && studentsToRender.every(s => selectedStudents.has(s.id));
+      const someInGroupSelected = studentsToRender.some(s => selectedStudents.has(s.id));
+
+      return (
     <div className="border rounded-md mt-2">
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[50px]">
+                <Checkbox
+                    checked={allInGroupSelected}
+                    onCheckedChange={(checked) => toggleSelectAll(studentsToRender.map(s => s.id), checked as boolean)}
+                    aria-label="Select all students in this group"
+                    data-state={someInGroupSelected && !allInGroupSelected ? "indeterminate" : (allInGroupSelected ? "checked" : "unchecked")}
+                />
+            </TableHead>
             <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
             <TableHead>{translate("nameLabel")}</TableHead>
             <TableHead>{translate("emailLabel")}</TableHead>
@@ -287,7 +325,21 @@ export default function ManageStudentsPage() {
         <TableBody>
           {studentsToRender.length > 0 ? (
             studentsToRender.map((student) => (
-              <TableRow key={student.id}>
+              <TableRow key={student.id} data-state={selectedStudents.has(student.id) ? "selected" : ""}>
+                <TableCell>
+                    <Checkbox
+                        checked={selectedStudents.has(student.id)}
+                        onCheckedChange={(checked) => {
+                            setSelectedStudents(prev => {
+                                const newSet = new Set(prev);
+                                if (checked) newSet.add(student.id);
+                                else newSet.delete(student.id);
+                                return newSet;
+                            });
+                        }}
+                        aria-label={`Select student ${student.name}`}
+                    />
+                </TableCell>
                 <TableCell>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={student.avatarUrl || undefined} alt={student.name} />
@@ -306,36 +358,12 @@ export default function ManageStudentsPage() {
                    <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                       <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton")}
                    </Button>
-                   <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm" onClick={() => setStudentToDelete(student)} className="gap-1">
-                              <Trash2 className="h-3 w-3" /> {translate("deleteButtonLabel")}
-                          </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                          <AlertDialogHeader>
-                          <AlertDialogTitle>{translate("studentDeleteConfirmTitle")}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                              {translate("studentDeleteConfirmDesc", { name: studentToDelete?.name || "this student"})}
-                              {" "}
-                              {translate("studentDeleteConfirmActionUndone")}
-                          </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                          <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translate("cancelButton")}</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeletingStudent}>
-                              {isDeletingStudent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                              {translate("deleteButtonLabel")}
-                          </AlertDialogAction>
-                          </AlertDialogFooter>
-                      </AlertDialogContent>
-                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
+              <TableCell colSpan={7} className="h-24 text-center">
                 {translate("studentManagementNoStudentsInClass") || "No students in this class."}
               </TableCell>
             </TableRow>
@@ -343,7 +371,9 @@ export default function ManageStudentsPage() {
         </TableBody>
       </Table>
     </div>
-  );
+    )
+  };
+
 
   if (authLoading) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -448,6 +478,35 @@ export default function ManageStudentsPage() {
         </div>
       </CardHeader>
       <CardContent>
+         <div className="flex items-center gap-4 p-4 border-t">
+              <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                      <Button variant="destructive" disabled={selectedStudents.size === 0 || isDeleting}>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete Selected ({selectedStudents.size})
+                      </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                      <AlertDialogHeader>
+                          <AlertDialogTitle>Delete {selectedStudents.size} Students?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                              Are you sure you want to delete the selected students? This action cannot be undone and will remove them from all classes and parent links.
+                          </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDeleteSelected} disabled={isDeleting}>
+                              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                              Delete
+                          </AlertDialogAction>
+                      </AlertDialogFooter>
+                  </AlertDialogContent>
+              </AlertDialog>
+              {/* Placeholder for Move Selected button */}
+              <Button variant="outline" disabled={selectedStudents.size === 0}>
+                  Move Selected ({selectedStudents.size})
+              </Button>
+          </div>
         {loadingData ? (
            <div className="flex justify-center items-center py-10">
              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
