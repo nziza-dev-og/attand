@@ -19,7 +19,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users } from "lucide-react";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move } from "lucide-react";
 import type { Student, UserProfile, Class } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
@@ -33,7 +33,7 @@ const getInitials = (name: string = '') => {
 const studentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal('')),
-  studentIdInfo: z.string().optional(),
+  studentId: z.string().optional(),
   avatarUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   classId: z.string().optional(), 
 });
@@ -66,6 +66,11 @@ export default function ManageStudentsPage() {
   const [isSubmittingAvatar, setIsSubmittingAvatar] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false); 
   const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
+  
+  // State for move dialog
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
+  const [targetClassId, setTargetClassId] = useState('');
+  const [isMoving, setIsMoving] = useState(false);
 
   // State for viewing parent details
   const [isViewParentsDialogOpen, setIsViewParentsDialogOpen] = useState(false);
@@ -77,7 +82,7 @@ export default function ManageStudentsPage() {
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: { name: '', email: '', studentIdInfo: '', avatarUrl: '', classId: undefined }
+    defaultValues: { name: '', email: '', studentId: '', avatarUrl: '', classId: undefined }
   });
 
   const fetchData = useCallback(async () => {
@@ -101,7 +106,7 @@ export default function ManageStudentsPage() {
         role: 'Student',
         classIds: doc.data().classIds || [],
         parentIds: doc.data().parentIds || [],
-        studentIdInfo: doc.data().studentIdInfo || '',
+        studentId: doc.data().studentId || '',
         avatarUrl: doc.data().avatarUrl,
         schoolId: doc.data().schoolId, 
       })) as StudentDisplay[];
@@ -154,7 +159,7 @@ export default function ManageStudentsPage() {
     }
     try {
       const studentData: any = {
-        name: data.name, email: data.email || null, role: "Student", studentIdInfo: data.studentIdInfo || null,
+        name: data.name, email: data.email || null, role: "Student", studentId: data.studentId || null,
         avatarUrl: data.avatarUrl || null, createdAt: Timestamp.now(), 
         classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
         parentIds: [], schoolId: adminSchoolId, 
@@ -217,7 +222,6 @@ export default function ManageStudentsPage() {
         const batch = writeBatch(db);
         const studentDocs = new Map<string, Student>();
         
-        // Fetch student data to find out their class and parent links
         for (const studentId of Array.from(selectedStudents)) {
             const studentDocRef = doc(db, "users", studentId);
             const studentDocSnap = await getDoc(studentDocRef);
@@ -254,8 +258,8 @@ export default function ManageStudentsPage() {
         await batch.commit();
 
         toast({ title: translate("studentDeleteSuccessTitle"), description: `${selectedStudents.size} students deleted.` });
-        fetchData(); // Refresh data
-        setSelectedStudents(new Set()); // Clear selection
+        fetchData(); 
+        setSelectedStudents(new Set()); 
     } catch (err: any) {
         console.error("Error deleting students:", err);
         toast({ variant: "destructive", title: translate("errorTitle"), description: translate("studentDeleteFailedDesc") });
@@ -264,6 +268,72 @@ export default function ManageStudentsPage() {
     }
   };
   
+  const handleMoveSelectedStudents = async () => {
+    if (selectedStudents.size === 0 || !targetClassId || !adminSchoolId) {
+      toast({ variant: "destructive", title: "Error", description: translate("studentMoveErrorSelection") });
+      return;
+    }
+    setIsMoving(true);
+
+    const batch = writeBatch(db);
+    const studentIdsToMove = Array.from(selectedStudents);
+    const studentDocs = new Map<string, Student>();
+
+    try {
+      // 1. Fetch current data for all selected students
+      for (const studentId of studentIdsToMove) {
+        const studentRef = doc(db, "users", studentId);
+        const studentSnap = await getDoc(studentRef);
+        if (studentSnap.exists() && studentSnap.data().schoolId === adminSchoolId) {
+          studentDocs.set(studentId, studentSnap.data() as Student);
+        }
+      }
+
+      // 2. Remove students from their old classes
+      const oldClassUpdates = new Map<string, string[]>();
+      studentDocs.forEach((student, studentId) => {
+        student.classIds?.forEach(classId => {
+          if (classId !== targetClassId) { // Don't remove if they are already in the target class
+            if (!oldClassUpdates.has(classId)) oldClassUpdates.set(classId, []);
+            oldClassUpdates.get(classId)!.push(studentId);
+          }
+        });
+      });
+
+      oldClassUpdates.forEach((studentIds, classId) => {
+        const classRef = doc(db, "classes", classId);
+        batch.update(classRef, { studentIds: arrayRemove(...studentIds) });
+      });
+
+      // 3. Update each student's document to set the new class
+      studentDocs.forEach((_, studentId) => {
+        const studentRef = doc(db, "users", studentId);
+        batch.update(studentRef, { classIds: [targetClassId] }); // Assign only the new class
+      });
+      
+      // 4. Add students to the new class
+      const newClassRef = doc(db, "classes", targetClassId);
+      batch.update(newClassRef, { studentIds: arrayUnion(...studentIdsToMove) });
+
+      // 5. Commit all changes
+      await batch.commit();
+
+      toast({ title: translate("studentMoveSuccessTitle"), description: translate("studentMoveSuccessDesc", { count: studentIdsToMove.length.toString() }) });
+      
+      // 6. Reset state and refresh data
+      fetchData();
+      setSelectedStudents(new Set());
+      setIsMoveDialogOpen(false);
+      setTargetClassId('');
+
+    } catch (err: any) {
+      console.error("Error moving students:", err);
+      toast({ variant: "destructive", title: "Error", description: translate("studentMoveErrorGeneral") });
+    } finally {
+      setIsMoving(false);
+    }
+  };
+
   const handleViewParents = async (student: StudentDisplay) => {
     if (!student.parentIds || student.parentIds.length === 0) {
         toast({ title: translate("noLinkedParentsTitle") || "No Linked Parents", description: translate("noLinkedParentsDesc") || "This student does not have any parents linked." });
@@ -348,7 +418,7 @@ export default function ManageStudentsPage() {
                 </TableCell>
                 <TableCell className="font-medium">{student.name}</TableCell>
                 <TableCell>{student.email || 'N/A'}</TableCell>
-                <TableCell>{student.studentIdInfo || 'N/A'}</TableCell>
+                <TableCell>{student.studentId || 'N/A'}</TableCell>
                 <TableCell>
                   <Button variant="outline" size="sm" onClick={() => handleViewParents(student)} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0}>
                     <Users className="h-4 w-4" /> {student.parentIds?.length || 0}
@@ -420,9 +490,9 @@ export default function ManageStudentsPage() {
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="studentIdInfo" className="text-right">{translate("studentManagementStudentIdLabel")}</Label>
+                      <Label htmlFor="studentId" className="text-right">{translate("studentManagementStudentIdLabel")}</Label>
                        <div className="col-span-3">
-                          <Input id="studentIdInfo" {...register("studentIdInfo")} placeholder={translate("studentManagementStudentIdPlaceholder")}/>
+                          <Input id="studentId" {...register("studentId")} placeholder={translate("studentManagementStudentIdPlaceholder")}/>
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
@@ -483,14 +553,14 @@ export default function ManageStudentsPage() {
                   <AlertDialogTrigger asChild>
                       <Button variant="destructive" disabled={selectedStudents.size === 0 || isDeleting}>
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Selected ({selectedStudents.size})
+                          {translate('deleteSelectedWithCount', { count: selectedStudents.size.toString() })}
                       </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                       <AlertDialogHeader>
-                          <AlertDialogTitle>Delete {selectedStudents.size} Students?</AlertDialogTitle>
+                          <AlertDialogTitle>{translate('studentDeleteConfirmTitleMultiple', { count: selectedStudents.size.toString() })}</AlertDialogTitle>
                           <AlertDialogDescription>
-                              Are you sure you want to delete the selected students? This action cannot be undone and will remove them from all classes and parent links.
+                              {translate('studentDeleteConfirmDescMultiple', { count: selectedStudents.size.toString() })}
                           </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -502,10 +572,42 @@ export default function ManageStudentsPage() {
                       </AlertDialogFooter>
                   </AlertDialogContent>
               </AlertDialog>
-              {/* Placeholder for Move Selected button */}
-              <Button variant="outline" disabled={selectedStudents.size === 0}>
-                  Move Selected ({selectedStudents.size})
-              </Button>
+              <Dialog open={isMoveDialogOpen} onOpenChange={setIsMoveDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" disabled={selectedStudents.size === 0}>
+                        <Move className="mr-2 h-4 w-4" />
+                        {translate('moveSelectedWithCount', { count: selectedStudents.size.toString() })}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{translate('studentMoveDialogTitle', { count: selectedStudents.size.toString() })}</DialogTitle>
+                        <DialogDescription>{translate('studentMoveDialogDesc')}</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-2">
+                        <Label htmlFor="target-class-select">{translate('studentMoveSelectClassLabel')}</Label>
+                        <Select value={targetClassId} onValueChange={setTargetClassId}>
+                            <SelectTrigger id="target-class-select">
+                                <SelectValue placeholder={translate('studentManagementSelectClassOptionalPlaceholder')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {allClasses.map(cls => (
+                                    <SelectItem key={cls.id} value={cls.id}>
+                                        {cls.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild><Button variant="outline">{translate('cancelButton')}</Button></DialogClose>
+                        <Button onClick={handleMoveSelectedStudents} disabled={isMoving || !targetClassId}>
+                            {isMoving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {translate('studentMoveConfirmButton')}
+                        </Button>
+                    </DialogFooter>
+                  </DialogContent>
+              </Dialog>
           </div>
         {loadingData ? (
            <div className="flex justify-center items-center py-10">
