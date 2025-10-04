@@ -24,7 +24,7 @@ export interface UserProfile {
 
 export interface Class {
   id: string; // Firestore document ID
-  name: string; // e.g., "Mathematics - Grade 10A"
+  name: string; // e.g., "Grade 5 - Section A"
   teacherId?: string; // UID of the assigned teacher
   studentIds?: string[]; // Array of UIDs of students in the class
   schoolId: string; // UID of the Admin/School this class belongs to

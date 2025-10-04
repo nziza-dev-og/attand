@@ -21,7 +21,7 @@ import { Loader2, PlusCircle, Edit, Users } from "lucide-react";
 import type { Class } from "@/lib/types";
 
 const classSchema = z.object({
-  name: z.string().min(3, { message: "Class name must be at least 3 characters." }),
+  name: z.string().min(3, { message: "Grade must be at least 3 characters." }),
   teacherId: z.string().optional(),
 });
 
@@ -202,7 +202,7 @@ export default function ManageClassesPage() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="add-name" className="text-right">Class Name</Label>
+                      <Label htmlFor="add-name" className="text-right">Grade</Label>
                       <div className="col-span-3">
                           <Input id="add-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Grade 5 - Section A" />
                           {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
@@ -267,7 +267,7 @@ export default function ManageClassesPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Class Name</TableHead>
+                    <TableHead>Grade</TableHead>
                     <TableHead>Teacher</TableHead>
                     <TableHead>Students</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -321,7 +321,7 @@ export default function ManageClassesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit(onEditSubmit)} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-name" className="text-right">Class Name</Label>
+                <Label htmlFor="edit-name" className="text-right">Grade</Label>
                 <div className="col-span-3">
                     <Input id="edit-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
                     {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
