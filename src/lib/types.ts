@@ -6,7 +6,7 @@ export type Role = 'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin' | null;
 
 export interface UserProfile {
   uid: string;
-  email?: string; // Made optional
+  email?: string | null; // Made optional and nullable
   role: Role;
   name?: string; 
   schoolName?: string; 
@@ -33,6 +33,7 @@ export interface Class {
 
 export interface Student extends UserProfile {
   role: 'Student';
+  email: null; // Students explicitly have no email
   studentIdInfo?: string; // e.g., Roll number, Admission ID
   classIds?: string[]; // IDs of classes the student is enrolled in
   parentIds?: string[]; // UIDs of linked parents

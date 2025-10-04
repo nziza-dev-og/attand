@@ -28,7 +28,7 @@ interface CsvStudent {
   Name?: string | number | boolean;
   StudentId?: string | number | boolean;
   AvatarURL?: string | number | boolean;
-  ClassName?: string | number | boolean; // New optional column for class name
+  ClassName?: string | number | boolean; 
 }
 
 const BATCH_SIZE = 100;
