@@ -101,7 +101,7 @@ export default function ManageStudentsPage() {
         id: doc.id,
         ...(doc.data() as Omit<UserProfile, 'uid' | 'createdAt'> & { createdAt: Timestamp }),
         name: doc.data().name || 'Unnamed Student',
-        email: doc.data().email || null,
+        email: null,
         role: 'Student',
         classIds: doc.data().classIds || [],
         parentIds: doc.data().parentIds || [],
