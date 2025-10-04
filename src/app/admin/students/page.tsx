@@ -32,8 +32,7 @@ const getInitials = (name: string = '') => {
 
 const studentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal('')),
-  studentId: z.string().optional(),
+  studentIdInfo: z.string().optional(),
   avatarUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   classId: z.string().optional(), 
 });
@@ -82,7 +81,7 @@ export default function ManageStudentsPage() {
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: { name: '', email: '', studentId: '', avatarUrl: '', classId: undefined }
+    defaultValues: { name: '', studentIdInfo: '', avatarUrl: '', classId: undefined }
   });
 
   const fetchData = useCallback(async () => {
@@ -106,7 +105,7 @@ export default function ManageStudentsPage() {
         role: 'Student',
         classIds: doc.data().classIds || [],
         parentIds: doc.data().parentIds || [],
-        studentId: doc.data().studentId || '',
+        studentIdInfo: doc.data().studentIdInfo || '',
         avatarUrl: doc.data().avatarUrl,
         schoolId: doc.data().schoolId, 
       })) as StudentDisplay[];
@@ -159,7 +158,7 @@ export default function ManageStudentsPage() {
     }
     try {
       const studentData: any = {
-        name: data.name, email: data.email || null, role: "Student", studentId: data.studentId || null,
+        name: data.name, email: null, role: "Student", studentIdInfo: data.studentIdInfo || null,
         avatarUrl: data.avatarUrl || null, createdAt: Timestamp.now(), 
         classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
         parentIds: [], schoolId: adminSchoolId, 
@@ -386,7 +385,6 @@ export default function ManageStudentsPage() {
             </TableHead>
             <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
             <TableHead>{translate("nameLabel")}</TableHead>
-            <TableHead>{translate("emailLabel")}</TableHead>
             <TableHead>{translate("studentManagementStudentIdLabel")}</TableHead>
             <TableHead>{translate("linkedParents")}</TableHead>
             <TableHead className="text-right">{translate("actionsLabel")}</TableHead>
@@ -417,8 +415,7 @@ export default function ManageStudentsPage() {
                   </Avatar>
                 </TableCell>
                 <TableCell className="font-medium">{student.name}</TableCell>
-                <TableCell>{student.email || 'N/A'}</TableCell>
-                <TableCell>{student.studentId || 'N/A'}</TableCell>
+                <TableCell>{student.studentIdInfo || 'N/A'}</TableCell>
                 <TableCell>
                   <Button variant="outline" size="sm" onClick={() => handleViewParents(student)} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0}>
                     <Users className="h-4 w-4" /> {student.parentIds?.length || 0}
@@ -433,7 +430,7 @@ export default function ManageStudentsPage() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
+              <TableCell colSpan={6} className="h-24 text-center">
                 {translate("studentManagementNoStudentsInClass") || "No students in this class."}
               </TableCell>
             </TableRow>
@@ -483,16 +480,9 @@ export default function ManageStudentsPage() {
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">{translate("studentManagementEmailOptionalLabel")}</Label>
+                      <Label htmlFor="studentIdInfo" className="text-right">{translate("studentManagementStudentIdLabel")}</Label>
                        <div className="col-span-3">
-                          <Input id="email" type="email" {...register("email")} className={errors.email ? 'border-destructive' : ''} placeholder="student@example.com"/>
-                          {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
-                      </div>
-                   </div>
-                   <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="studentId" className="text-right">{translate("studentManagementStudentIdLabel")}</Label>
-                       <div className="col-span-3">
-                          <Input id="studentId" {...register("studentId")} placeholder={translate("studentManagementStudentIdPlaceholder")}/>
+                          <Input id="studentIdInfo" {...register("studentIdInfo")} placeholder={translate("studentManagementStudentIdPlaceholder")}/>
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
@@ -723,7 +713,7 @@ export default function ManageStudentsPage() {
               {linkedParentsDetails.map(parent => (
                 <li key={parent.uid} className="flex items-center gap-4 p-2 border rounded-md">
                   <Avatar>
-                    <AvatarImage src={parent.avatarUrl || undefined} alt={parent.name} />
+                    <AvatarImage src={parent.avatarUrl} alt={parent.name} />
                     <AvatarFallback>{getInitials(parent.name || "P")}</AvatarFallback>
                   </Avatar>
                   <div>

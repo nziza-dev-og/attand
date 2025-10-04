@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 import type { Timestamp } from "firebase/firestore";
@@ -7,31 +6,25 @@ export type Role = 'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin' | null;
 
 export interface UserProfile {
   uid: string;
-  email: string;
+  email?: string; // Made optional
   role: Role;
-  name?: string; // Optional: User's display name
-  schoolName?: string; // Optional: For Admins to name their school
-  phoneNumber?: string; // Optional: For Admins to set their school's contact phone
+  name?: string; 
+  schoolName?: string; 
+  phoneNumber?: string; 
   createdAt: Timestamp;
   avatarUrl?: string;
-  schoolIdentifierCode?: string; // For Admins to set their school's code
-  enteredSchoolCode?: string; // For Teachers/Parents to enter when signing up
-  isSchoolCodeVerified?: boolean; // Tracks if teacher's/parent's school code is validated
-  assignedClassIds?: string[]; // For Teachers: IDs of classes they are assigned to
-  schoolCodeVerificationAttempts?: number; // Number of attempts left for school code verification
-  isSchoolCodeLocked?: boolean; // If true, teacher's school code verification is locked
-  schoolId?: string | null; // UID of the Admin whose school this user belongs to (Admin's own UID for Admins). Null for SuperAdmins.
-  // For Students, this is the schoolId they are enrolled in.
-  // For Teachers, this is the schoolId they are verified with.
-  // For Parents, this can be set if they enter a valid school code during signup.
+  schoolIdentifierCode?: string; 
+  enteredSchoolCode?: string; 
+  isSchoolCodeVerified?: boolean; 
+  assignedClassIds?: string[]; 
+  schoolCodeVerificationAttempts?: number; 
+  isSchoolCodeLocked?: boolean; 
+  schoolId?: string | null; 
 }
 
 export interface Class {
   id: string; // Firestore document ID
   name: string; // e.g., "Mathematics - Grade 10A"
-  subject?: string; // e.g., "Mathematics"
-  gradeLevel?: string; // e.g., "10"
-  schedule?: string; // e.g., "Mon, Wed 9:00 AM - 10:30 AM"
   teacherId?: string; // UID of the assigned teacher
   studentIds?: string[]; // Array of UIDs of students in the class
   schoolId: string; // UID of the Admin/School this class belongs to

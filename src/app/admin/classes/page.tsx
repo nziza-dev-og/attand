@@ -22,7 +22,6 @@ import type { Class } from "@/lib/types";
 
 const classSchema = z.object({
   name: z.string().min(3, { message: "Class name must be at least 3 characters." }),
-  gradeLevel: z.string().optional(),
   teacherId: z.string().optional(),
 });
 
@@ -54,7 +53,6 @@ export default function ManageClassesPage() {
     resolver: zodResolver(classSchema),
     defaultValues: {
         name: '',
-        gradeLevel: '',
         teacherId: undefined,
     }
   });
@@ -124,14 +122,13 @@ export default function ManageClassesPage() {
     try {
       await addDoc(collection(db, "classes"), {
         name: data.name,
-        gradeLevel: data.gradeLevel || null,
         teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
         createdAt: Timestamp.now(),
         studentIds: [],
         schoolId: adminSchoolId, // Add schoolId
       });
       toast({ title: "Success", description: "Class added successfully." });
-      reset({ name: '', gradeLevel: '', teacherId: undefined });
+      reset({ name: '', teacherId: undefined });
       setIsAddDialogOpen(false);
       fetchClasses();
     } catch (err: any) {
@@ -144,7 +141,6 @@ export default function ManageClassesPage() {
     setCurrentEditingClass(classToEdit);
     reset({
         name: classToEdit.name,
-        gradeLevel: classToEdit.gradeLevel || '',
         teacherId: classToEdit.teacherId || undefined,
     });
     setIsEditDialogOpen(true);
@@ -161,12 +157,11 @@ export default function ManageClassesPage() {
       const classRef = doc(db, "classes", currentEditingClass.id);
       await updateDoc(classRef, {
         name: data.name,
-        gradeLevel: data.gradeLevel || null,
         teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
         // schoolId remains unchanged
       });
       toast({ title: "Success", description: "Class updated successfully." });
-      reset({ name: '', gradeLevel: '', teacherId: undefined });
+      reset({ name: '', teacherId: undefined });
       setIsEditDialogOpen(false);
       setCurrentEditingClass(null);
       fetchClasses();
@@ -191,7 +186,7 @@ export default function ManageClassesPage() {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
               setIsAddDialogOpen(open);
-              if (!open) reset({ name: '', gradeLevel: '', teacherId: undefined });
+              if (!open) reset({ name: '', teacherId: undefined });
               else if (teachers.length === 0 && !loadingTeachers) fetchTeachers();
               }}>
               <DialogTrigger asChild>
@@ -207,16 +202,10 @@ export default function ManageClassesPage() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="add-name" className="text-right">Name</Label>
+                      <Label htmlFor="add-name" className="text-right">Class Name</Label>
                       <div className="col-span-3">
-                          <Input id="add-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Mathematics 10A" />
+                          <Input id="add-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Grade 5 - Section A" />
                           {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
-                      </div>
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="add-gradeLevel" className="text-right">Grade</Label>
-                      <div className="col-span-3">
-                          <Input id="add-gradeLevel" {...register("gradeLevel")} placeholder="e.g., 10"/>
                       </div>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -278,8 +267,7 @@ export default function ManageClassesPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Grade</TableHead>
+                    <TableHead>Class Name</TableHead>
                     <TableHead>Teacher</TableHead>
                     <TableHead>Students</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -290,7 +278,6 @@ export default function ManageClassesPage() {
                     classes.map((cls) => (
                       <TableRow key={cls.id}>
                         <TableCell className="font-medium">{cls.name}</TableCell>
-                        <TableCell>{cls.gradeLevel || 'N/A'}</TableCell>
                         <TableCell>{teachers.find(t => t.id === cls.teacherId)?.name || (cls.teacherId ? 'Unknown Teacher' : 'N/A')}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -307,7 +294,7 @@ export default function ManageClassesPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
+                      <TableCell colSpan={4} className="h-24 text-center">
                         No classes found for your school. Add one using the button above.
                       </TableCell>
                     </TableRow>
@@ -323,7 +310,7 @@ export default function ManageClassesPage() {
       <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
           setIsEditDialogOpen(open);
           if (!open) {
-            reset({ name: '', gradeLevel: '', teacherId: undefined });
+            reset({ name: '', teacherId: undefined });
             setCurrentEditingClass(null);
           }
           }}>
@@ -334,16 +321,10 @@ export default function ManageClassesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit(onEditSubmit)} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-name" className="text-right">Name</Label>
+                <Label htmlFor="edit-name" className="text-right">Class Name</Label>
                 <div className="col-span-3">
                     <Input id="edit-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
                     {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
-                </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-gradeLevel" className="text-right">Grade</Label>
-                <div className="col-span-3">
-                    <Input id="edit-gradeLevel" {...register("gradeLevel")} />
                 </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">

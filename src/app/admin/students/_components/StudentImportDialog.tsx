@@ -1,4 +1,4 @@
-
+// src/app/admin/students/_components/StudentImportDialog.tsx
 "use client";
 
 import * as React from "react";
@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, FileText, AlertCircle } from "lucide-react";
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
-import type { Student, UserProfile, Class } from "@/lib/types";
+import type { Student } from "@/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface StudentImportDialogProps {
@@ -26,8 +26,7 @@ interface StudentImportDialogProps {
 
 interface CsvStudent {
   Name?: string | number | boolean;
-  Email?: string | number | boolean;
-  StudentIdInfo?: string | number | boolean;
+  StudentId?: string | number | boolean;
   AvatarURL?: string | number | boolean;
   ClassName?: string | number | boolean; // New optional column for class name
 }
@@ -110,9 +109,9 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         const studentDocRef = doc(collection(db, "users"));
         const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' > & Partial<Pick<Student, 'classIds' | 'parentIds'>> = {
           name: studentNameStr,
-          email: String(csvStudent.Email || "").trim() || null,
+          email: null,
           role: "Student",
-          studentIdInfo: String(csvStudent.StudentIdInfo || "").trim() || null,
+          studentIdInfo: String(csvStudent.StudentId || "").trim() || null,
           avatarUrl: String(csvStudent.AvatarURL || "").trim() || null,
           createdAt: Timestamp.now(),
           schoolId: adminSchoolId,
@@ -253,7 +252,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Upload className="h-5 w-5" /> {translate("studentImportTitle") || "Import Students"}
           </DialogTitle>
           <DialogDescription>
-            {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'Email', 'StudentIdInfo', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
+            {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'StudentId', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
