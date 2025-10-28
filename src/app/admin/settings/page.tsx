@@ -235,15 +235,17 @@ export default function AdminSettingsPage() {
           <Accordion type="single" collapsible className="w-full">
             {academicYears.map((year) => (
               <AccordionItem value={year.id} key={year.id}>
-                <AccordionTrigger className="text-lg font-medium flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                        {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                      <span>{year.name}</span>
-                  </div>
-                  {!year.isActive && (
-                      <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}}>Set Active</Button>
-                  )}
-                </AccordionTrigger>
+                <div className="flex justify-between items-center w-full">
+                    <AccordionTrigger className="text-lg font-medium flex-1">
+                      <div className="flex items-center gap-2">
+                            {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
+                          <span>{year.name}</span>
+                      </div>
+                    </AccordionTrigger>
+                    {!year.isActive && (
+                        <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}} className="mr-4">Set Active</Button>
+                    )}
+                </div>
                 <AccordionContent className="space-y-4 pl-2">
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                       <p className="text-muted-foreground text-sm">
