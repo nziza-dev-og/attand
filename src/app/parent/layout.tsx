@@ -7,6 +7,7 @@ import { AppHeader } from '@/components/shared/AppHeader';
 import { ParentSidebar } from './_components/ParentSidebar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AdvertisementDisplay } from '@/components/shared/AdvertisementDisplay'; // Import Ad Display
+import { IncomingCallManager } from '@/components/shared/IncomingCallManager';
 
 export default function ParentLayout({ children }: { children: ReactNode }) {
   const { translate } = useLanguage();
@@ -26,6 +27,7 @@ export default function ParentLayout({ children }: { children: ReactNode }) {
             </main>
           </div>
        </div>
+       <IncomingCallManager />
     </ProtectedRoute>
   );
 }

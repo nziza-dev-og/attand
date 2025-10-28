@@ -19,7 +19,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move } from "lucide-react";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move, PhoneCall } from "lucide-react";
 import type { Student, UserProfile, Class } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
@@ -70,6 +70,7 @@ export default function ManageStudentsPage() {
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [targetClassId, setTargetClassId] = useState('');
   const [isMoving, setIsMoving] = useState(false);
+  const [isCalling, setIsCalling] = useState<Record<string, boolean>>({});
 
   // State for viewing parent details
   const [isViewParentsDialogOpen, setIsViewParentsDialogOpen] = useState(false);
@@ -353,6 +354,31 @@ export default function ManageStudentsPage() {
         setLoadingParentDetails(false);
     }
   };
+  
+  const handleCallParent = async (student: StudentDisplay, parentId: string) => {
+    if (!authUser) return;
+    const callId = `${authUser.uid}_${parentId}_${Date.now()}`;
+    setIsCalling(prev => ({...prev, [student.id]: true}));
+
+    try {
+      const callDocRef = doc(db, 'calls', callId);
+      await setDoc(callDocRef, {
+        callerId: authUser.uid,
+        callerName: authUser.displayName || 'Admin',
+        calleeId: parentId,
+        studentId: student.id,
+        studentName: student.name,
+        status: 'ringing',
+        createdAt: Timestamp.now(),
+      });
+      toast({ title: "Calling Parent", description: `Calling parent of ${student.name}...` });
+    } catch(err) {
+      toast({ variant: "destructive", title: "Call Failed", description: "Could not initiate the call." });
+    } finally {
+      setIsCalling(prev => ({...prev, [student.id]: false}));
+    }
+  };
+
 
   const toggleSelectAll = (studentIds: string[], isSelected: boolean) => {
       setSelectedStudents(prev => {
@@ -424,6 +450,10 @@ export default function ManageStudentsPage() {
                 <TableCell className="text-right space-x-2">
                    <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                       <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton")}
+                   </Button>
+                   <Button variant="secondary" size="sm" onClick={() => handleCallParent(student, student.parentIds?.[0] || '')} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0 || isCalling[student.id]}>
+                      {isCalling[student.id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <PhoneCall className="h-4 w-4" />}
+                      Call Parent
                    </Button>
                 </TableCell>
               </TableRow>

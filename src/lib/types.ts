@@ -121,3 +121,18 @@ export interface Announcement {
   isActive: boolean;
   createdAt: Timestamp;
 }
+
+export type CallStatus = 'ringing' | 'answered' | 'declined' | 'ended' | 'missed';
+
+export interface Call {
+  id: string; // Firestore document ID
+  callerId: string;
+  callerName: string;
+  calleeId: string; // The parent being called
+  studentId: string;
+  studentName: string;
+  status: CallStatus;
+  createdAt: Timestamp;
+  answeredAt?: Timestamp;
+  endedAt?: Timestamp;
+}
