@@ -22,6 +22,23 @@ import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
+// Helper function to safely convert various date types to a JS Date object
+const getDate = (date: any): Date | undefined => {
+  if (!date) return undefined;
+  if (date instanceof Timestamp) return date.toDate();
+  if (date instanceof Date) return date;
+  // Handle string dates that might come from state updates
+  if (typeof date === 'string') {
+    const parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    }
+  }
+  console.warn("Could not convert date:", date);
+  return undefined;
+};
+
+
 export default function AdminSettingsPage() {
   const { schoolId, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -221,13 +238,6 @@ export default function AdminSettingsPage() {
       return <Card><CardContent className="p-6">Admin school context is missing. Cannot manage settings.</CardContent></Card>
   }
   
-  const getDate = (date: any): Date | undefined => {
-    if (!date) return undefined;
-    if (date instanceof Timestamp) return date.toDate();
-    return new Date(date);
-  };
-
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
