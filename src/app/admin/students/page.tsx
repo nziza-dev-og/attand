@@ -171,11 +171,6 @@ export default function ManageStudentsPage() {
     });
 
     allStudents.forEach(student => {
-        if (!enrolledStudentsThisTerm.has(student.id)) {
-            unassigned.push(student);
-            return;
-        }
-
         let assignedInTerm = false;
         for (const classId in activeTerm.studentEnrollments) {
             if (activeTerm.studentEnrollments[classId].includes(student.id)) {
@@ -203,9 +198,14 @@ export default function ManageStudentsPage() {
       
       const studentDocRef = doc(collection(db, "users"));
       const studentData: any = {
-        name: data.name, email: null, role: "Student", studentIdInfo: data.studentIdInfo || undefined,
-        avatarUrl: data.avatarUrl || undefined, createdAt: Timestamp.now(), 
-        parentIds: [], schoolId: adminSchoolId, 
+        name: data.name,
+        email: null,
+        role: "Student",
+        studentIdInfo: data.studentIdInfo || undefined,
+        avatarUrl: data.avatarUrl || undefined,
+        createdAt: Timestamp.now(), 
+        parentIds: [],
+        schoolId: adminSchoolId, 
       };
       batch.set(studentDocRef, studentData);
 
@@ -276,7 +276,6 @@ export default function ManageStudentsPage() {
             }
         }
         
-        // This part needs to be updated to remove from academic year enrollments
         if (activeAcademicYear) {
             const yearRef = doc(db, "academicYears", activeAcademicYear.id);
             const activeTerm = activeAcademicYear.terms.find(t => t.id === activeAcademicYear.activeTermId);
@@ -322,7 +321,7 @@ export default function ManageStudentsPage() {
   
   const handleMoveSelectedStudents = async () => {
     if (selectedStudents.size === 0 || !targetClassId || !adminSchoolId || !activeAcademicYear) {
-      toast({ variant: "destructive", title: "Error", description: "Please select students, a target class, and ensure an active academic year." });
+      toast({ variant: "destructive", title: "Error", description: translate("studentMoveErrorSelection") });
       return;
     }
     setIsMoving(true);
@@ -374,7 +373,7 @@ export default function ManageStudentsPage() {
 
   const handleViewParents = async (student: StudentDisplay) => {
     if (!student.parentIds || student.parentIds.length === 0) {
-        toast({ title: translate("noLinkedParentsTitle") || "No Linked Parents", description: translate("noLinkedParentsDesc") || "This student does not have any parents linked." });
+        toast({ title: translate("noLinkedParentsTitle"), description: translate("noLinkedParentsDesc") });
         return;
     }
     setSelectedStudentForParents(student);
@@ -393,31 +392,6 @@ export default function ManageStudentsPage() {
     }
   };
   
-  const handleCallParent = async (student: StudentDisplay, parentId: string) => {
-    if (!authUser) return;
-    const callId = `${authUser.uid}_${parentId}_${Date.now()}`;
-    setIsCalling(prev => ({...prev, [student.id]: true}));
-
-    try {
-      const callDocRef = doc(db, 'calls', callId);
-      await setDoc(callDocRef, {
-        callerId: authUser.uid,
-        callerName: authUser.displayName || 'Admin',
-        calleeId: parentId,
-        studentId: student.id,
-        studentName: student.name,
-        status: 'ringing',
-        createdAt: Timestamp.now(),
-      });
-      toast({ title: "Calling Parent", description: `Calling parent of ${student.name}...` });
-    } catch(err) {
-      toast({ variant: "destructive", title: "Call Failed", description: "Could not initiate the call." });
-    } finally {
-      setIsCalling(prev => ({...prev, [student.id]: false}));
-    }
-  };
-
-
   const toggleSelectAll = (studentIds: string[], isSelected: boolean) => {
       setSelectedStudents(prev => {
           const newSet = new Set(prev);
@@ -488,10 +462,6 @@ export default function ManageStudentsPage() {
                 <TableCell className="text-right space-x-2">
                    <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
                       <ImageIcon className="h-3 w-3" /> Edit Avatar
-                   </Button>
-                   <Button variant="secondary" size="sm" onClick={() => handleCallParent(student, student.parentIds?.[0] || '')} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0 || isCalling[student.id]}>
-                      {isCalling[student.id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <PhoneCall className="h-4 w-4" />}
-                      Call Parent
                    </Button>
                 </TableCell>
               </TableRow>
@@ -612,14 +582,14 @@ export default function ManageStudentsPage() {
                   <AlertDialogTrigger asChild>
                       <Button variant="destructive" disabled={selectedStudents.size === 0 || isDeleting}>
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Selected ({selectedStudents.size})
+                          {translate("deleteSelectedWithCount", { count: selectedStudents.size.toString() })}
                       </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                       <AlertDialogHeader>
-                          <AlertDialogTitle>Delete {selectedStudents.size} Students?</AlertDialogTitle>
+                          <AlertDialogTitle>{translate("studentDeleteConfirmTitleMultiple", { count: selectedStudents.size.toString() })}</AlertDialogTitle>
                           <AlertDialogDescription>
-                              Are you sure you want to delete the {selectedStudents.size} selected students? This will remove them from all classes and parent links. This action cannot be undone.
+                              {translate("studentDeleteConfirmDescMultiple", { count: selectedStudents.size.toString() })}
                           </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -635,16 +605,16 @@ export default function ManageStudentsPage() {
                   <DialogTrigger asChild>
                     <Button variant="outline" disabled={selectedStudents.size === 0}>
                         <Move className="mr-2 h-4 w-4" />
-                        Move Selected ({selectedStudents.size})
+                        {translate("moveSelectedWithCount", { count: selectedStudents.size.toString() })}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Move {selectedStudents.size} Selected Students</DialogTitle>
-                        <DialogDescription>Choose a new class to assign all selected students to. They will be removed from their current classes for this term.</DialogDescription>
+                        <DialogTitle>{translate("studentMoveDialogTitle", { count: selectedStudents.size.toString() })}</DialogTitle>
+                        <DialogDescription>{translate("studentMoveDialogDesc")}</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
-                        <Label htmlFor="target-class-select">Move to Class</Label>
+                        <Label htmlFor="target-class-select">{translate("studentMoveSelectClassLabel")}</Label>
                         <Select value={targetClassId} onValueChange={setTargetClassId}>
                             <SelectTrigger id="target-class-select">
                                 <SelectValue placeholder="Select a class" />
@@ -662,7 +632,7 @@ export default function ManageStudentsPage() {
                         <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                         <Button onClick={handleMoveSelectedStudents} disabled={isMoving || !targetClassId}>
                             {isMoving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Move Students
+                            {translate("studentMoveConfirmButton")}
                         </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -734,8 +704,8 @@ export default function ManageStudentsPage() {
     }}>
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-                <DialogTitle>Edit Avatar for {currentEditingStudent?.name}</DialogTitle>
-                <DialogDescription>Enter a new image URL for the student's avatar.</DialogDescription>
+                <DialogTitle>{translate("studentManagementEditAvatarDialogTitle", {name: currentEditingStudent?.name || ''})}</DialogTitle>
+                <DialogDescription>{translate("studentManagementEditAvatarDialogDesc")}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="flex justify-center mb-4">
@@ -760,7 +730,7 @@ export default function ManageStudentsPage() {
                 <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                 <Button onClick={handleUpdateAvatar} disabled={isSubmittingAvatar}>
                     {isSubmittingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Avatar
+                    {translate("studentManagementSaveAvatarButton")}
                 </Button>
             </DialogFooter>
         </DialogContent>
@@ -769,14 +739,14 @@ export default function ManageStudentsPage() {
     <Dialog open={isViewParentsDialogOpen} onOpenChange={setIsViewParentsDialogOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Parent Details for {selectedStudentForParents?.name || "Student"}</DialogTitle>
-          <DialogDescription>The following parents are linked to this student.</DialogDescription>
+          <DialogTitle>{translate("parentDetailsForStudent", {studentName: selectedStudentForParents?.name || "Student"})}</DialogTitle>
+          <DialogDescription>{translate("listOfLinkedParentsDesc")}</DialogDescription>
         </DialogHeader>
         <div className="py-4">
           {loadingParentDetails ? (
             <div className="flex justify-center items-center">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="ml-2">Loading parent details...</span>
+              <span className="ml-2">{translate("loadingParentDetails")}</span>
             </div>
           ) : linkedParentsDetails.length > 0 ? (
             <ul className="space-y-3">
@@ -794,12 +764,12 @@ export default function ManageStudentsPage() {
               ))}
             </ul>
           ) : (
-            <p className="text-center text-muted-foreground">No parents found for this student.</p>
+            <p className="text-center text-muted-foreground">{translate("noLinkedParents")}</p>
           )}
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">Close</Button>
+            <Button type="button" variant="secondary">{translate("closeButton")}</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
