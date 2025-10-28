@@ -27,7 +27,7 @@ const getBadgeVariant = (status: AttendanceStatus): 'default' | 'destructive' | 
 };
 
 const getInitials = (name: string = '') => {
-  return name.split(' ').map(n => n[0]).join('') || '??';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 };
 
 interface ChildInfo extends Student {
@@ -74,7 +74,6 @@ export default function ChildAttendancePage() {
              email: data.email, // Include fields as needed from Student type
              role: 'Student', // From the check above
              parentIds: data.parentIds || [],
-             classIds: data.classIds || [],
              createdAt: data.createdAt as Timestamp, // Cast Firestore Timestamp from UserProfile part
              // Use a fallback avatar if none is set
              avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'U')}&background=random`,
@@ -206,7 +205,7 @@ export default function ChildAttendancePage() {
                             {filteredRecords.length > 0 ? (
                                 filteredRecords.map((record) => (
                                 <TableRow key={record.id}>
-                                    <TableCell>{record.date}</TableCell>
+                                    <TableCell>{record.timestamp ? format(record.timestamp.toDate(), 'PPP') : record.date}</TableCell>
                                     {/* Display Class Name - Requires fetching class details or storing className in record */}
                                      <TableCell>{record.classId.substring(0,8)}...</TableCell>{/* Placeholder - show Class ID for now */}
                                      {/* TODO: Fetch class name based on record.classId if needed, or ensure it's stored in the record */}

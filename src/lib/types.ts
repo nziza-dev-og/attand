@@ -49,14 +49,12 @@ export interface Class {
   teacherId?: string; // UID of the assigned teacher
   schoolId: string; // UID of the Admin/School this class belongs to
   createdAt: Timestamp; // When the class was created
-  studentIds?: string[];
 }
 
 export interface Student extends UserProfile {
   role: 'Student';
   email: null; // Students explicitly have no email
   studentIdInfo?: string; 
-  classIds?: string[]; 
   parentIds?: string[];
   schoolId: string; 
 }

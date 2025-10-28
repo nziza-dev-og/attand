@@ -31,6 +31,7 @@ export default function TeacherDashboard() {
 
   const [schoolAdminDetails, setSchoolAdminDetails] = useState<SchoolAdminDetails | null>(null);
   const [loadingAdminDetails, setLoadingAdminDetails] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchTeacherAndAdminData = async () => {
@@ -105,7 +106,6 @@ export default function TeacherDashboard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, role, isSchoolCodeVerified, translate]);
   
-  const { toast } = useToast();
 
   if (authLoading || (role === 'Teacher' && isSchoolCodeVerified === true && (loadingData || loadingAdminDetails))) {
     return (
@@ -232,4 +232,5 @@ export default function TeacherDashboard() {
     </div>
   );
 }
+
 

@@ -71,7 +71,7 @@ const enrollStudentsTool = ai.defineTool(
 
     studentsToEnroll.forEach(student => {
       const studentDocRef = doc(collection(db, "users"));
-      const studentData: Omit<Student, 'id' | 'uid' > & Partial<Pick<Student, 'classIds' | 'parentIds'>> = {
+      const studentData: Omit<Student, 'id' | 'uid' > & Partial<Pick<Student, 'parentIds'>> = {
         name: student.name,
         email: null,
         role: "Student",
@@ -79,7 +79,6 @@ const enrollStudentsTool = ai.defineTool(
         avatarUrl: student.avatarUrl || undefined,
         createdAt: Timestamp.now(),
         schoolId: schoolId,
-        classIds: student.classId ? [student.classId] : [], // Still store on student for convenience
         parentIds: [],
       };
       batch.set(studentDocRef, studentData);
@@ -98,9 +97,6 @@ const enrollStudentsTool = ai.defineTool(
     // Update the term's studentEnrollments
     const academicYearRef = doc(db, "academicYears", academicYearId);
     
-    // We need to merge this new enrollment data with existing data for the term.
-    // This is a simplified example. A real-world scenario might need to read the doc first
-    // to properly merge, but for a fresh term import, this is sufficient.
     const enrollmentUpdatesForTerm: Record<string, any> = {};
     classEnrollmentUpdates.forEach((studentIds, classId) => {
         // Using dot notation to update a specific field in the map
@@ -151,7 +147,6 @@ const enrollStudentsFlow = ai.defineFlow(
     const toolCall = llmResponse.toolCalls()[0];
     const toolResult = await toolCall.result();
     
-    // The output from our tool is exactly what our flow needs to return
     const output = toolResult.output as z.infer<typeof EnrollOutputSchema>;
     return {
         success: output.success,

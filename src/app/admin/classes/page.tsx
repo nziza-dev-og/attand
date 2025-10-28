@@ -124,7 +124,6 @@ export default function ManageClassesPage() {
         name: data.name,
         teacherId: data.teacherId === 'none_teacher_option' || !data.teacherId ? null : data.teacherId,
         createdAt: Timestamp.now(),
-        studentIds: [],
         schoolId: adminSchoolId, // Add schoolId
       });
       toast({ title: "Success", description: "Class added successfully." });
@@ -202,7 +201,7 @@ export default function ManageClassesPage() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="add-name" className="text-right">Name</Label>
+                      <Label htmlFor="add-name" className="text-right">Class Name</Label>
                       <div className="col-span-3">
                           <Input id="add-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} placeholder="e.g., Grade 5 - Section A" />
                           {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
@@ -267,9 +266,8 @@ export default function ManageClassesPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
+                    <TableHead>Class Name</TableHead>
                     <TableHead>Teacher</TableHead>
-                    <TableHead>Students</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -279,12 +277,6 @@ export default function ManageClassesPage() {
                       <TableRow key={cls.id}>
                         <TableCell className="font-medium">{cls.name}</TableCell>
                         <TableCell>{teachers.find(t => t.id === cls.teacherId)?.name || (cls.teacherId ? 'Unknown Teacher' : 'N/A')}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                             <Users className="h-4 w-4 text-muted-foreground" />
-                             {cls.studentIds?.length || 0}
-                          </div>
-                        </TableCell>
                         <TableCell className="text-right">
                           <Button variant="outline" size="sm" onClick={() => handleOpenEditDialog(cls)} className="gap-1">
                             <Edit className="h-3 w-3" /> Edit
@@ -294,7 +286,7 @@ export default function ManageClassesPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-24 text-center">
+                      <TableCell colSpan={3} className="h-24 text-center">
                         No classes found for your school. Add one using the button above.
                       </TableCell>
                     </TableRow>
@@ -321,7 +313,7 @@ export default function ManageClassesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit(onEditSubmit)} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-name" className="text-right">Name</Label>
+                <Label htmlFor="edit-name" className="text-right">Class Name</Label>
                 <div className="col-span-3">
                     <Input id="edit-name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
                     {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}

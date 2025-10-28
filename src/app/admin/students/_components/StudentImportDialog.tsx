@@ -45,15 +45,9 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-      const fileType = selectedFile.type;
       const fileName = selectedFile.name.toLowerCase();
 
-      if (
-        fileType === "text/csv" || fileName.endsWith(".csv") ||
-        fileType === "application/vnd.ms-excel" ||
-        fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        fileName.endsWith(".xls") || fileName.endsWith(".xlsx")
-      ) {
+      if (fileName.endsWith(".csv") || fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
         setFile(selectedFile);
         setError(null);
       } else {
@@ -143,7 +137,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     const parseAndProcess = (fileData: ArrayBuffer | string) => {
         try {
             let jsonData: CsvStudent[] = [];
-            if (file.name.endsWith('.csv') || file.type === 'text/csv') {
+            if (file.name.endsWith('.csv')) {
                 Papa.parse<CsvStudent>(fileData as string, {
                     header: true,
                     skipEmptyLines: true,
@@ -166,7 +160,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
         }
     };
     
-    if (file.name.endsWith('.csv') || file.type === 'text/csv') {
+    if (file.name.endsWith('.csv')) {
         reader.onload = (event) => parseAndProcess(event.target?.result as string);
         reader.readAsText(file);
     } else {
@@ -200,7 +194,7 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
             <Input
               id="student-file-import"
               type="file"
-              accept=".csv, text/csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xls, .xlsx"
+              accept=".csv,.xlsx,.xls"
               onChange={handleFileChange}
               disabled={isImporting}
               className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
@@ -216,9 +210,12 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
           )}
 
           {isImporting && (
-            <div className="space-y-2">
+            <div className="space-y-2 text-center">
               <Label>AI processing in progress...</Label>
-              <Loader2 className="h-6 w-6 animate-spin" />
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+              <p className="text-xs text-muted-foreground">The AI is analyzing your file, matching students to classes, and preparing the import. Please wait.</p>
             </div>
           )}
         </div>

@@ -1,4 +1,3 @@
-
 // src/app/parent/page.tsx
 "use client"; // Use client component for hooks and state
 
@@ -163,6 +162,7 @@ export default function ParentDashboard() {
                              name: studentData.name || translate('unknownChild') || 'Unknown Child',
                              parentIds: studentData.parentIds || [],
                              role: 'Student', 
+                             email: null,
                              createdAt: studentData.createdAt as Timestamp, 
                              avatarUrl: studentData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(studentData.name || 'U')}&background=random`, 
                              attendancePercentage: attendancePercentage,
@@ -346,7 +346,7 @@ export default function ParentDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> {translate('schoolAdminContactTitle')}</CardTitle>
-            <CardDescription>{translate('schoolInfoContactDesc')}</CardDescription>
+            <CardDescription>{translate('schoolAdminContactDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-1 text-sm">
             <p><strong>{translate('schoolNameLabel')}:</strong> {schoolAdminDetails.schoolName || schoolAdminDetails.name || translate('notSetPlaceholder')}</p>
@@ -401,4 +401,5 @@ export default function ParentDashboard() {
 }
 
     
+
 
