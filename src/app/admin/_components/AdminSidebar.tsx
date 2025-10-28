@@ -15,6 +15,7 @@ import {
   UserCircle,
   ShieldAlert, // New Icon for Locked Accounts
   Speaker, // Icon for Announcements
+  Settings, // New Icon for Settings
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -47,6 +48,7 @@ export function AdminSidebar({ isMobileSheet = false }: AdminSidebarProps) {
     { href: "/admin/announcements", icon: Speaker, labelKey: "manageAnnouncements", srOnlyKey: "manageAnnouncements" },
     { href: "/admin/parent-responses", icon: MessageSquareReply, labelKey: "viewParentResponses", srOnlyKey: "viewParentResponses" },
     { href: "/admin/locked-accounts", icon: ShieldAlert, labelKey: "lockedAccountsTitle", srOnlyKey: "lockedAccountsTitle"}, 
+    { href: "/admin/settings", icon: Settings, labelKey: "schoolSettingsTitle", srOnlyKey: "schoolSettingsTitle" },
     { href: "/profile", icon: UserCircle, labelKey: "myProfileTitle", srOnlyKey: "myProfileTitle"},
   ];
 

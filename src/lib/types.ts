@@ -6,7 +6,7 @@ export type Role = 'Admin' | 'Teacher' | 'Parent' | 'SuperAdmin' | null;
 
 export interface UserProfile {
   uid: string;
-  email?: string | null; // Made optional and nullable
+  email?: string | null; 
   role: Role;
   name?: string; 
   schoolName?: string; 
@@ -22,6 +22,23 @@ export interface UserProfile {
   schoolId?: string | null; 
 }
 
+export interface AcademicYear {
+  id: string;
+  name: string; // e.g., "2024-2025"
+  startDate: Timestamp;
+  endDate: Timestamp;
+  schoolId: string;
+  terms: Term[];
+}
+
+export interface Term {
+  id: string; // e.g., "term1"
+  name: string; // e.g., "Term 1"
+  startDate: Timestamp;
+  endDate: Timestamp;
+}
+
+
 export interface Class {
   id: string; // Firestore document ID
   name: string; // e.g., "Grade 5 - Section A"
@@ -34,20 +51,20 @@ export interface Class {
 export interface Student extends UserProfile {
   role: 'Student';
   email: null; // Students explicitly have no email
-  studentIdInfo?: string; // e.g., Roll number, Admission ID
-  classIds?: string[]; // IDs of classes the student is enrolled in
-  parentIds?: string[]; // UIDs of linked parents
-  schoolId: string; // Students must belong to a school
+  studentIdInfo?: string; 
+  classIds?: string[]; 
+  parentIds?: string[];
+  schoolId: string; 
 }
 
 export interface Teacher extends UserProfile {
     role: 'Teacher';
-    schoolId: string; // Teachers must belong to a school after verification
+    schoolId: string; 
 }
 
 export interface ParentNotificationPreferences {
   absenceAlerts?: boolean;
-  lowAttendanceThreshold?: boolean; // Placeholder, not fully implemented
+  lowAttendanceThreshold?: boolean; 
   newBehaviorReport?: boolean;
 }
 
@@ -55,7 +72,6 @@ export interface Parent extends UserProfile {
     role: 'Parent';
     childIds?: string[];
     notificationPreferences?: ParentNotificationPreferences;
-    // schoolId can be null or set if they entered a valid school code at signup
 }
 
 
@@ -85,20 +101,20 @@ export interface ParentResponse {
 export interface BehaviorReport {
   id: string; // Firestore document ID
   studentId: string;
-  studentName: string; // Denormalized for easier display
-  classId?: string; // Optional: class context for the report
+  studentName: string; 
+  classId?: string; 
   reporterId: string; // UID of Admin or Teacher who reported
-  reporterName: string; // Denormalized
+  reporterName: string; 
   reporterRole: 'Admin' | 'Teacher';
   reportDate: Timestamp; // Date of the incident
   title: string;
   description: string;
   severity?: BehaviorReportSeverity;
-  createdAt: Timestamp; // When the report was created in the system
-  parentNotifiedAt?: Timestamp; // Optional: When parent was "notified"
-  seenByParentIds?: string[]; // Optional: if tracking individual parent views
+  createdAt: Timestamp; 
+  parentNotifiedAt?: Timestamp; 
+  seenByParentIds?: string[]; 
   parentResponses?: ParentResponse[];
-  schoolId: string; // schoolId of the school this report belongs to
+  schoolId: string; 
 }
 
 export interface Advertisement {
@@ -128,7 +144,7 @@ export interface Call {
   id: string; // Firestore document ID
   callerId: string;
   callerName: string;
-  calleeId: string; // The parent being called
+  calleeId: string; 
   studentId: string;
   studentName: string;
   status: CallStatus;
