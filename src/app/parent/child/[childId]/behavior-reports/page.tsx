@@ -1,4 +1,3 @@
-
 // src/app/parent/child/[childId]/behavior-reports/page.tsx
 "use client";
 
@@ -13,9 +12,9 @@ import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, type FormEvent } from 'react';
 import { format } from 'date-fns';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, Timestamp as FirestoreTimestamp, updateDoc, arrayUnion } from 'firebase/firestore';
-import type { Student, BehaviorReport, BehaviorReportSeverity, ParentResponse } from '@/lib/types';
-import { Loader2, Megaphone, AlertCircle, Info, MessageSquare, Send } from 'lucide-react';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, Timestamp as FirestoreTimestamp, updateDoc, arrayUnion, addDoc } from 'firebase/firestore';
+import type { Student, BehaviorReport, BehaviorReportSeverity, ParentResponse, Call } from '@/lib/types';
+import { Loader2, Megaphone, AlertCircle, Info, MessageSquare, Send, PhoneCall } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,6 +55,8 @@ export default function ChildBehaviorReportsPage() {
 
   const [currentResponse, setCurrentResponse] = useState<Record<string, string>>({}); // { reportId: comment }
   const [submittingResponse, setSubmittingResponse] = useState<Record<string, boolean>>({}); // { reportId: isLoading }
+  const [isCalling, setIsCalling] = useState<Record<string, boolean>>({});
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,12 +74,8 @@ export default function ChildBehaviorReportsPage() {
         const studentDocSnap = await getDoc(studentDocRef);
 
         if (studentDocSnap.exists() && studentDocSnap.data().role === 'Student') {
-          const data = studentDocSnap.data();
-          setChildInfo({
-            id: studentDocSnap.id,
-            name: data.name || 'Unknown Child',
-            avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'U')}&background=random`,
-          } as Student);
+          const data = studentDocSnap.data() as Student;
+          setChildInfo(data);
         } else {
           setError(studentDocSnap.exists() ? "User is not a Student." : "Student profile not found.");
           setLoading(false);
@@ -109,6 +106,33 @@ export default function ChildBehaviorReportsPage() {
   const handleResponseChange = (reportId: string, comment: string) => {
     setCurrentResponse(prev => ({ ...prev, [reportId]: comment }));
   };
+  
+  const handleInitiateCall = async (report: BehaviorReport) => {
+    if (!user || !childInfo) return;
+    setIsCalling(prev => ({ ...prev, [report.id]: true }));
+    try {
+      const callData: Omit<Call, 'id'> = {
+        callerId: user.uid,
+        callerName: user.displayName || 'Parent',
+        calleeId: report.reporterId,
+        studentId: childInfo.id,
+        studentName: childInfo.name || 'Unknown Student',
+        status: 'ringing',
+        createdAt: FirestoreTimestamp.now(),
+      };
+      await addDoc(collection(db, 'calls'), callData);
+      toast({
+        title: "Call Initiated",
+        description: `Calling ${report.reporterName}... Please wait for them to answer.`,
+      });
+    } catch (err) {
+      console.error("Error initiating call:", err);
+      toast({ variant: "destructive", title: "Call Failed", description: "Could not initiate the call." });
+    } finally {
+      setIsCalling(prev => ({ ...prev, [report.id]: false }));
+    }
+  };
+
 
   const handleAddResponse = async (reportId: string) => {
     if (!user) {
@@ -253,25 +277,43 @@ export default function ChildBehaviorReportsPage() {
             )}
 
             {/* Add Response Form */}
-            <div className="mt-4 pt-4 border-t">
-              <Label htmlFor={`response-${report.id}`} className="text-md font-semibold mb-2 block">Add Your Response</Label>
-              <Textarea
-                id={`response-${report.id}`}
-                value={currentResponse[report.id] || ""}
-                onChange={(e) => handleResponseChange(report.id, e.target.value)}
-                placeholder="Type your comment or acknowledgment here..."
-                rows={3}
-                disabled={submittingResponse[report.id]}
-              />
-              <Button 
-                onClick={() => handleAddResponse(report.id)} 
-                disabled={submittingResponse[report.id] || !currentResponse[report.id]?.trim()}
-                className="mt-2"
-                size="sm"
-              >
-                {submittingResponse[report.id] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                Submit Response
-              </Button>
+            <div className="mt-4 pt-4 border-t space-y-4">
+              <div>
+                <Label htmlFor={`response-${report.id}`} className="text-md font-semibold mb-2 block">Add Your Response</Label>
+                <Textarea
+                  id={`response-${report.id}`}
+                  value={currentResponse[report.id] || ""}
+                  onChange={(e) => handleResponseChange(report.id, e.target.value)}
+                  placeholder="Type your comment or acknowledgment here..."
+                  rows={3}
+                  disabled={submittingResponse[report.id]}
+                />
+                 <Button 
+                  onClick={() => handleAddResponse(report.id)} 
+                  disabled={submittingResponse[report.id] || !currentResponse[report.id]?.trim()}
+                  className="mt-2"
+                  size="sm"
+                >
+                  {submittingResponse[report.id] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  Submit Response
+                </Button>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-md font-semibold mb-2 block">Real-time Action</Label>
+                 <Button 
+                  variant="outline"
+                  onClick={() => handleInitiateCall(report)} 
+                  disabled={isCalling[report.id]}
+                  className="w-full sm:w-auto"
+                >
+                  {isCalling[report.id] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PhoneCall className="mr-2 h-4 w-4" />}
+                  Call {report.reporterName}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">Initiate a real-time call request to discuss this report.</p>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="text-xs text-muted-foreground">

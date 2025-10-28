@@ -8,6 +8,7 @@ import { AdminSidebar } from './_components/AdminSidebar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AdvertisementDisplay } from '@/components/shared/AdvertisementDisplay';
 import { AnnouncementDisplay } from '@/components/shared/AnnouncementDisplay'; // Import AnnouncementDisplay
+import { IncomingCallManager } from '@/components/shared/IncomingCallManager';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { translate } = useLanguage();
@@ -30,6 +31,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </main>
          </div>
        </div>
+       <IncomingCallManager />
     </ProtectedRoute>
   );
 }

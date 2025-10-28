@@ -56,10 +56,17 @@ export function IncomingCallManager() {
       } else {
         setIncomingCall(null);
       }
+    }, (error) => {
+      console.error("Error listening for incoming calls:", error);
+      toast({
+        variant: "destructive",
+        title: "Connection Error",
+        description: "Could not listen for incoming calls.",
+      });
     });
 
     return () => unsubscribe();
-  }, [user, incomingCall]);
+  }, [user, incomingCall, toast]);
 
   const handleAnswer = async () => {
     if (!incomingCall) return;

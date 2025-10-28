@@ -89,8 +89,8 @@ export interface AttendanceRecord {
   timestamp: Timestamp; // Firestore timestamp when marked
   notes?: string; // Optional notes from the teacher
   schoolId: string; // schoolId of the school this record belongs to
-  academicYearId: string; // Link to academic year
-  termId: string; // Link to term
+  academicYearId?: string; // Link to academic year
+  termId?: string; // Link to term
 }
 
 export type BehaviorReportSeverity = 'Minor' | 'Moderate' | 'Severe';
@@ -119,8 +119,8 @@ export interface BehaviorReport {
   seenByParentIds?: string[]; 
   parentResponses?: ParentResponse[];
   schoolId: string; 
-  academicYearId: string; // Link to academic year
-  termId: string; // Link to term
+  academicYearId?: string; // Link to academic year
+  termId?: string; // Link to term
 }
 
 export interface Advertisement {

@@ -8,6 +8,7 @@ import { TeacherSidebar } from './_components/TeacherSidebar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AdvertisementDisplay } from '@/components/shared/AdvertisementDisplay';
 import { AnnouncementDisplay } from '@/components/shared/AnnouncementDisplay'; // Import AnnouncementDisplay
+import { IncomingCallManager } from '@/components/shared/IncomingCallManager';
 
 export default function TeacherLayout({ children }: { children: ReactNode }) {
   const { translate } = useLanguage();
@@ -30,6 +31,7 @@ export default function TeacherLayout({ children }: { children: ReactNode }) {
             </main>
           </div>
        </div>
+       <IncomingCallManager />
     </ProtectedRoute>
   );
 }
