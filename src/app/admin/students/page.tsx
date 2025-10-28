@@ -159,8 +159,8 @@ export default function ManageStudentsPage() {
     }
     try {
       const studentData: any = {
-        name: data.name, email: null, role: "Student", studentIdInfo: data.studentIdInfo || null,
-        avatarUrl: data.avatarUrl || null, createdAt: Timestamp.now(), 
+        name: data.name, email: null, role: "Student", studentIdInfo: data.studentIdInfo || undefined,
+        avatarUrl: data.avatarUrl || undefined, createdAt: Timestamp.now(), 
         classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
         parentIds: [], schoolId: adminSchoolId, 
       };
