@@ -3,8 +3,6 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { collection, Timestamp, writeBatch, doc, arrayUnion } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,25 +13,27 @@ import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import type { Student } from "@/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { enrollStudentsInTerm } from "@/ai/flows/enroll-students-flow";
+import type { AcademicYear } from "@/lib/types";
+
 
 interface StudentImportDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   adminSchoolId: string | null;
   onImportSuccess: () => void;
-  allClasses: { id: string; name: string; }[]; // Pass all classes for name matching
+  allClasses: { id: string; name: string; }[];
+  activeAcademicYear: AcademicYear | null;
 }
 
 interface CsvStudent {
-  Name?: string | number | boolean;
-  StudentId?: string | number | boolean;
-  AvatarURL?: string | number | boolean;
-  ClassName?: string | number | boolean; 
+  Name?: string;
+  StudentId?: string;
+  AvatarURL?: string;
+  ClassName?: string;
 }
 
-const BATCH_SIZE = 100;
-
-export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImportSuccess, allClasses }: StudentImportDialogProps) {
+export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImportSuccess, allClasses, activeAcademicYear }: StudentImportDialogProps) {
   const { toast } = useToast();
   const { translate } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
@@ -71,9 +71,9 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
     setError(null);
   };
 
-  const processImportData = async (dataToImport: CsvStudent[]) => {
-    if (!adminSchoolId) {
-        setError(translate("studentImportErrorNoSchoolId") || "Admin school context is missing. Cannot import.");
+  const processAndImportData = async (dataToImport: CsvStudent[]) => {
+    if (!adminSchoolId || !activeAcademicYear?.id || !activeAcademicYear?.activeTermId) {
+        setError(translate("studentImportErrorNoSchoolId") || "Admin school context, active year, or active term is missing. Cannot import.");
         toast({ variant: "destructive", title: "Error", description: translate("studentImportErrorNoSchoolId") });
         setIsImporting(false);
         return;
@@ -87,108 +87,50 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
       setIsImporting(false);
       return;
     }
-
-    let importedCount = 0;
-    let errorCount = 0;
-    let unassignedClassCount = 0;
-
-    const classNameToIdMap = new Map(allClasses.map(cls => [cls.name.toLowerCase(), cls.id]));
-
-    for (let i = 0; i < studentsToImport.length; i += BATCH_SIZE) {
-      const firestoreBatch = writeBatch(db);
-      const chunk = studentsToImport.slice(i, i + BATCH_SIZE);
-
-      chunk.forEach((csvStudent) => {
-        const studentNameStr = String(csvStudent.Name || "").trim();
-        if (studentNameStr === "") {
-          console.warn("Skipping row due to missing or empty Name (after trim):", csvStudent);
-          errorCount++;
-          return;
-        }
-
-        const studentDocRef = doc(collection(db, "users"));
-        const studentData: Omit<Student, 'id' | 'uid' | 'parentIds' > & Partial<Pick<Student, 'classIds' | 'parentIds'>> = {
-          name: studentNameStr,
-          email: null,
-          role: "Student",
-          studentIdInfo: String(csvStudent.StudentId || "").trim() || undefined,
-          avatarUrl: String(csvStudent.AvatarURL || "").trim() || undefined,
-          createdAt: Timestamp.now(),
-          schoolId: adminSchoolId,
-          classIds: [],
-          parentIds: [],
-        };
-
-        const providedClassName = String(csvStudent.ClassName || "").trim();
-        let assignedClassId: string | undefined = undefined;
-
-        if (providedClassName) {
-          assignedClassId = classNameToIdMap.get(providedClassName.toLowerCase());
-          if (assignedClassId) {
-            studentData.classIds = [assignedClassId];
-            const classDocRef = doc(db, "classes", assignedClassId);
-            firestoreBatch.update(classDocRef, { studentIds: arrayUnion(studentDocRef.id) });
-          } else {
-            unassignedClassCount++;
-            console.warn(`Class name "${providedClassName}" not found for student "${studentNameStr}". Student will be unassigned.`);
-          }
-        }
-        
-        firestoreBatch.set(studentDocRef, studentData);
-      });
-
-      try {
-        await firestoreBatch.commit();
-        const validInChunk = chunk.filter(s => String(s.Name || "").trim() !== "").length;
-        importedCount += validInChunk;
-        setImportProgress(importedCount);
-      } catch (batchError) {
-        console.error("Error importing batch:", batchError);
-        errorCount += chunk.length; 
-        toast({
-          variant: "destructive",
-          title: translate("studentImportErrorBatchFailedTitle") || "Batch Import Failed",
-          description: `${translate("studentImportErrorBatchFailedDesc") || "A batch of students could not be imported."} ${batchError instanceof Error ? batchError.message : ""}`,
-        });
-      }
-    }
-
-    setIsImporting(false);
-
-    if (importedCount > 0) {
-      toast({
-        title: translate("studentImportSuccessTitle") || "Import Successful",
-        description: translate("studentImportSuccessDesc", { count: importedCount.toString() }),
-      });
-      if (unassignedClassCount > 0) {
-        toast({
-          variant: "warning",
-          title: translate("studentImportWarningTitle") || "Import Warnings",
-          description: translate("studentImportWarningClassNotAssigned", { count: unassignedClassCount.toString() }),
-          duration: 7000,
-        });
-      }
-      onImportSuccess();
-    }
-    if (errorCount > 0 && importedCount === 0) { // Only show general error if no successes
-      toast({
-        variant: "warning",
-        title: translate("studentImportWarningTitle") || "Import Warnings",
-        description: translate("studentImportWarningDesc", { count: errorCount.toString() }),
-      });
-    }
     
-    if (importedCount === 0 && errorCount === 0 && studentsToImport.length > 0) {
-         setError(translate("studentImportErrorNoStudentsInFile") || "No valid student records found in the file (ensure 'Name' column is present and not empty).");
-    } else if (importedCount === 0 && errorCount > 0) {
-        setError(translate("studentImportErrorAllFailed") || "All student records failed to import. Check file format and console for errors.");
+    // Convert file content to a string to pass to the AI flow
+    const fileContent = JSON.stringify(studentsToImport);
+
+    try {
+        const result = await enrollStudentsInTerm({
+            fileContent,
+            schoolId: adminSchoolId,
+            academicYearId: activeAcademicYear.id,
+            termId: activeAcademicYear.activeTermId,
+            existingClasses: allClasses,
+        });
+
+        if (result.success) {
+            toast({
+                title: translate("studentImportSuccessTitle"),
+                description: `${result.importedCount} students imported. ${result.unassignedCount > 0 ? `${result.unassignedCount} were unassigned due to class name mismatches.` : ''}`
+            });
+            onImportSuccess();
+        } else {
+            throw new Error(result.error || "AI flow failed to enroll students.");
+        }
+
+    } catch (flowError: any) {
+        console.error("Error during AI enrollment flow:", flowError);
+        setError(flowError.message || "An unexpected error occurred during the import process.");
+        toast({
+            variant: "destructive",
+            title: "Import Failed",
+            description: flowError.message || "The AI-powered import failed. Please check the file and try again.",
+        });
+    } finally {
+        setIsImporting(false);
     }
-  }
+  };
 
 
   const handleImport = async () => {
     if (!file) {
       setError(translate("studentImportErrorNoFile") || "Please select a file to import.");
+      return;
+    }
+     if (!activeAcademicYear) {
+      setError("No active academic year set. Please set one in Settings before importing.");
       return;
     }
     
@@ -198,46 +140,38 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
 
     const reader = new FileReader();
 
-    if (file.name.endsWith('.csv') || file.type === 'text/csv') {
-      Papa.parse<CsvStudent>(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          processImportData(results.data);
-        },
-        error: (err) => {
-          console.error("CSV Parsing Error:", err);
-          setError(`${translate("studentImportErrorParsingFailed") || "Failed to parse CSV file:"} ${err.message}`);
-          setIsImporting(false);
-        }
-      });
-    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.type === "application/vnd.ms-excel" || file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-      reader.onload = (event) => {
+    const parseAndProcess = (fileData: ArrayBuffer | string) => {
         try {
-          const data = event.target?.result;
-          if (!data) {
-            throw new Error("File data could not be read.");
-          }
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          const jsonData = XLSX.utils.sheet_to_json<CsvStudent>(worksheet, { defval: "" });
-          processImportData(jsonData);
-        } catch (excelError) {
-          console.error("Excel Parsing Error:", excelError);
-          setError(`${translate("studentImportErrorParsingFailedExcel") || "Failed to parse Excel file:"} ${excelError instanceof Error ? excelError.message : "Unknown error"}`);
-          setIsImporting(false);
+            let jsonData: CsvStudent[] = [];
+            if (file.name.endsWith('.csv') || file.type === 'text/csv') {
+                Papa.parse<CsvStudent>(fileData as string, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        processAndImportData(results.data);
+                    },
+                    error: (err) => { throw new Error(`CSV Parsing: ${err.message}`); }
+                });
+            } else { // Excel
+                const workbook = XLSX.read(fileData, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                jsonData = XLSX.utils.sheet_to_json<CsvStudent>(worksheet, { defval: "" });
+                processAndImportData(jsonData);
+            }
+        } catch(parseError: any) {
+             console.error("File Parsing Error:", parseError);
+             setError(`${translate("studentImportErrorParsingFailed") || "Failed to parse file:"} ${parseError.message}`);
+             setIsImporting(false);
         }
-      };
-      reader.onerror = (error) => {
-        console.error("File Reading Error:", error);
-        setError(translate("studentImportErrorReadingFile") || "Error reading file.");
-        setIsImporting(false);
-      };
-      reader.readAsArrayBuffer(file);
+    };
+    
+    if (file.name.endsWith('.csv') || file.type === 'text/csv') {
+        reader.onload = (event) => parseAndProcess(event.target?.result as string);
+        reader.readAsText(file);
     } else {
-      setError(translate("studentImportErrorInvalidFileTypeExcel") || "Unsupported file type. Please upload a CSV, XLSX, or XLS file.");
-      setIsImporting(false);
+        reader.onload = (event) => parseAndProcess(event.target?.result as ArrayBuffer);
+        reader.readAsArrayBuffer(file);
     }
   };
 
@@ -254,6 +188,9 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
           <DialogDescription>
             {translate("studentImportDescExcelCsvWithClass") || "Upload a CSV, XLSX, or XLS file. Required column: 'Name'. Optional: 'StudentId', 'AvatarURL', 'ClassName'. Students will be assigned to 'ClassName' if it matches an existing class in your school."}
           </DialogDescription>
+           {activeAcademicYear && (
+             <p className="text-sm text-blue-600 pt-2">Importing for: {activeAcademicYear.name} - Term {activeAcademicYear.activeTermId.replace('term','')}</p>
+           )}
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
@@ -280,13 +217,8 @@ export function StudentImportDialog({ isOpen, onOpenChange, adminSchoolId, onImp
 
           {isImporting && (
             <div className="space-y-2">
-              <Label>{translate("studentImportProgress") || "Import Progress:"} {importProgress} / {totalToImport}</Label>
-              <div className="w-full bg-secondary rounded-full h-2.5">
-                <div
-                  className="bg-primary h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${totalToImport > 0 ? (importProgress / totalToImport) * 100 : 0}%` }}
-                ></div>
-              </div>
+              <Label>AI processing in progress...</Label>
+              <Loader2 className="h-6 w-6 animate-spin" />
             </div>
           )}
         </div>

@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move, PhoneCall } from "lucide-react";
-import type { Student, UserProfile, Class } from "@/lib/types";
+import type { Student, UserProfile, Class, AcademicYear } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -53,6 +53,7 @@ export default function ManageStudentsPage() {
   
   const [allStudents, setAllStudents] = useState<StudentDisplay[]>([]);
   const [allClasses, setAllClasses] = useState<ClassSelectItem[]>([]);
+  const [activeAcademicYear, setActiveAcademicYear] = useState<AcademicYear | null>(null);
   
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,6 +97,19 @@ export default function ManageStudentsPage() {
     setLoadingData(true);
     setError(null);
     try {
+      // Fetch Active Academic Year
+      const academicYearQuery = query(collection(db, "academicYears"), where("schoolId", "==", adminSchoolId), where("isActive", "==", true));
+      const academicYearSnapshot = await getDocs(academicYearQuery);
+      if (academicYearSnapshot.empty) {
+        setError("No active academic year found. Please set one in the settings.");
+        setLoadingData(false);
+        return;
+      }
+      const yearDoc = academicYearSnapshot.docs[0];
+      const yearData = { id: yearDoc.id, ...yearDoc.data() } as AcademicYear;
+      setActiveAcademicYear(yearData);
+
+
       const studentsQuery = query(collection(db, "users"), where("role", "==", "Student"), where("schoolId", "==", adminSchoolId));
       const studentsSnapshot = await getDocs(studentsQuery);
       const studentList = studentsSnapshot.docs.map(doc => ({
@@ -116,7 +130,7 @@ export default function ManageStudentsPage() {
       const classesSnapshot = await getDocs(classesQuery);
       const classListItems = classesSnapshot.docs.map(doc => ({
           id: doc.id,
-          name: doc.data().name || `Class (${doc.id.substring(0,4)})`,
+          name: doc.data().name,
       }));
       setAllClasses(classListItems);
 
@@ -137,43 +151,74 @@ export default function ManageStudentsPage() {
     const byClass: Record<string, StudentDisplay[]> = {};
     const unassigned: StudentDisplay[] = [];
     allClasses.forEach(cls => { byClass[cls.id] = []; });
-    allStudents.forEach(student => {
-      let assigned = false;
-      if (student.classIds && student.classIds.length > 0) {
-        student.classIds.forEach(classId => {
-          if (byClass[classId]) {
-            byClass[classId].push(student);
-            assigned = true;
-          }
-        });
-      }
-      if (!assigned) { unassigned.push(student); }
+
+    if (!activeAcademicYear?.activeTermId) {
+        allStudents.forEach(student => unassigned.push(student));
+        return { byClass, unassigned };
+    }
+
+    const activeTermId = activeAcademicYear.activeTermId;
+    const activeTerm = activeAcademicYear.terms.find(t => t.id === activeTermId);
+    
+    if (!activeTerm || !activeTerm.studentEnrollments) {
+        allStudents.forEach(student => unassigned.push(student));
+        return { byClass, unassigned };
+    }
+
+    const enrolledStudentsThisTerm = new Set<string>();
+    Object.values(activeTerm.studentEnrollments).forEach(studentIds => {
+        studentIds.forEach(id => enrolledStudentsThisTerm.add(id));
     });
+
+    allStudents.forEach(student => {
+        if (!enrolledStudentsThisTerm.has(student.id)) {
+            unassigned.push(student);
+            return;
+        }
+
+        let assignedInTerm = false;
+        for (const classId in activeTerm.studentEnrollments) {
+            if (activeTerm.studentEnrollments[classId].includes(student.id)) {
+                if (byClass[classId]) {
+                    byClass[classId].push(student);
+                    assignedInTerm = true;
+                }
+            }
+        }
+        if (!assignedInTerm) {
+            unassigned.push(student);
+        }
+    });
+
     return { byClass, unassigned };
-  }, [allStudents, allClasses]);
+  }, [allStudents, allClasses, activeAcademicYear]);
 
   const onAddSubmit: SubmitHandler<StudentFormData> = async (data) => {
-    if (!adminSchoolId) {
-      toast({ variant: "destructive", title: "Error", description: translate("studentManagementErrorNoSchoolIdSubmit") });
+    if (!adminSchoolId || !activeAcademicYear?.id || !activeAcademicYear?.activeTermId) {
+      toast({ variant: "destructive", title: "Error", description: "Active academic year/term context is missing." });
       return;
     }
     try {
+      const batch = writeBatch(db);
+      
+      const studentDocRef = doc(collection(db, "users"));
       const studentData: any = {
         name: data.name, email: null, role: "Student", studentIdInfo: data.studentIdInfo || undefined,
         avatarUrl: data.avatarUrl || undefined, createdAt: Timestamp.now(), 
-        classIds: data.classId && data.classId !== 'none_class_option' ? [data.classId] : [],
         parentIds: [], schoolId: adminSchoolId, 
       };
-      const docRef = await addDoc(collection(db, "users"), studentData);
+      batch.set(studentDocRef, studentData);
+
       if (data.classId && data.classId !== 'none_class_option') {
-        const classRef = doc(db, "classes", data.classId);
-        const classSnap = await getDoc(classRef);
-        if(classSnap.exists() && classSnap.data().schoolId === adminSchoolId) {
-            await updateDoc(classRef, { studentIds: arrayUnion(docRef.id) });
-        } else {
-            toast({ variant: "warning", title: translate("studentManagementWarningClassMismatchTitle"), description: translate("studentManagementWarningClassMismatchDesc") });
-        }
+        const yearDocRef = doc(db, "academicYears", activeAcademicYear.id);
+        const fieldToUpdate = `terms.${activeAcademicYear.activeTermId}.studentEnrollments.${data.classId}`;
+        batch.update(yearDocRef, {
+            [fieldToUpdate]: arrayUnion(studentDocRef.id)
+        });
       }
+      
+      await batch.commit();
+      
       toast({ title: translate("studentManagementSuccessAddTitle"), description: translate("studentManagementSuccessAddDesc") });
       reset(); setIsAddDialogOpen(false); fetchData();
     } catch (err: any) {
@@ -230,24 +275,31 @@ export default function ManageStudentsPage() {
                 batch.delete(studentDocRef);
             }
         }
+        
+        // This part needs to be updated to remove from academic year enrollments
+        if (activeAcademicYear) {
+            const yearRef = doc(db, "academicYears", activeAcademicYear.id);
+            const activeTerm = activeAcademicYear.terms.find(t => t.id === activeAcademicYear.activeTermId);
+            if(activeTerm) {
+                const enrollmentUpdates: Record<string, any> = {};
+                Object.entries(activeTerm.studentEnrollments).forEach(([classId, studentIdsInClass]) => {
+                    const studentsToRemove = studentIdsInClass.filter(id => selectedStudents.has(id));
+                    if(studentsToRemove.length > 0) {
+                        enrollmentUpdates[`terms.${activeTerm.id}.studentEnrollments.${classId}`] = arrayRemove(...studentsToRemove);
+                    }
+                });
+                if(Object.keys(enrollmentUpdates).length > 0) {
+                    batch.update(yearRef, enrollmentUpdates);
+                }
+            }
+        }
 
-        const classUpdates = new Map<string, string[]>();
         const parentUpdates = new Map<string, string[]>();
-
         studentDocs.forEach((studentData, studentId) => {
-            studentData.classIds?.forEach(classId => {
-                if (!classUpdates.has(classId)) classUpdates.set(classId, []);
-                classUpdates.get(classId)?.push(studentId);
-            });
             studentData.parentIds?.forEach(parentId => {
                  if (!parentUpdates.has(parentId)) parentUpdates.set(parentId, []);
                  parentUpdates.get(parentId)?.push(studentId);
             });
-        });
-
-        classUpdates.forEach((studentIds, classId) => {
-            const classRef = doc(db, "classes", classId);
-            batch.update(classRef, { studentIds: arrayRemove(...studentIds) });
         });
 
         parentUpdates.forEach((studentIds, parentId) => {
@@ -269,62 +321,48 @@ export default function ManageStudentsPage() {
   };
   
   const handleMoveSelectedStudents = async () => {
-    if (selectedStudents.size === 0 || !targetClassId || !adminSchoolId) {
-      toast({ variant: "destructive", title: "Error", description: translate("studentMoveErrorSelection") });
+    if (selectedStudents.size === 0 || !targetClassId || !adminSchoolId || !activeAcademicYear) {
+      toast({ variant: "destructive", title: "Error", description: "Please select students, a target class, and ensure an active academic year." });
       return;
     }
     setIsMoving(true);
 
     const batch = writeBatch(db);
     const studentIdsToMove = Array.from(selectedStudents);
-    const studentDocs = new Map<string, Student>();
 
     try {
-      // 1. Fetch current data for all selected students
-      for (const studentId of studentIdsToMove) {
-        const studentRef = doc(db, "users", studentId);
-        const studentSnap = await getDoc(studentRef);
-        if (studentSnap.exists() && studentSnap.data().schoolId === adminSchoolId) {
-          studentDocs.set(studentId, studentSnap.data() as Student);
-        }
-      }
+        const yearRef = doc(db, "academicYears", activeAcademicYear.id);
+        const activeTerm = activeAcademicYear.terms.find(t => t.id === activeAcademicYear.activeTermId);
+        if (!activeTerm) throw new Error("Active term not found.");
 
-      // 2. Remove students from their old classes
-      const oldClassUpdates = new Map<string, string[]>();
-      studentDocs.forEach((student, studentId) => {
-        student.classIds?.forEach(classId => {
-          if (classId !== targetClassId) { // Don't remove if they are already in the target class
-            if (!oldClassUpdates.has(classId)) oldClassUpdates.set(classId, []);
-            oldClassUpdates.get(classId)!.push(studentId);
-          }
+        // 1. Remove students from their old class enrollments in the current term
+        const removalUpdates: Record<string, any> = {};
+        Object.entries(activeTerm.studentEnrollments).forEach(([classId, studentIdsInClass]) => {
+             const studentsToRemove = studentIdsInClass.filter(id => studentIdsToMove.includes(id));
+             if (studentsToRemove.length > 0) {
+                 removalUpdates[`terms.${activeTerm.id}.studentEnrollments.${classId}`] = arrayRemove(...studentsToRemove);
+             }
         });
-      });
+        if(Object.keys(removalUpdates).length > 0) {
+            batch.update(yearRef, removalUpdates);
+        }
 
-      oldClassUpdates.forEach((studentIds, classId) => {
-        const classRef = doc(db, "classes", classId);
-        batch.update(classRef, { studentIds: arrayRemove(...studentIds) });
-      });
+        // 2. Add students to the new class enrollment for the current term
+        const fieldToUpdate = `terms.${activeTerm.id}.studentEnrollments.${targetClassId}`;
+        batch.update(yearRef, {
+            [fieldToUpdate]: arrayUnion(...studentIdsToMove)
+        });
 
-      // 3. Update each student's document to set the new class
-      studentDocs.forEach((_, studentId) => {
-        const studentRef = doc(db, "users", studentId);
-        batch.update(studentRef, { classIds: [targetClassId] }); // Assign only the new class
-      });
+        // 3. Commit all changes
+        await batch.commit();
+
+        toast({ title: translate("studentMoveSuccessTitle"), description: translate("studentMoveSuccessDesc", { count: studentIdsToMove.length.toString() }) });
       
-      // 4. Add students to the new class
-      const newClassRef = doc(db, "classes", targetClassId);
-      batch.update(newClassRef, { studentIds: arrayUnion(...studentIdsToMove) });
-
-      // 5. Commit all changes
-      await batch.commit();
-
-      toast({ title: translate("studentMoveSuccessTitle"), description: translate("studentMoveSuccessDesc", { count: studentIdsToMove.length.toString() }) });
-      
-      // 6. Reset state and refresh data
-      fetchData();
-      setSelectedStudents(new Set());
-      setIsMoveDialogOpen(false);
-      setTargetClassId('');
+        // 4. Reset state and refresh data
+        fetchData();
+        setSelectedStudents(new Set());
+        setIsMoveDialogOpen(false);
+        setTargetClassId('');
 
     } catch (err: any) {
       console.error("Error moving students:", err);
@@ -409,11 +447,11 @@ export default function ManageStudentsPage() {
                     data-state={someInGroupSelected && !allInGroupSelected ? "indeterminate" : (allInGroupSelected ? "checked" : "unchecked")}
                 />
             </TableHead>
-            <TableHead className="w-[80px]">{translate("avatarUrlLabel")}</TableHead>
-            <TableHead>{translate("nameLabel")}</TableHead>
-            <TableHead>{translate("studentManagementStudentIdLabel")}</TableHead>
-            <TableHead>{translate("linkedParents")}</TableHead>
-            <TableHead className="text-right">{translate("actionsLabel")}</TableHead>
+            <TableHead className="w-[80px]">Avatar</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Student ID</TableHead>
+            <TableHead>Linked Parents</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -449,7 +487,7 @@ export default function ManageStudentsPage() {
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                    <Button variant="outline" size="sm" onClick={() => handleOpenEditAvatarDialog(student)} className="gap-1">
-                      <ImageIcon className="h-3 w-3" /> {translate("studentManagementEditAvatarButton")}
+                      <ImageIcon className="h-3 w-3" /> Edit Avatar
                    </Button>
                    <Button variant="secondary" size="sm" onClick={() => handleCallParent(student, student.parentIds?.[0] || '')} className="gap-1" disabled={!student.parentIds || student.parentIds.length === 0 || isCalling[student.id]}>
                       {isCalling[student.id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <PhoneCall className="h-4 w-4" />}
@@ -461,7 +499,7 @@ export default function ManageStudentsPage() {
           ) : (
             <TableRow>
               <TableCell colSpan={6} className="h-24 text-center">
-                {translate("studentManagementNoStudentsInClass") || "No students in this class."}
+                No students in this group for the current term.
               </TableCell>
             </TableRow>
           )}
@@ -475,6 +513,9 @@ export default function ManageStudentsPage() {
   if (authLoading) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
+   if (error) {
+    return <p className="text-center text-destructive">{error}</p>
+  }
 
   return (
     <>
@@ -483,15 +524,16 @@ export default function ManageStudentsPage() {
         <div>
             <CardTitle>{translate("manageStudents")}</CardTitle>
             <CardDescription>{translate("studentManagementPageDescClassified") || "View students grouped by class, add new students, or import them."}</CardDescription>
+             {activeAcademicYear && <p className="text-sm text-primary pt-1">Current Term: {activeAcademicYear.name} - {activeAcademicYear.terms.find(t=>t.id === activeAcademicYear.activeTermId)?.name}</p>}
         </div>
         <div className="flex gap-2">
-            <Button size="sm" className="gap-1" onClick={() => setIsImportDialogOpen(true)} disabled={!adminSchoolId}>
+            <Button size="sm" className="gap-1" onClick={() => setIsImportDialogOpen(true)} disabled={!adminSchoolId || !activeAcademicYear}>
                 <Upload className="h-4 w-4" />
                 {translate("studentImportButtonTitle")}
             </Button>
             <Dialog open={isAddDialogOpen} onOpenChange={(open) => { setIsAddDialogOpen(open); if (!open) reset(); }}>
               <DialogTrigger asChild>
-                <Button size="sm" className="gap-1" disabled={!adminSchoolId}>
+                <Button size="sm" className="gap-1" disabled={!adminSchoolId || !activeAcademicYear}>
                   <PlusCircle className="h-4 w-4" />
                   {translate("studentManagementAddStudentButton")}
                 </Button>
@@ -503,27 +545,27 @@ export default function ManageStudentsPage() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onAddSubmit)} className="grid gap-4 py-4">
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">{translate("nameLabel")}</Label>
+                      <Label htmlFor="name" className="text-right">Name</Label>
                       <div className="col-span-3">
                           <Input id="name" {...register("name")} className={errors.name ? 'border-destructive' : ''} />
                           {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="studentIdInfo" className="text-right">{translate("studentManagementStudentIdLabel")}</Label>
+                      <Label htmlFor="studentIdInfo" className="text-right">Student ID</Label>
                        <div className="col-span-3">
-                          <Input id="studentIdInfo" {...register("studentIdInfo")} placeholder={translate("studentManagementStudentIdPlaceholder")}/>
+                          <Input id="studentIdInfo" {...register("studentIdInfo")} placeholder="e.g., Roll No, Admission ID"/>
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="avatarUrl" className="text-right">{translate("avatarUrlLabel")}</Label>
+                      <Label htmlFor="avatarUrl" className="text-right">Avatar URL</Label>
                        <div className="col-span-3">
                           <Input id="avatarUrl" {...register("avatarUrl")} className={errors.avatarUrl ? 'border-destructive' : ''} placeholder="https://example.com/avatar.png"/>
                           {errors.avatarUrl && <p className="text-xs text-destructive mt-1">{errors.avatarUrl.message}</p>}
                       </div>
                    </div>
                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="classId" className="text-right">{translate("studentManagementAssignToClassLabel")}</Label>
+                      <Label htmlFor="classId" className="text-right">Assign to Class</Label>
                       <div className="col-span-3">
                            <Controller
                               control={control}
@@ -535,18 +577,15 @@ export default function ManageStudentsPage() {
                                       disabled={loadingData || allClasses.length === 0}
                                   >
                                       <SelectTrigger id="classId">
-                                          <SelectValue placeholder={loadingData ? translate("loading") : translate("studentManagementSelectClassOptionalPlaceholder")} />
+                                          <SelectValue placeholder={loadingData ? "Loading..." : "Select Class (Optional)"} />
                                       </SelectTrigger>
                                       <SelectContent>
-                                          <SelectItem value="none_class_option">{translate("studentManagementNoneOption")}</SelectItem>
+                                          <SelectItem value="none_class_option">None</SelectItem>
                                           {allClasses.map(cls => (
                                               <SelectItem key={cls.id} value={cls.id}>
                                                   {cls.name}
                                               </SelectItem>
                                           ))}
-                                          {!loadingData && allClasses.length === 0 && (
-                                              <SelectItem value="no_classes_available" disabled>{translate("studentManagementNoClassesAvailable")}</SelectItem>
-                                          )}
                                       </SelectContent>
                                   </Select>
                                )}
@@ -555,11 +594,11 @@ export default function ManageStudentsPage() {
                    </div>
                    <DialogFooter>
                       <DialogClose asChild>
-                         <Button type="button" variant="outline">{translate("cancelButton")}</Button>
+                         <Button type="button" variant="outline">Cancel</Button>
                       </DialogClose>
                       <Button type="submit" disabled={isSubmitting || loadingData}>
                           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          {translate("studentManagementAddStudentButton")}
+                          Add Student
                       </Button>
                    </DialogFooter>
                 </form>
@@ -573,14 +612,14 @@ export default function ManageStudentsPage() {
                   <AlertDialogTrigger asChild>
                       <Button variant="destructive" disabled={selectedStudents.size === 0 || isDeleting}>
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {translate('deleteSelectedWithCount', { count: selectedStudents.size.toString() })}
+                          Delete Selected ({selectedStudents.size})
                       </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                       <AlertDialogHeader>
-                          <AlertDialogTitle>{translate('studentDeleteConfirmTitleMultiple', { count: selectedStudents.size.toString() })}</AlertDialogTitle>
+                          <AlertDialogTitle>Delete {selectedStudents.size} Students?</AlertDialogTitle>
                           <AlertDialogDescription>
-                              {translate('studentDeleteConfirmDescMultiple', { count: selectedStudents.size.toString() })}
+                              Are you sure you want to delete the {selectedStudents.size} selected students? This will remove them from all classes and parent links. This action cannot be undone.
                           </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -596,19 +635,19 @@ export default function ManageStudentsPage() {
                   <DialogTrigger asChild>
                     <Button variant="outline" disabled={selectedStudents.size === 0}>
                         <Move className="mr-2 h-4 w-4" />
-                        {translate('moveSelectedWithCount', { count: selectedStudents.size.toString() })}
+                        Move Selected ({selectedStudents.size})
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{translate('studentMoveDialogTitle', { count: selectedStudents.size.toString() })}</DialogTitle>
-                        <DialogDescription>{translate('studentMoveDialogDesc')}</DialogDescription>
+                        <DialogTitle>Move {selectedStudents.size} Selected Students</DialogTitle>
+                        <DialogDescription>Choose a new class to assign all selected students to. They will be removed from their current classes for this term.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
-                        <Label htmlFor="target-class-select">{translate('studentMoveSelectClassLabel')}</Label>
+                        <Label htmlFor="target-class-select">Move to Class</Label>
                         <Select value={targetClassId} onValueChange={setTargetClassId}>
                             <SelectTrigger id="target-class-select">
-                                <SelectValue placeholder={translate('studentManagementSelectClassOptionalPlaceholder')} />
+                                <SelectValue placeholder="Select a class" />
                             </SelectTrigger>
                             <SelectContent>
                                 {allClasses.map(cls => (
@@ -620,10 +659,10 @@ export default function ManageStudentsPage() {
                         </Select>
                     </div>
                     <DialogFooter>
-                        <DialogClose asChild><Button variant="outline">{translate('cancelButton')}</Button></DialogClose>
+                        <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                         <Button onClick={handleMoveSelectedStudents} disabled={isMoving || !targetClassId}>
                             {isMoving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {translate('studentMoveConfirmButton')}
+                            Move Students
                         </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -634,15 +673,15 @@ export default function ManageStudentsPage() {
              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
              <span className="ml-2">{translate("studentManagementLoadingStudents")}</span>
            </div>
-         ) : error ? (
-            <p className="text-center text-destructive">{error}</p>
          ) : !adminSchoolId ? (
             <p className="text-center text-destructive">{translate("studentManagementErrorNoSchoolId")}</p>
+         ) : !activeAcademicYear ? (
+            <p className="text-center text-destructive">No active academic year. Please configure one in Settings.</p>
          ) : (
             allClasses.length === 0 && groupedStudents.unassigned.length === 0 ? (
                  <p className="text-center text-muted-foreground py-10">{translate("studentManagementNoStudentsFound")}</p>
             ) : (
-            <Accordion type="multiple" className="w-full">
+            <Accordion type="multiple" className="w-full" defaultValue={allClasses.map(c => c.id).concat("unassigned-students")}>
               {allClasses.map((cls) => (
                 <AccordionItem key={cls.id} value={cls.id}>
                   <AccordionTrigger>
@@ -686,6 +725,7 @@ export default function ManageStudentsPage() {
             setIsImportDialogOpen(false);
         }}
         allClasses={allClasses}
+        activeAcademicYear={activeAcademicYear}
     />
 
     <Dialog open={isEditAvatarDialogOpen} onOpenChange={(open) => {
@@ -694,8 +734,8 @@ export default function ManageStudentsPage() {
     }}>
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-                <DialogTitle>{translate("studentManagementEditAvatarDialogTitle", { name: currentEditingStudent?.name || ""})}</DialogTitle>
-                <DialogDescription>{translate("studentManagementEditAvatarDialogDesc")}</DialogDescription>
+                <DialogTitle>Edit Avatar for {currentEditingStudent?.name}</DialogTitle>
+                <DialogDescription>Enter a new image URL for the student's avatar.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="flex justify-center mb-4">
@@ -705,7 +745,7 @@ export default function ManageStudentsPage() {
                     </Avatar>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-avatarUrl" className="text-right">{translate("avatarUrlLabel")}</Label>
+                    <Label htmlFor="edit-avatarUrl" className="text-right">Avatar URL</Label>
                     <div className="col-span-3">
                         <Input
                             id="edit-avatarUrl"
@@ -717,10 +757,10 @@ export default function ManageStudentsPage() {
                 </div>
             </div>
             <DialogFooter>
-                <DialogClose asChild><Button type="button" variant="outline">{translate("cancelButton")}</Button></DialogClose>
+                <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                 <Button onClick={handleUpdateAvatar} disabled={isSubmittingAvatar}>
                     {isSubmittingAvatar && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {translate("studentManagementSaveAvatarButton")}
+                    Save Avatar
                 </Button>
             </DialogFooter>
         </DialogContent>
@@ -729,14 +769,14 @@ export default function ManageStudentsPage() {
     <Dialog open={isViewParentsDialogOpen} onOpenChange={setIsViewParentsDialogOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{translate('parentDetailsForStudent', { studentName: selectedStudentForParents?.name || "Student" })}</DialogTitle>
-          <DialogDescription>{translate('listOfLinkedParentsDesc', 'The following parents are linked to this student.')}</DialogDescription>
+          <DialogTitle>Parent Details for {selectedStudentForParents?.name || "Student"}</DialogTitle>
+          <DialogDescription>The following parents are linked to this student.</DialogDescription>
         </DialogHeader>
         <div className="py-4">
           {loadingParentDetails ? (
             <div className="flex justify-center items-center">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="ml-2">{translate('loadingParentDetails', 'Loading parent details...')}</span>
+              <span className="ml-2">Loading parent details...</span>
             </div>
           ) : linkedParentsDetails.length > 0 ? (
             <ul className="space-y-3">
@@ -754,12 +794,12 @@ export default function ManageStudentsPage() {
               ))}
             </ul>
           ) : (
-            <p className="text-center text-muted-foreground">{translate('noLinkedParents', 'No parents found for this student.')}</p>
+            <p className="text-center text-muted-foreground">No parents found for this student.</p>
           )}
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">{translate('closeButton', 'Close')}</Button>
+            <Button type="button" variant="secondary">Close</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
