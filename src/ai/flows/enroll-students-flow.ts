@@ -3,8 +3,8 @@
  * @fileOverview An AI flow to intelligently import and enroll students into classes for a specific academic term.
  *
  * - enrollStudentsInTerm - The main function that orchestrates the student enrollment process using an AI flow.
- * - EnrollInputSchema - The Zod schema for the input data.
- * - EnrollOutputSchema - The Zod schema for the output data.
+ * - EnrollInput - The Zod schema for the input data.
+ * - EnrollOutput - The Zod schema for the output data.
  */
 
 import { ai } from '@/ai/ai-instance';
@@ -20,7 +20,7 @@ const ClassInfoSchema = z.object({
 });
 
 // Define Zod schema for the input of the AI flow
-export const EnrollInputSchema = z.object({
+const EnrollInputSchema = z.object({
   fileContent: z.string().describe("JSON stringified array of student data from the uploaded file."),
   schoolId: z.string().describe("The ID of the school where students will be enrolled."),
   academicYearId: z.string().describe("The ID of the academic year for this enrollment."),
@@ -30,7 +30,7 @@ export const EnrollInputSchema = z.object({
 export type EnrollInput = z.infer<typeof EnrollInputSchema>;
 
 // Define Zod schema for the output of the AI flow
-export const EnrollOutputSchema = z.object({
+const EnrollOutputSchema = z.object({
   success: z.boolean().describe("Whether the enrollment was successful."),
   importedCount: z.number().describe("The number of students successfully imported and enrolled."),
   unassignedCount: z.number().describe("The number of students imported but not assigned to a class due to mismatch."),
