@@ -1,4 +1,3 @@
-
 // src/app/admin/settings/page.tsx
 "use client";
 
@@ -22,16 +21,6 @@ import { format, isBefore } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-
-// Helper function to safely convert a Firestore Timestamp or a JS Date to a JS Date
-const toDate = (date: Timestamp | Date | undefined): Date | undefined => {
-  if (!date) return undefined;
-  if (date instanceof Timestamp) {
-    return date.toDate();
-  }
-  return date;
-};
-
 
 export default function AdminSettingsPage() {
   const { schoolId, loading: authLoading } = useAuth();
@@ -73,16 +62,15 @@ export default function AdminSettingsPage() {
       return;
     }
     
-    // Logic to infer dates from name like "2024-2025"
     const yearParts = newYearName.match(/(\d{4})-(\d{4})/);
     let startDate: Date, endDate: Date;
     if (yearParts) {
-        startDate = new Date(parseInt(yearParts[1]), 7, 1); // August 1st of start year
-        endDate = new Date(parseInt(yearParts[2]), 5, 30); // June 30th of end year
+        startDate = new Date(parseInt(yearParts[1]), 7, 1);
+        endDate = new Date(parseInt(yearParts[2]), 5, 30);
     } else {
         const currentYear = new Date().getFullYear();
-        startDate = new Date(currentYear, 7, 1); // Default to current year August 1st
-        endDate = new Date(currentYear + 1, 5, 30); // Default to next year June 30th
+        startDate = new Date(currentYear, 7, 1);
+        endDate = new Date(currentYear + 1, 5, 30);
         toast({variant: "info", title: "Default Dates Used", description: "Could not infer year from name, using default dates (Aug 1 - Jun 30)."});
     }
 
@@ -93,8 +81,8 @@ export default function AdminSettingsPage() {
         schoolId: schoolId,
         startDate: Timestamp.fromDate(startDate),
         endDate: Timestamp.fromDate(endDate),
-        isActive: false, // Initially not active
-        activeTermId: 'term1', // Default to term1 being active
+        isActive: false, 
+        activeTermId: 'term1',
         terms: [
             { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(startDate), endDate: Timestamp.fromDate(new Date(startDate.getFullYear(), 11, 20)), studentEnrollments: {} },
             { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(new Date(startDate.getFullYear() + 1, 0, 10)), endDate: Timestamp.fromDate(new Date(startDate.getFullYear() + 1, 2, 30)), studentEnrollments: {} },
@@ -107,7 +95,7 @@ export default function AdminSettingsPage() {
       toast({ title: "Success", description: "Academic year created. Activate it to make it the current year for your school." });
       setIsAddYearOpen(false);
       setNewYearName("");
-      fetchAcademicYears(); // Refresh list
+      fetchAcademicYears();
 
     } catch (error) {
       console.error("Error adding academic year:", error);
@@ -122,37 +110,48 @@ export default function AdminSettingsPage() {
 
     const yearIndex = academicYears.findIndex(y => y.id === yearId);
     if (yearIndex === -1) return;
-
-    const year = { ...academicYears[yearIndex] };
-    const termIndex = year.terms.findIndex(t => t.id === termId);
-    if (termIndex === -1) return;
-
-    // Optimistic UI update
-    const updatedYears = [...academicYears];
-    const updatedTerms = [...updatedYears[yearIndex].terms];
-    updatedTerms[termIndex] = { ...updatedTerms[termIndex], [dateType]: newDate }; // Use JS Date for immediate feedback
-    updatedYears[yearIndex] = { ...updatedYears[yearIndex], terms: updatedTerms };
+    
+    // Create a deep copy to avoid direct state mutation issues
+    const updatedYears = JSON.parse(JSON.stringify(academicYears));
+    const yearToUpdate = updatedYears[yearIndex];
+    const termToUpdate = yearToUpdate.terms.find((t: Term) => t.id === termId);
+    
+    if (!termToUpdate) return;
+    
+    // Set the new date as a JS Date object for immediate UI feedback
+    termToUpdate[dateType] = newDate.toISOString(); 
     setAcademicYears(updatedYears);
 
     // Persist to Firestore
     try {
         const yearDocRef = doc(db, "academicYears", yearId);
-        // Create a version of the terms with Firestore Timestamps for saving
-        const termsForFirestore = year.terms.map(t => {
-            if (t.id === termId) {
-                return { ...t, [dateType]: Timestamp.fromDate(newDate) };
+        
+        // Get original terms from state to avoid issues with non-serializable data
+        const originalYear = academicYears[yearIndex];
+        const termsForFirestore = originalYear.terms.map(t => {
+            const termCopy: any = { ...t };
+            // Convert any JS Dates back to Timestamps before saving
+            if (termCopy.startDate && !(termCopy.startDate instanceof Timestamp)) {
+                termCopy.startDate = Timestamp.fromDate(new Date(termCopy.startDate));
             }
-            return t;
+            if (termCopy.endDate && !(termCopy.endDate instanceof Timestamp)) {
+                termCopy.endDate = Timestamp.fromDate(new Date(termCopy.endDate));
+            }
+
+            if (t.id === termId) {
+                return { ...termCopy, [dateType]: Timestamp.fromDate(newDate) };
+            }
+            return termCopy;
         });
 
         await updateDoc(yearDocRef, { terms: termsForFirestore });
         toast({ title: "Term Updated", description: "Term date has been saved." });
-        // No need to re-fetch, optimistic update is already done. If paranoid, you can re-fetch.
-        // fetchAcademicYears();
+        // Re-fetch to ensure data consistency from Firestore after update
+        fetchAcademicYears();
     } catch (error) {
         console.error("Error updating term date:", error);
         toast({ variant: "destructive", title: "Update Failed", description: "Could not save the term date. Reverting." });
-        // Revert optimistic update on failure
+        // Revert optimistic update on failure by re-fetching
         fetchAcademicYears();
     }
   };
@@ -221,6 +220,13 @@ export default function AdminSettingsPage() {
   if (!schoolId && !authLoading) {
       return <Card><CardContent className="p-6">Admin school context is missing. Cannot manage settings.</CardContent></Card>
   }
+  
+  const getDate = (date: any): Date | undefined => {
+    if (!date) return undefined;
+    if (date instanceof Timestamp) return date.toDate();
+    return new Date(date);
+  };
+
 
   return (
     <Card>
@@ -277,7 +283,7 @@ export default function AdminSettingsPage() {
                 <AccordionContent className="space-y-4 pl-2">
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                       <p className="text-muted-foreground text-sm">
-                          Year runs from {format(toDate(year.startDate)!, 'PPP')} to {format(toDate(year.endDate)!, 'PPP')}.
+                          Year runs from {format(getDate(year.startDate)!, 'PPP')} to {format(getDate(year.endDate)!, 'PPP')}.
                       </p>
                       {year.isActive && (
                           <div className="flex gap-2">
@@ -313,7 +319,10 @@ export default function AdminSettingsPage() {
 
                   <h4 className="font-semibold">Terms</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {year.terms.map(term => (
+                    {year.terms.map(term => {
+                       const startDate = getDate(term.startDate);
+                       const endDate = getDate(term.endDate);
+                       return (
                       <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
                         <CardHeader className="pb-2 flex flex-row items-center justify-between">
                           <CardTitle className="text-base">{term.name}</CardTitle>
@@ -324,29 +333,29 @@ export default function AdminSettingsPage() {
                               <Label className="text-xs">Start Date</Label>
                               <Popover>
                                   <PopoverTrigger asChild>
-                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.startDate && "text-muted-foreground")}>
+                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                                       <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {term.startDate ? format(toDate(term.startDate)!, "PPP") : <span>Pick date</span>}
+                                      {startDate ? format(startDate, "PPP") : <span>Pick date</span>}
                                   </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={toDate(term.startDate)} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
+                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={startDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
                               </Popover>
                           </div>
                             <div>
                               <Label className="text-xs">End Date</Label>
                               <Popover>
                                   <PopoverTrigger asChild>
-                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.endDate && "text-muted-foreground")}>
+                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
                                       <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {term.endDate ? format(toDate(term.endDate)!, "PPP") : <span>Pick date</span>}
+                                      {endDate ? format(endDate, "PPP") : <span>Pick date</span>}
                                   </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={toDate(term.endDate)} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
+                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={endDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
                               </Popover>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                    )})}
                   </div>
                 </AccordionContent>
               </AccordionItem>
