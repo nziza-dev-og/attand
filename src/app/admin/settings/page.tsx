@@ -22,6 +22,7 @@ import { format, isBefore } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 // Helper function to safely convert various date types to a JS Date object
 const getDate = (date: any): Date | undefined => {
@@ -46,6 +47,7 @@ export default function AdminSettingsPage() {
 
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const [isAddYearOpen, setIsAddYearOpen] = useState(false);
   const [newYearName, setNewYearName] = useState("");
@@ -57,11 +59,15 @@ export default function AdminSettingsPage() {
         return;
       }
       setLoading(true);
+      setError(null);
       try {
         const q = query(collection(db, "academicYears"), where("schoolId", "==", schoolId), orderBy("startDate", "desc"));
         const querySnapshot = await getDocs(q);
         const years = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AcademicYear));
         setAcademicYears(years);
+        if (years.length === 0) {
+            setError("No academic year found. Please create one to manage students and classes.");
+        }
       } catch (error) {
         console.error("Error fetching academic years:", error);
         toast({ variant: "destructive", title: "Error", description: "Failed to load academic years." });
@@ -148,16 +154,17 @@ export default function AdminSettingsPage() {
         const originalYear = academicYears[yearIndex];
         const termsForFirestore = originalYear.terms.map(t => {
             const termCopy: any = { ...t };
-            // Convert any JS Dates back to Timestamps before saving
+            
+            if (t.id === termId) {
+                termCopy[dateType] = Timestamp.fromDate(newDate);
+            }
+            
+            // Ensure all dates are Timestamps before saving
             if (termCopy.startDate && !(termCopy.startDate instanceof Timestamp)) {
                 termCopy.startDate = Timestamp.fromDate(new Date(termCopy.startDate));
             }
             if (termCopy.endDate && !(termCopy.endDate instanceof Timestamp)) {
                 termCopy.endDate = Timestamp.fromDate(new Date(termCopy.endDate));
-            }
-
-            if (t.id === termId) {
-                return { ...termCopy, [dateType]: Timestamp.fromDate(newDate) };
             }
             return termCopy;
         });
@@ -274,7 +281,12 @@ export default function AdminSettingsPage() {
         </Dialog>
       </CardHeader>
       <CardContent>
-        {academicYears.length === 0 ? (
+        {error && !loading && academicYears.length === 0 ? (
+            <div className="text-center py-8">
+                <p className="text-destructive">{error}</p>
+                <Button onClick={() => setIsAddYearOpen(true)} className="mt-4">Create Academic Year</Button>
+            </div>
+        ) : academicYears.length === 0 && !loading ? (
           <p className="text-center text-muted-foreground py-8">No academic years created yet.</p>
         ) : (
           <Accordion type="single" collapsible className="w-full">
