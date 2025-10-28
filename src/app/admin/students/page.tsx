@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/componentsui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -19,12 +19,13 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move, PhoneCall } from "lucide-react";
+import { Loader2, PlusCircle, Edit, Image as ImageIcon, Upload, Trash2, Users, Move, PhoneCall, Settings } from "lucide-react";
 import type { Student, UserProfile, Class, AcademicYear } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StudentImportDialog } from "./_components/StudentImportDialog"; 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
+import Link from 'next/link';
 
 const getInitials = (name: string = '') => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
@@ -484,7 +485,21 @@ export default function ManageStudentsPage() {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
    if (error) {
-    return <p className="text-center text-destructive">{error}</p>
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-destructive">Action Required</CardTitle>
+                <CardDescription>{error}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button asChild>
+                    <Link href="/admin/settings" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" /> Go to Settings
+                    </Link>
+                </Button>
+            </CardContent>
+        </Card>
+    )
   }
 
   return (

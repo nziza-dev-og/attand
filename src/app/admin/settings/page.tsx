@@ -1,4 +1,3 @@
-
 // src/app/admin/settings/page.tsx
 "use client";
 
@@ -31,8 +30,6 @@ export default function AdminSettingsPage() {
   
   const [isAddYearOpen, setIsAddYearOpen] = useState(false);
   const [newYearName, setNewYearName] = useState("");
-  const [newYearStartDate, setNewYearStartDate] = useState<Date | undefined>();
-  const [newYearEndDate, setNewYearEndDate] = useState<Date | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchAcademicYears = React.useCallback(async () => {
@@ -59,13 +56,22 @@ export default function AdminSettingsPage() {
   }, [fetchAcademicYears]);
 
   const handleAddAcademicYear = async () => {
-    if (!schoolId || !newYearName.trim() || !newYearStartDate || !newYearEndDate) {
-      toast({ variant: "destructive", title: "Missing Information", description: "Please provide a name, start date, and end date." });
+    if (!schoolId || !newYearName.trim()) {
+      toast({ variant: "destructive", title: "Missing Information", description: "Please provide a name for the academic year." });
       return;
     }
-    if (isBefore(newYearEndDate, newYearStartDate)) {
-       toast({ variant: "destructive", title: "Invalid Dates", description: "End date cannot be before the start date." });
-       return;
+    
+    // Logic to infer dates from name like "2024-2025"
+    const yearParts = newYearName.match(/(\d{4})-(\d{4})/);
+    let startDate: Date, endDate: Date;
+    if (yearParts) {
+        startDate = new Date(parseInt(yearParts[1]), 7, 1); // August 1st of start year
+        endDate = new Date(parseInt(yearParts[2]), 5, 30); // June 30th of end year
+    } else {
+        const currentYear = new Date().getFullYear();
+        startDate = new Date(currentYear, 7, 1); // Default to current year August 1st
+        endDate = new Date(currentYear + 1, 5, 30); // Default to next year June 30th
+        toast({variant: "info", title: "Default Dates Used", description: "Could not infer year from name, using default dates (Aug 1 - Jun 30)."});
     }
 
     setIsSubmitting(true);
@@ -73,14 +79,14 @@ export default function AdminSettingsPage() {
       const newYearData: Omit<AcademicYear, 'id'> = {
         name: newYearName.trim(),
         schoolId: schoolId,
-        startDate: Timestamp.fromDate(newYearStartDate),
-        endDate: Timestamp.fromDate(newYearEndDate),
+        startDate: Timestamp.fromDate(startDate),
+        endDate: Timestamp.fromDate(endDate),
         isActive: false, // Initially not active
         activeTermId: 'term1', // Default to term1 being active
         terms: [
-            { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
-            { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
-            { id: 'term3', name: 'Term 3', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
+            { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(startDate), endDate: Timestamp.fromDate(new Date(startDate.getFullYear(), 11, 20)), studentEnrollments: {} },
+            { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(new Date(startDate.getFullYear() + 1, 0, 10)), endDate: Timestamp.fromDate(new Date(startDate.getFullYear() + 1, 2, 30)), studentEnrollments: {} },
+            { id: 'term3', name: 'Term 3', startDate: Timestamp.fromDate(new Date(startDate.getFullYear() + 1, 3, 10)), endDate: Timestamp.fromDate(endDate), studentEnrollments: {} },
         ]
       };
 
@@ -89,8 +95,6 @@ export default function AdminSettingsPage() {
       toast({ title: "Success", description: "Academic year created. Activate it to make it the current year for your school." });
       setIsAddYearOpen(false);
       setNewYearName("");
-      setNewYearStartDate(undefined);
-      setNewYearEndDate(undefined);
       fetchAcademicYears(); // Refresh list
 
     } catch (error) {
@@ -206,37 +210,12 @@ export default function AdminSettingsPage() {
           <DialogContent>
               <DialogHeader>
                   <DialogTitle>Create New Academic Year</DialogTitle>
+                   <DialogDescription>Enter a name for the new academic year (e.g., "2024-2025"). Dates will be inferred automatically.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                   <div>
                       <Label htmlFor="year-name">Academic Year Name</Label>
                       <Input id="year-name" value={newYearName} onChange={(e) => setNewYearName(e.target.value)} placeholder="e.g., 2024-2025"/>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                      <div>
-                          <Label>Start Date</Label>
-                          <Popover>
-                              <PopoverTrigger asChild>
-                              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearStartDate && "text-muted-foreground")}>
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {newYearStartDate ? format(newYearStartDate, "PPP") : <span>Pick a date</span>}
-                              </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearStartDate} onSelect={setNewYearStartDate} initialFocus /></PopoverContent>
-                          </Popover>
-                      </div>
-                        <div>
-                          <Label>End Date</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearEndDate && "text-muted-foreground")}>
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {newYearEndDate ? format(newYearEndDate, "PPP") : <span>Pick a date</span>}
-                              </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearEndDate} onSelect={setNewYearEndDate} initialFocus /></PopoverContent>
-                          </Popover>
-                      </div>
                   </div>
               </div>
               <DialogFooter>
