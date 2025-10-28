@@ -1,3 +1,4 @@
+
 // src/app/admin/settings/page.tsx
 "use client";
 
@@ -20,6 +21,7 @@ import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle } from
 import { format, isBefore } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge"; // Import Badge component
 
 export default function AdminSettingsPage() {
   const { schoolId, loading: authLoading } = useAuth();
@@ -235,8 +237,8 @@ export default function AdminSettingsPage() {
           <Accordion type="single" collapsible className="w-full">
             {academicYears.map((year) => (
               <AccordionItem value={year.id} key={year.id}>
-                <div className="flex justify-between items-center w-full">
-                    <AccordionTrigger className="text-lg font-medium flex-1">
+                 <div className="flex justify-between items-center w-full">
+                    <AccordionTrigger className="flex-1 text-lg font-medium">
                       <div className="flex items-center gap-2">
                             {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
                           <span>{year.name}</span>
@@ -245,7 +247,7 @@ export default function AdminSettingsPage() {
                     {!year.isActive && (
                         <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}} className="mr-4">Set Active</Button>
                     )}
-                </div>
+                 </div>
                 <AccordionContent className="space-y-4 pl-2">
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                       <p className="text-muted-foreground text-sm">
