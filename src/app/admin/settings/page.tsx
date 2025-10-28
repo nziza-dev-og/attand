@@ -191,162 +191,162 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6"/>School Settings</CardTitle>
-            <CardDescription>Manage academic years and terms for your school.</CardDescription>
-          </div>
-          <Dialog open={isAddYearOpen} onOpenChange={setIsAddYearOpen}>
-            <DialogTrigger asChild>
-                <Button size="sm" className="gap-1">
-                    <PlusCircle className="h-4 w-4"/> Create Academic Year
-                </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Create New Academic Year</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                    <div>
-                        <Label htmlFor="year-name">Academic Year Name</Label>
-                        <Input id="year-name" value={newYearName} onChange={(e) => setNewYearName(e.target.value)} placeholder="e.g., 2024-2025"/>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6"/>School Settings</CardTitle>
+          <CardDescription>Manage academic years and terms for your school.</CardDescription>
+        </div>
+        <Dialog open={isAddYearOpen} onOpenChange={setIsAddYearOpen}>
+          <DialogTrigger asChild>
+              <Button size="sm" className="gap-1">
+                  <PlusCircle className="h-4 w-4"/> Create Academic Year
+              </Button>
+          </DialogTrigger>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>Create New Academic Year</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                  <div>
+                      <Label htmlFor="year-name">Academic Year Name</Label>
+                      <Input id="year-name" value={newYearName} onChange={(e) => setNewYearName(e.target.value)} placeholder="e.g., 2024-2025"/>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                      <div>
+                          <Label>Start Date</Label>
+                          <Popover>
+                              <PopoverTrigger asChild>
+                              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearStartDate && "text-muted-foreground")}>
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {newYearStartDate ? format(newYearStartDate, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearStartDate} onSelect={setNewYearStartDate} initialFocus /></PopoverContent>
+                          </Popover>
+                      </div>
                         <div>
-                            <Label>Start Date</Label>
+                          <Label>End Date</Label>
                             <Popover>
-                                <PopoverTrigger asChild>
-                                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearStartDate && "text-muted-foreground")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {newYearStartDate ? format(newYearStartDate, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearStartDate} onSelect={setNewYearStartDate} initialFocus /></PopoverContent>
-                            </Popover>
-                        </div>
-                         <div>
-                            <Label>End Date</Label>
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearEndDate && "text-muted-foreground")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {newYearEndDate ? format(newYearEndDate, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearEndDate} onSelect={setNewYearEndDate} initialFocus /></PopoverContent>
-                            </Popover>
-                        </div>
-                    </div>
-                </div>
-                <DialogFooter>
-                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                    <Button onClick={handleAddAcademicYear} disabled={isSubmitting}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                        Create Year
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </CardHeader>
-        <CardContent>
-          {academicYears.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No academic years created yet.</p>
-          ) : (
-            <Accordion type="single" collapsible className="w-full">
-              {academicYears.map((year) => (
-                <AccordionItem value={year.id} key={year.id}>
-                  <AccordionTrigger className="text-lg font-medium flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                         {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                        <span>{year.name}</span>
-                    </div>
-                    {!year.isActive && (
-                        <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}}>Set Active</Button>
-                    )}
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-4 pl-2">
-                    <div className="p-4 bg-muted/50 rounded-lg space-y-4">
-                        <p className="text-muted-foreground text-sm">
-                            Year runs from {format(year.startDate.toDate(), 'PPP')} to {format(year.endDate.toDate(), 'PPP')}.
-                        </p>
-                        {year.isActive && (
-                           <div className="flex gap-2">
-                                <AlertDialog>
+                              <PopoverTrigger asChild>
+                              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !newYearEndDate && "text-muted-foreground")}>
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {newYearEndDate ? format(newYearEndDate, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newYearEndDate} onSelect={setNewYearEndDate} initialFocus /></PopoverContent>
+                          </Popover>
+                      </div>
+                  </div>
+              </div>
+              <DialogFooter>
+                  <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                  <Button onClick={handleAddAcademicYear} disabled={isSubmitting}>
+                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                      Create Year
+                  </Button>
+              </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent>
+        {academicYears.length === 0 ? (
+          <p className="text-center text-muted-foreground py-8">No academic years created yet.</p>
+        ) : (
+          <Accordion type="single" collapsible className="w-full">
+            {academicYears.map((year) => (
+              <AccordionItem value={year.id} key={year.id}>
+                <AccordionTrigger className="text-lg font-medium flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                        {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
+                      <span>{year.name}</span>
+                  </div>
+                  {!year.isActive && (
+                      <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}}>Set Active</Button>
+                  )}
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pl-2">
+                  <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+                      <p className="text-muted-foreground text-sm">
+                          Year runs from {format(year.startDate.toDate(), 'PPP')} to {format(year.endDate.toDate(), 'PPP')}.
+                      </p>
+                      {year.isActive && (
+                          <div className="flex gap-2">
+                              <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                      <Button variant="outline" size="sm" disabled={year.activeTermId === year.terms[year.terms.length - 1].id}>End Active Term</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                      <AlertDialogHeader><AlertDialogTitle>End the current term?</AlertDialogTitle></AlertDialogHeader>
+                                      <AlertDialogDescription>This will move the school to the next term. This cannot be undone.</AlertDialogDescription>
+                                      <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => endActiveTerm(year)}>Confirm</AlertDialogAction>
+                                      </AlertDialogFooter>
+                                  </AlertDialogContent>
+                              </AlertDialog>
+                              <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="outline" size="sm" disabled={year.activeTermId === year.terms[year.terms.length - 1].id}>End Active Term</Button>
+                                      <Button variant="destructive" size="sm" disabled={year.activeTermId !== year.terms[year.terms.length - 1].id}>End Academic Year</Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
-                                        <AlertDialogHeader><AlertDialogTitle>End the current term?</AlertDialogTitle></AlertDialogHeader>
-                                        <AlertDialogDescription>This will move the school to the next term. This cannot be undone.</AlertDialogDescription>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => endActiveTerm(year)}>Confirm</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                                <AlertDialog>
-                                     <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" size="sm" disabled={year.activeTermId !== year.terms[year.terms.length - 1].id}>End Academic Year</Button>
-                                     </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader><AlertDialogTitle>End the Academic Year?</AlertDialogTitle></AlertDialogHeader>
-                                        <AlertDialogDescription>This will mark the entire academic year as inactive. You will need to create and activate a new year to continue.</AlertDialogDescription>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => endAcademicYear(year)}>Confirm and End Year</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                           </div>
-                        )}
-                    </div>
+                                      <AlertDialogHeader><AlertDialogTitle>End the Academic Year?</AlertDialogTitle></AlertDialogHeader>
+                                      <AlertDialogDescription>This will mark the entire academic year as inactive. You will need to create and activate a new year to continue.</AlertDialogDescription>
+                                      <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => endAcademicYear(year)}>Confirm and End Year</AlertDialogAction>
+                                      </AlertDialogFooter>
+                                  </AlertDialogContent>
+                              </AlertDialog>
+                          </div>
+                      )}
+                  </div>
 
-                    <h4 className="font-semibold">Terms</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {year.terms.map(term => (
-                        <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
-                          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                            <CardTitle className="text-base">{term.name}</CardTitle>
-                            {year.activeTermId === term.id && year.isActive && <Badge>Active Term</Badge>}
-                          </CardHeader>
-                          <CardContent className="space-y-2">
+                  <h4 className="font-semibold">Terms</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {year.terms.map(term => (
+                      <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
+                        <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                          <CardTitle className="text-base">{term.name}</CardTitle>
+                          {year.activeTermId === term.id && year.isActive && <Badge>Active Term</Badge>}
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          <div>
+                              <Label className="text-xs">Start Date</Label>
+                              <Popover>
+                                  <PopoverTrigger asChild>
+                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.startDate && "text-muted-foreground")}>
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {term.startDate ? format(term.startDate.toDate(), "PPP") : <span>Pick date</span>}
+                                  </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={term.startDate.toDate()} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
+                              </Popover>
+                          </div>
                             <div>
-                                <Label className="text-xs">Start Date</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                    <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.startDate && "text-muted-foreground")}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {term.startDate ? format(term.startDate.toDate(), "PPP") : <span>Pick date</span>}
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={term.startDate.toDate()} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
-                                </Popover>
-                            </div>
-                             <div>
-                                <Label className="text-xs">End Date</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                    <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.endDate && "text-muted-foreground")}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {term.endDate ? format(term.endDate.toDate(), "PPP") : <span>Pick date</span>}
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={term.endDate.toDate()} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
-                                </Popover>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          )}
-        </CardContent>
-      </Card>
-    </>
+                              <Label className="text-xs">End Date</Label>
+                              <Popover>
+                                  <PopoverTrigger asChild>
+                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !term.endDate && "text-muted-foreground")}>
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {term.endDate ? format(term.endDate.toDate(), "PPP") : <span>Pick date</span>}
+                                  </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={term.endDate.toDate()} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
+                              </Popover>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
+      </CardContent>
+    </Card>
   );
 }
+
+    
