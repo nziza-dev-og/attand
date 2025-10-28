@@ -4,19 +4,20 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, CalendarIcon, Settings } from "lucide-react";
+import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle } from "lucide-react";
 import { format, isBefore } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -28,22 +29,20 @@ export default function AdminSettingsPage() {
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // State for new academic year dialog
   const [isAddYearOpen, setIsAddYearOpen] = useState(false);
   const [newYearName, setNewYearName] = useState("");
   const [newYearStartDate, setNewYearStartDate] = useState<Date | undefined>();
   const [newYearEndDate, setNewYearEndDate] = useState<Date | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const fetchAcademicYears = async () => {
+  const fetchAcademicYears = React.useCallback(async () => {
       if (!schoolId || authLoading) {
         if (!authLoading) setLoading(false);
         return;
       }
       setLoading(true);
       try {
-        const q = query(collection(db, "academicYears"), where("schoolId", "==", schoolId));
+        const q = query(collection(db, "academicYears"), where("schoolId", "==", schoolId), orderBy("startDate", "desc"));
         const querySnapshot = await getDocs(q);
         const years = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AcademicYear));
         setAcademicYears(years);
@@ -53,9 +52,11 @@ export default function AdminSettingsPage() {
       } finally {
         setLoading(false);
       }
-    };
+    }, [schoolId, authLoading, toast]);
+
+  useEffect(() => {
     fetchAcademicYears();
-  }, [schoolId, authLoading, toast]);
+  }, [fetchAcademicYears]);
 
   const handleAddAcademicYear = async () => {
     if (!schoolId || !newYearName.trim() || !newYearStartDate || !newYearEndDate) {
@@ -69,34 +70,29 @@ export default function AdminSettingsPage() {
 
     setIsSubmitting(true);
     try {
-      const yearDocRef = await addDoc(collection(db, "academicYears"), {
+      const newYearData: Omit<AcademicYear, 'id'> = {
         name: newYearName.trim(),
         schoolId: schoolId,
         startDate: Timestamp.fromDate(newYearStartDate),
         endDate: Timestamp.fromDate(newYearEndDate),
-        terms: [ // Auto-create 3 terms
-            { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
-            { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
-            { id: 'term3', name: 'Term 3', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
+        isActive: false, // Initially not active
+        activeTermId: 'term1', // Default to term1 being active
+        terms: [
+            { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
+            { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
+            { id: 'term3', name: 'Term 3', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate), studentEnrollments: {} },
         ]
-      });
-      setAcademicYears(prev => [...prev, {
-          id: yearDocRef.id,
-          name: newYearName.trim(),
-          schoolId,
-          startDate: Timestamp.fromDate(newYearStartDate),
-          endDate: Timestamp.fromDate(newYearEndDate),
-          terms: [
-             { id: 'term1', name: 'Term 1', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
-             { id: 'term2', name: 'Term 2', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
-             { id: 'term3', name: 'Term 3', startDate: Timestamp.fromDate(newYearStartDate), endDate: Timestamp.fromDate(newYearEndDate) },
-          ]
-      }]);
-      toast({ title: "Success", description: "Academic year created successfully." });
+      };
+
+      const yearDocRef = await addDoc(collection(db, "academicYears"), newYearData);
+      
+      toast({ title: "Success", description: "Academic year created. Activate it to make it the current year for your school." });
       setIsAddYearOpen(false);
       setNewYearName("");
       setNewYearStartDate(undefined);
       setNewYearEndDate(undefined);
+      fetchAcademicYears(); // Refresh list
+
     } catch (error) {
       console.error("Error adding academic year:", error);
       toast({ variant: "destructive", title: "Error", description: "Failed to create academic year." });
@@ -110,28 +106,81 @@ export default function AdminSettingsPage() {
 
     const yearIndex = academicYears.findIndex(y => y.id === yearId);
     if (yearIndex === -1) return;
-    const year = academicYears[yearIndex];
+
+    const year = { ...academicYears[yearIndex] };
     const termIndex = year.terms.findIndex(t => t.id === termId);
     if (termIndex === -1) return;
 
-    const updatedTerms = [...year.terms];
-    updatedTerms[termIndex] = { ...updatedTerms[termIndex], [dateType]: Timestamp.fromDate(newDate) };
+    // Create a deep copy to avoid direct state mutation before API call
+    const updatedTerms = JSON.parse(JSON.stringify(year.terms));
+    updatedTerms[termIndex][dateType] = Timestamp.fromDate(newDate);
     
-    // Optimistic UI update
-    const updatedYears = [...academicYears];
-    updatedYears[yearIndex] = { ...year, terms: updatedTerms };
-    setAcademicYears(updatedYears);
-
     try {
         const yearDocRef = doc(db, "academicYears", yearId);
         await updateDoc(yearDocRef, { terms: updatedTerms });
         toast({ title: "Term Updated", description: "Term date has been saved." });
+        fetchAcademicYears(); // Re-fetch to get the latest state
     } catch (error) {
         console.error("Error updating term date:", error);
         toast({ variant: "destructive", title: "Update Failed", description: "Could not save the term date." });
-        // Revert UI on error if needed
     }
   };
+
+  const setActiveAcademicYear = async (yearToActivate: AcademicYear) => {
+    if (!schoolId) return;
+    const batch = writeBatch(db);
+    
+    academicYears.forEach(year => {
+        const yearRef = doc(db, "academicYears", year.id);
+        if (year.id === yearToActivate.id) {
+            batch.update(yearRef, { isActive: true });
+        } else if (year.isActive) {
+            batch.update(yearRef, { isActive: false });
+        }
+    });
+
+    try {
+        await batch.commit();
+        toast({ title: "Success", description: `${yearToActivate.name} is now the active academic year.` });
+        fetchAcademicYears();
+    } catch (error) {
+        console.error("Error setting active year:", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not set the active academic year." });
+    }
+  };
+
+  const endActiveTerm = async (year: AcademicYear) => {
+      const currentTermIndex = year.terms.findIndex(t => t.id === year.activeTermId);
+      if (currentTermIndex === -1 || currentTermIndex === year.terms.length - 1) {
+        toast({ variant: "destructive", title: "Action Not Allowed", description: "This is the last term. End the academic year instead." });
+        return;
+      }
+      const nextTerm = year.terms[currentTermIndex + 1];
+      try {
+        const yearRef = doc(db, "academicYears", year.id);
+        await updateDoc(yearRef, { activeTermId: nextTerm.id });
+        toast({ title: "Term Ended", description: `${year.terms[currentTermIndex].name} has ended. ${nextTerm.name} is now active.` });
+        fetchAcademicYears();
+      } catch (error) {
+          toast({ variant: "destructive", title: "Error", description: "Could not end the current term."});
+      }
+  };
+
+  const endAcademicYear = async (year: AcademicYear) => {
+      if (year.activeTermId !== year.terms[year.terms.length - 1].id) {
+          toast({ variant: "warning", title: "Not Last Term", description: "You can only end the academic year when the final term is active." });
+          return;
+      }
+      try {
+          const yearRef = doc(db, "academicYears", year.id);
+          await updateDoc(yearRef, { isActive: false });
+          toast({ title: "Academic Year Ended", description: `${year.name} has been marked as inactive.`});
+          fetchAcademicYears();
+      } catch (error) {
+          toast({ variant: "destructive", title: "Error", description: "Could not end the academic year."});
+      }
+  };
+
 
   if (loading || authLoading) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -208,17 +257,59 @@ export default function AdminSettingsPage() {
             <Accordion type="single" collapsible className="w-full">
               {academicYears.map((year) => (
                 <AccordionItem value={year.id} key={year.id}>
-                  <AccordionTrigger className="text-lg font-medium">{year.name}</AccordionTrigger>
+                  <AccordionTrigger className="text-lg font-medium flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                         {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
+                        <span>{year.name}</span>
+                    </div>
+                    {!year.isActive && (
+                        <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}}>Set Active</Button>
+                    )}
+                  </AccordionTrigger>
                   <AccordionContent className="space-y-4 pl-2">
-                    <p className="text-muted-foreground">
-                        Year runs from {format(year.startDate.toDate(), 'PPP')} to {format(year.endDate.toDate(), 'PPP')}.
-                    </p>
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+                        <p className="text-muted-foreground text-sm">
+                            Year runs from {format(year.startDate.toDate(), 'PPP')} to {format(year.endDate.toDate(), 'PPP')}.
+                        </p>
+                        {year.isActive && (
+                           <div className="flex gap-2">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" size="sm" disabled={year.activeTermId === year.terms[year.terms.length - 1].id}>End Active Term</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>End the current term?</AlertDialogTitle></AlertDialogHeader>
+                                        <AlertDialogDescription>This will move the school to the next term. This cannot be undone.</AlertDialogDescription>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => endActiveTerm(year)}>Confirm</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                <AlertDialog>
+                                     <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm" disabled={year.activeTermId !== year.terms[year.terms.length - 1].id}>End Academic Year</Button>
+                                     </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>End the Academic Year?</AlertDialogTitle></AlertDialogHeader>
+                                        <AlertDialogDescription>This will mark the entire academic year as inactive. You will need to create and activate a new year to continue.</AlertDialogDescription>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => endAcademicYear(year)}>Confirm and End Year</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                           </div>
+                        )}
+                    </div>
+
                     <h4 className="font-semibold">Terms</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {year.terms.map(term => (
-                        <Card key={term.id}>
-                          <CardHeader className="pb-2">
+                        <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
+                          <CardHeader className="pb-2 flex flex-row items-center justify-between">
                             <CardTitle className="text-base">{term.name}</CardTitle>
+                            {year.activeTermId === term.id && year.isActive && <Badge>Active Term</Badge>}
                           </CardHeader>
                           <CardContent className="space-y-2">
                             <div>

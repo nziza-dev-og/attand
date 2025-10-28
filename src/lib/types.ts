@@ -1,3 +1,4 @@
+
 // src/lib/types.ts
 
 import type { Timestamp } from "firebase/firestore";
@@ -28,6 +29,8 @@ export interface AcademicYear {
   startDate: Timestamp;
   endDate: Timestamp;
   schoolId: string;
+  isActive: boolean; // Is this the current academic year for the school?
+  activeTermId: string; // ID of the currently active term
   terms: Term[];
 }
 
@@ -36,6 +39,8 @@ export interface Term {
   name: string; // e.g., "Term 1"
   startDate: Timestamp;
   endDate: Timestamp;
+  // Maps classId to an array of studentIds
+  studentEnrollments: Record<string, string[]>;
 }
 
 
@@ -43,7 +48,6 @@ export interface Class {
   id: string; // Firestore document ID
   name: string; // e.g., "Grade 5 - Section A"
   teacherId?: string; // UID of the assigned teacher
-  studentIds?: string[]; // Array of UIDs of students in the class
   schoolId: string; // UID of the Admin/School this class belongs to
   createdAt: Timestamp; // When the class was created
 }
@@ -51,7 +55,7 @@ export interface Class {
 export interface Student extends UserProfile {
   role: 'Student';
   email: null; // Students explicitly have no email
-  studentIdInfo?: string; 
+  studentId?: string; 
   classIds?: string[]; 
   parentIds?: string[];
   schoolId: string; 
@@ -87,6 +91,8 @@ export interface AttendanceRecord {
   timestamp: Timestamp; // Firestore timestamp when marked
   notes?: string; // Optional notes from the teacher
   schoolId: string; // schoolId of the school this record belongs to
+  academicYearId: string; // Link to academic year
+  termId: string; // Link to term
 }
 
 export type BehaviorReportSeverity = 'Minor' | 'Moderate' | 'Severe';
@@ -115,6 +121,8 @@ export interface BehaviorReport {
   seenByParentIds?: string[]; 
   parentResponses?: ParentResponse[];
   schoolId: string; 
+  academicYearId: string; // Link to academic year
+  termId: string; // Link to term
 }
 
 export interface Advertisement {
