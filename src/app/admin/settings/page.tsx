@@ -135,14 +135,14 @@ export default function AdminSettingsPage() {
     if (yearIndex === -1) return;
     
     // Create a deep copy to avoid direct state mutation issues with nested objects
-    const updatedYears = academicYears.map(y => ({ ...y, terms: y.terms.map(t => ({...t}))}));
+    const updatedYears = JSON.parse(JSON.stringify(academicYears));
     const yearToUpdate = updatedYears[yearIndex];
     const termToUpdate = yearToUpdate.terms.find((t: Term) => t.id === termId);
     
     if (!termToUpdate) return;
     
     // Optimistically update the UI with a JS Date object
-    termToUpdate[dateType] = newDate as any;
+    termToUpdate[dateType] = newDate.toISOString();
     setAcademicYears(updatedYears);
 
     // Persist to Firestore
@@ -156,15 +156,10 @@ export default function AdminSettingsPage() {
             
             if (t.id === termId) {
                 termCopy[dateType] = Timestamp.fromDate(newDate);
-            }
-            
-            // Ensure all dates are Timestamps before saving
-            // This is crucial for consistency
-            if (termCopy.startDate && !(termCopy.startDate instanceof Timestamp)) {
-                termCopy.startDate = Timestamp.fromDate(new Date(termCopy.startDate));
-            }
-            if (termCopy.endDate && !(termCopy.endDate instanceof Timestamp)) {
-                termCopy.endDate = Timestamp.fromDate(new Date(termCopy.endDate));
+            } else {
+                 // Ensure other dates remain Timestamps before saving
+                termCopy.startDate = termCopy.startDate instanceof Timestamp ? termCopy.startDate : Timestamp.fromDate(new Date(termCopy.startDate));
+                termCopy.endDate = termCopy.endDate instanceof Timestamp ? termCopy.endDate : Timestamp.fromDate(new Date(termCopy.endDate));
             }
             return termCopy;
         });
