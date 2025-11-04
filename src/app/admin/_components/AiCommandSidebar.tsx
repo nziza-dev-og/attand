@@ -29,7 +29,7 @@ interface AiCommandSidebarProps {
 
 export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarProps) {
   const { translate } = useLanguage();
-  const { schoolId } = useAuth();
+  const { user, schoolId } = useAuth();
   
   const [command, setCommand] = useState("");
   const [logs, setLogs] = useState<AiLogEntry[]>([
@@ -63,7 +63,7 @@ export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarP
 
 
   const handleSendCommand = async () => {
-    if (!command.trim() || !schoolId) return;
+    if (!command.trim() || !schoolId || !user) return;
     
     const newCommandLog: AiLogEntry = {
         type: 'command',
@@ -85,6 +85,7 @@ export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarP
       const result = await executeCommand({
         command,
         schoolId,
+        userId: user.uid,
         academicYearId: activeAcademicYear?.id,
         termId: activeAcademicYear?.activeTermId,
         allClasses,

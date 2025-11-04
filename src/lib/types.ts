@@ -20,6 +20,7 @@ export interface UserProfile {
   schoolCodeVerificationAttempts?: number; 
   isSchoolCodeLocked?: boolean; 
   schoolId?: string | null; 
+  aiEnabled?: boolean; // AI feature flag
 }
 
 export interface AcademicYear {

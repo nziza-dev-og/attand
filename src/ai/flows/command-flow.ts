@@ -7,12 +7,15 @@
 import { ai } from '@/ai/ai-instance';
 import { z } from 'genkit';
 import { getAttendanceReport, addStudent } from '@/lib/services'; // Centralized services
-import { School, Student } from '@/lib/types';
+import { School, Student, UserProfile } from '@/lib/types';
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // Define the input schema for the command flow
 const CommandInputSchema = z.object({
   command: z.string().describe('The natural language command from the user.'),
   schoolId: z.string().describe('The ID of the school the user is administering.'),
+  userId: z.string().describe('The ID of the user issuing the command.'),
   academicYearId: z.string().optional().describe('The active academic year ID, if available.'),
   termId: z.string().optional().describe('The active term ID, if available.'),
   allClasses: z.array(z.object({ id: z.string(), name: z.string() })).describe('A list of all classes in the school for context.'),
@@ -145,9 +148,17 @@ const commandFlow = ai.defineFlow(
 // Wrapper function to be called from the client component
 export async function executeCommand(input: CommandInput): Promise<CommandOutput> {
   try {
-    if (!input.schoolId) {
-        return { response: "Cannot execute command: School context is missing." };
+    if (!input.schoolId || !input.userId) {
+        return { response: "Cannot execute command: School or User context is missing." };
     }
+
+    // Check if AI is enabled for this user
+    const userDocRef = doc(db, 'users', input.userId);
+    const userDoc = await getDoc(userDocRef);
+    if (!userDoc.exists() || userDoc.data()?.aiEnabled !== true) {
+        return { response: "The AI assistant is currently disabled. Please enable it in the admin settings to use this feature." };
+    }
+    
     return await commandFlow(input);
   } catch (error: any) {
     console.error("Error in command flow:", error);

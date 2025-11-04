@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, writeBatch, orderBy } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp, doc, updateDoc, writeBatch, orderBy, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle } from "lucide-react";
-import { format, isBefore } from "date-fns";
+import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle, Bot } from "lucide-react";
+import { format } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 
 // Helper function to safely convert various date types to a JS Date object
 const getDate = (date: any): Date | undefined => {
@@ -41,7 +41,7 @@ const getDate = (date: any): Date | undefined => {
 
 
 export default function AdminSettingsPage() {
-  const { schoolId, loading: authLoading } = useAuth();
+  const { user, schoolId, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
@@ -51,6 +51,12 @@ export default function AdminSettingsPage() {
   const [isAddYearOpen, setIsAddYearOpen] = useState(false);
   const [newYearName, setNewYearName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // AI Settings State
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [loadingAiSettings, setLoadingAiSettings] = useState(true);
+  const [isSavingAiSettings, setIsSavingAiSettings] = useState(false);
+
 
   const fetchAcademicYears = React.useCallback(async () => {
       if (!schoolId || authLoading) {
@@ -75,9 +81,28 @@ export default function AdminSettingsPage() {
       }
     }, [schoolId, authLoading, toast]);
 
+    const fetchAiSettings = React.useCallback(async () => {
+        if (!user) return;
+        setLoadingAiSettings(true);
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                setAiEnabled(docSnap.data().aiEnabled === true);
+            }
+        } catch (error) {
+            console.error("Error fetching AI settings:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not load AI settings." });
+        } finally {
+            setLoadingAiSettings(false);
+        }
+    }, [user, toast]);
+
+
   useEffect(() => {
     fetchAcademicYears();
-  }, [fetchAcademicYears]);
+    fetchAiSettings();
+  }, [fetchAcademicYears, fetchAiSettings]);
 
   const handleAddAcademicYear = async () => {
     if (!schoolId || !newYearName.trim()) {
@@ -135,14 +160,14 @@ export default function AdminSettingsPage() {
     if (yearIndex === -1) return;
     
     // Create a deep copy to avoid direct state mutation issues with nested objects
-    const updatedYears = JSON.parse(JSON.stringify(academicYears));
+    const updatedYears: AcademicYear[] = JSON.parse(JSON.stringify(academicYears));
     const yearToUpdate = updatedYears[yearIndex];
     const termToUpdate = yearToUpdate.terms.find((t: Term) => t.id === termId);
     
     if (!termToUpdate) return;
     
     // Optimistically update the UI with a JS Date object
-    termToUpdate[dateType] = newDate.toISOString();
+    (termToUpdate as any)[dateType] = newDate.toISOString();
     setAcademicYears(updatedYears);
 
     // Persist to Firestore
@@ -152,16 +177,10 @@ export default function AdminSettingsPage() {
         // Get original terms from state to avoid issues with non-serializable data
         const originalYear = academicYears[yearIndex];
         const termsForFirestore = originalYear.terms.map(t => {
-            const termCopy: any = { ...t };
-            
             if (t.id === termId) {
-                termCopy[dateType] = Timestamp.fromDate(newDate);
-            } else {
-                 // Ensure other dates remain Timestamps before saving
-                termCopy.startDate = termCopy.startDate instanceof Timestamp ? termCopy.startDate : Timestamp.fromDate(new Date(termCopy.startDate));
-                termCopy.endDate = termCopy.endDate instanceof Timestamp ? termCopy.endDate : Timestamp.fromDate(new Date(termCopy.endDate));
+                return { ...t, [dateType]: Timestamp.fromDate(newDate) };
             }
-            return termCopy;
+            return t; // Return the original term object for others
         });
 
         await updateDoc(yearDocRef, { terms: termsForFirestore });
@@ -232,8 +251,25 @@ export default function AdminSettingsPage() {
       }
   };
 
+  const handleAiToggle = async (enabled: boolean) => {
+      if (!user) return;
+      setIsSavingAiSettings(true);
+      setAiEnabled(enabled); // Optimistic update
+      try {
+          const userDocRef = doc(db, 'users', user.uid);
+          await updateDoc(userDocRef, { aiEnabled: enabled });
+          toast({ title: "AI Settings Updated", description: `AI assistant has been ${enabled ? 'enabled' : 'disabled'}.` });
+      } catch (error) {
+          console.error("Error updating AI settings:", error);
+          toast({ variant: "destructive", title: "Save Failed", description: "Could not save AI settings." });
+          setAiEnabled(!enabled); // Revert on failure
+      } finally {
+          setIsSavingAiSettings(false);
+      }
+  };
 
-  if (loading || authLoading) {
+
+  if (loading || authLoading || loadingAiSettings) {
     return <div className="flex justify-center items-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
@@ -242,145 +278,170 @@ export default function AdminSettingsPage() {
   }
   
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6"/>School Settings</CardTitle>
-          <CardDescription>Manage academic years and terms for your school.</CardDescription>
-        </div>
-        <Dialog open={isAddYearOpen} onOpenChange={setIsAddYearOpen}>
-          <DialogTrigger asChild>
-              <Button size="sm" className="gap-1">
-                  <PlusCircle className="h-4 w-4"/> Create Academic Year
-              </Button>
-          </DialogTrigger>
-          <DialogContent>
-              <DialogHeader>
-                  <DialogTitle>Create New Academic Year</DialogTitle>
-                   <DialogDescription>Enter a name for the new academic year (e.g., "2024-2025"). Dates will be inferred automatically.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                  <div>
-                      <Label htmlFor="year-name">Academic Year Name</Label>
-                      <Input id="year-name" value={newYearName} onChange={(e) => setNewYearName(e.target.value)} placeholder="e.g., 2024-2025"/>
-                  </div>
+    <div className="grid gap-6 auto-rows-max">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6"/>AI Assistant Settings</CardTitle>
+                <CardDescription>Control the AI assistant's capabilities for your school.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center space-x-4 rounded-md border p-4">
+                    <div className="flex-1 space-y-1">
+                        <p className="text-sm font-medium leading-none">Enable AI Data Management</p>
+                        <p className="text-sm text-muted-foreground">
+                            Allow the AI assistant to perform actions like adding students and generating reports based on your commands.
+                        </p>
+                    </div>
+                    <Switch
+                        checked={aiEnabled}
+                        onCheckedChange={handleAiToggle}
+                        disabled={isSavingAiSettings}
+                        aria-label="Toggle AI data management"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2"><Settings className="h-6 w-6"/>Academic Year Settings</CardTitle>
+            <CardDescription>Manage academic years and terms for your school.</CardDescription>
+          </div>
+          <Dialog open={isAddYearOpen} onOpenChange={setIsAddYearOpen}>
+            <DialogTrigger asChild>
+                <Button size="sm" className="gap-1">
+                    <PlusCircle className="h-4 w-4"/> Create Academic Year
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Create New Academic Year</DialogTitle>
+                    <DialogDescription>Enter a name for the new academic year (e.g., "2024-2025"). Dates will be inferred automatically.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div>
+                        <Label htmlFor="year-name">Academic Year Name</Label>
+                        <Input id="year-name" value={newYearName} onChange={(e) => setNewYearName(e.target.value)} placeholder="e.g., 2024-2025"/>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                    <Button onClick={handleAddAcademicYear} disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                        Create Year
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+        <CardContent>
+          {error && !loading && academicYears.length === 0 ? (
+              <div className="text-center py-8">
+                  <p className="text-destructive">{error}</p>
+                  <Button onClick={() => setIsAddYearOpen(true)} className="mt-4">Create Academic Year</Button>
               </div>
-              <DialogFooter>
-                  <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                  <Button onClick={handleAddAcademicYear} disabled={isSubmitting}>
-                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                      Create Year
-                  </Button>
-              </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </CardHeader>
-      <CardContent>
-        {error && !loading && academicYears.length === 0 ? (
-            <div className="text-center py-8">
-                <p className="text-destructive">{error}</p>
-                <Button onClick={() => setIsAddYearOpen(true)} className="mt-4">Create Academic Year</Button>
-            </div>
-        ) : academicYears.length === 0 && !loading ? (
-          <p className="text-center text-muted-foreground py-8">No academic years created yet.</p>
-        ) : (
-          <Accordion type="single" collapsible className="w-full">
-            {academicYears.map((year) => (
-              <AccordionItem value={year.id} key={year.id}>
-                <div className="flex justify-between items-center w-full">
-                    <AccordionTrigger className="flex-1 text-lg font-medium">
-                      <div className="flex items-center gap-2">
-                            {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                          <span>{year.name}</span>
-                      </div>
-                    </AccordionTrigger>
-                    {!year.isActive && (
-                        <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}} className="mr-4">Set Active</Button>
-                    )}
-                 </div>
-                <AccordionContent className="space-y-4 pl-2">
-                  <div className="p-4 bg-muted/50 rounded-lg space-y-4">
-                      <p className="text-muted-foreground text-sm">
-                          Year runs from {format(getDate(year.startDate)!, 'PPP')} to {format(getDate(year.endDate)!, 'PPP')}.
-                      </p>
-                      {year.isActive && (
-                          <div className="flex gap-2">
-                              <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                      <Button variant="outline" size="sm" disabled={year.activeTermId === year.terms[year.terms.length - 1].id}>End Active Term</Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                      <AlertDialogHeader><AlertDialogTitle>End the current term?</AlertDialogTitle></AlertDialogHeader>
-                                      <AlertDialogDescription>This will move the school to the next term. This cannot be undone.</AlertDialogDescription>
-                                      <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => endActiveTerm(year)}>Confirm</AlertDialogAction>
-                                      </AlertDialogFooter>
-                                  </AlertDialogContent>
-                              </AlertDialog>
-                              <AlertDialog>
+          ) : academicYears.length === 0 && !loading ? (
+            <p className="text-center text-muted-foreground py-8">No academic years created yet.</p>
+          ) : (
+            <Accordion type="single" collapsible className="w-full">
+              {academicYears.map((year) => (
+                <AccordionItem value={year.id} key={year.id}>
+                  <div className="flex justify-between items-center w-full">
+                      <AccordionTrigger className="flex-1 text-lg font-medium">
+                        <div className="flex items-center gap-2">
+                              {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
+                            <span>{year.name}</span>
+                        </div>
+                      </AccordionTrigger>
+                      {!year.isActive && (
+                          <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setActiveAcademicYear(year);}} className="mr-4">Set Active</Button>
+                      )}
+                   </div>
+                  <AccordionContent className="space-y-4 pl-2">
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+                        <p className="text-muted-foreground text-sm">
+                            Year runs from {format(getDate(year.startDate)!, 'PPP')} to {format(getDate(year.endDate)!, 'PPP')}.
+                        </p>
+                        {year.isActive && (
+                            <div className="flex gap-2">
+                                <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                      <Button variant="destructive" size="sm" disabled={year.activeTermId !== year.terms[year.terms.length - 1].id}>End Academic Year</Button>
+                                        <Button variant="outline" size="sm" disabled={year.activeTermId === year.terms[year.terms.length - 1].id}>End Active Term</Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
-                                      <AlertDialogHeader><AlertDialogTitle>End the Academic Year?</AlertDialogTitle></AlertDialogHeader>
-                                      <AlertDialogDescription>This will mark the entire academic year as inactive. You will need to create and activate a new year to continue.</AlertDialogDescription>
-                                      <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => endAcademicYear(year)}>Confirm and End Year</AlertDialogAction>
-                                      </AlertDialogFooter>
-                                  </AlertDialogContent>
-                              </AlertDialog>
-                          </div>
-                      )}
-                  </div>
+                                        <AlertDialogHeader><AlertDialogTitle>End the current term?</AlertDialogTitle></AlertDialogHeader>
+                                        <AlertDialogDescription>This will move the school to the next term. This cannot be undone.</AlertDialogDescription>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => endActiveTerm(year)}>Confirm</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm" disabled={year.activeTermId !== year.terms[year.terms.length - 1].id}>End Academic Year</Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>End the Academic Year?</AlertDialogTitle></AlertDialogHeader>
+                                        <AlertDialogDescription>This will mark the entire academic year as inactive. You will need to create and activate a new year to continue.</AlertDialogDescription>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => endAcademicYear(year)}>Confirm and End Year</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        )}
+                    </div>
 
-                  <h4 className="font-semibold">Terms</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {year.terms.map(term => {
-                       const startDate = getDate(term.startDate);
-                       const endDate = getDate(term.endDate);
-                       return (
-                      <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
-                        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                          <CardTitle className="text-base">{term.name}</CardTitle>
-                          {year.activeTermId === term.id && year.isActive && <Badge>Active Term</Badge>}
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div>
-                              <Label className="text-xs">Start Date</Label>
-                              <Popover>
-                                  <PopoverTrigger asChild>
-                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
-                                      <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {startDate ? format(startDate, "PPP") : <span>Pick date</span>}
-                                  </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={startDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
-                              </Popover>
-                          </div>
+                    <h4 className="font-semibold">Terms</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {year.terms.map(term => {
+                         const startDate = getDate(term.startDate);
+                         const endDate = getDate(term.endDate);
+                         return (
+                        <Card key={term.id} className={cn(year.activeTermId === term.id && year.isActive ? "border-primary bg-primary/5" : "")}>
+                          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                            <CardTitle className="text-base">{term.name}</CardTitle>
+                            {year.activeTermId === term.id && year.isActive && <Badge>Active Term</Badge>}
+                          </CardHeader>
+                          <CardContent className="space-y-2">
                             <div>
-                              <Label className="text-xs">End Date</Label>
-                              <Popover>
-                                  <PopoverTrigger asChild>
-                                  <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
-                                      <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {endDate ? format(endDate, "PPP") : <span>Pick date</span>}
-                                  </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={endDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
-                              </Popover>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )})}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        )}
-      </CardContent>
-    </Card>
+                                <Label className="text-xs">Start Date</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {startDate ? format(startDate, "PPP") : <span>Pick date</span>}
+                                    </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={startDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'startDate')} /></PopoverContent>
+                                </Popover>
+                            </div>
+                              <div>
+                                <Label className="text-xs">End Date</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <Button size="sm" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {endDate ? format(endDate, "PPP") : <span>Pick date</span>}
+                                    </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={endDate} onSelect={(date) => handleTermDateChange(year.id, term.id, date, 'endDate')} /></PopoverContent>
+                                </Popover>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )})}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
