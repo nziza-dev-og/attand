@@ -1,4 +1,3 @@
-
 // src/app/admin/settings/page.tsx
 "use client";
 
@@ -135,15 +134,15 @@ export default function AdminSettingsPage() {
     const yearIndex = academicYears.findIndex(y => y.id === yearId);
     if (yearIndex === -1) return;
     
-    // Create a deep copy to avoid direct state mutation issues
-    const updatedYears = JSON.parse(JSON.stringify(academicYears));
+    // Create a deep copy to avoid direct state mutation issues with nested objects
+    const updatedYears = academicYears.map(y => ({ ...y, terms: y.terms.map(t => ({...t}))}));
     const yearToUpdate = updatedYears[yearIndex];
     const termToUpdate = yearToUpdate.terms.find((t: Term) => t.id === termId);
     
     if (!termToUpdate) return;
     
-    // Set the new date as a JS Date object for immediate UI feedback
-    termToUpdate[dateType] = newDate.toISOString(); 
+    // Optimistically update the UI with a JS Date object
+    termToUpdate[dateType] = newDate as any;
     setAcademicYears(updatedYears);
 
     // Persist to Firestore
@@ -160,6 +159,7 @@ export default function AdminSettingsPage() {
             }
             
             // Ensure all dates are Timestamps before saving
+            // This is crucial for consistency
             if (termCopy.startDate && !(termCopy.startDate instanceof Timestamp)) {
                 termCopy.startDate = Timestamp.fromDate(new Date(termCopy.startDate));
             }
@@ -292,7 +292,7 @@ export default function AdminSettingsPage() {
           <Accordion type="single" collapsible className="w-full">
             {academicYears.map((year) => (
               <AccordionItem value={year.id} key={year.id}>
-                 <div className="flex justify-between items-center w-full">
+                <div className="flex justify-between items-center w-full">
                     <AccordionTrigger className="flex-1 text-lg font-medium">
                       <div className="flex items-center gap-2">
                             {year.isActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
