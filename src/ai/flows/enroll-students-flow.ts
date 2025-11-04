@@ -141,7 +141,7 @@ const enrollStudentsFlow = ai.defineFlow(
       7.  Call the 'enrollStudentsInDatabase' tool with the prepared list of students and the provided schoolId, academicYearId, and termId.
       `,
       tools: [enrollStudentsTool],
-      model: 'googleai/gemini-1.5-pro-latest',
+      model: 'gemini-pro',
     });
 
     const toolCall = llmResponse.toolCalls()[0];

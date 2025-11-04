@@ -115,7 +115,7 @@ const commandFlow = ai.defineFlow(
     const llmResponse = await ai.generate({
       prompt: contextPrompt,
       tools: [getAttendanceReportTool, addStudentTool],
-      model: 'googleai/gemini-1.5-pro-latest',
+      model: 'gemini-pro',
     });
 
     const toolCalls = llmResponse.toolCalls();
