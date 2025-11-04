@@ -1,7 +1,7 @@
 // src/app/admin/_components/AiCommandSidebar.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Send, Sparkles, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { executeCommand } from "@/ai/flows/command-flow";
+import { useAuth } from "@/hooks/useAuth";
+import type { AcademicYear, Class } from "@/lib/types";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 
 interface AiLogEntry {
   type: 'info' | 'command' | 'response' | 'error';
@@ -23,6 +29,8 @@ interface AiCommandSidebarProps {
 
 export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarProps) {
   const { translate } = useLanguage();
+  const { schoolId } = useAuth();
+  
   const [command, setCommand] = useState("");
   const [logs, setLogs] = useState<AiLogEntry[]>([
     {
@@ -32,9 +40,30 @@ export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarP
     }
   ]);
   const [isSending, setIsSending] = useState(false);
+  const [activeAcademicYear, setActiveAcademicYear] = useState<AcademicYear | null>(null);
+  const [allClasses, setAllClasses] = useState<{ id: string, name: string }[]>([]);
 
-  const handleSendCommand = () => {
-    if (!command.trim()) return;
+  useEffect(() => {
+    if (!schoolId) return;
+    const fetchContext = async () => {
+        // Fetch Active Academic Year
+        const yearQuery = query(collection(db, "academicYears"), where("schoolId", "==", schoolId), where("isActive", "==", true));
+        const yearSnapshot = await getDocs(yearQuery);
+        if (!yearSnapshot.empty) {
+            setActiveAcademicYear({ id: yearSnapshot.docs[0].id, ...yearSnapshot.docs[0].data() } as AcademicYear);
+        }
+
+        // Fetch All Classes
+        const classesQuery = query(collection(db, "classes"), where("schoolId", "==", schoolId));
+        const classesSnapshot = await getDocs(classesQuery);
+        setAllClasses(classesSnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name })));
+    };
+    fetchContext();
+  }, [schoolId]);
+
+
+  const handleSendCommand = async () => {
+    if (!command.trim() || !schoolId) return;
     
     const newCommandLog: AiLogEntry = {
         type: 'command',
@@ -50,19 +79,34 @@ export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarP
 
     setLogs(prev => [...prev, newCommandLog, thinkingLog]);
     setIsSending(true);
+    setCommand(""); // Clear input immediately
 
-    // This is where you would call your actual AI flow
-    setTimeout(() => {
-        const responseLog: AiLogEntry = {
-            type: 'response',
-            message: `Command "${command}" acknowledged. Feature not yet implemented.`,
+    try {
+      const result = await executeCommand({
+        command,
+        schoolId,
+        academicYearId: activeAcademicYear?.id,
+        termId: activeAcademicYear?.activeTermId,
+        allClasses,
+      });
+
+      const responseLog: AiLogEntry = {
+        type: 'response',
+        message: result.response,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setLogs(prev => [...prev.slice(0, -1), responseLog]); 
+
+    } catch (error: any) {
+        const errorLog: AiLogEntry = {
+            type: 'error',
+            message: `Error: ${error.message || "An unexpected error occurred."}`,
             timestamp: new Date().toLocaleTimeString(),
         };
-        setLogs(prev => [...prev.slice(0, -1), responseLog]); 
+        setLogs(prev => [...prev.slice(0, -1), errorLog]); 
+    } finally {
         setIsSending(false);
-    }, 1500);
-
-    setCommand("");
+    }
   };
 
   const content = (
@@ -101,16 +145,22 @@ export function AiCommandSidebar({ isSheet = false, onClose }: AiCommandSidebarP
             <div className="space-y-2">
                 <h4 className="text-sm font-medium">Issue a Command</h4>
                 <Textarea
-                    placeholder="e.g., 'Generate a summary of today's attendance reports'"
+                    placeholder="e.g., 'Add a student named Jane Doe to Grade 5'"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    disabled={isSending}
+                    disabled={isSending || !schoolId}
                     rows={3}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendCommand();
+                        }
+                    }}
                 />
             </div>
         </CardContent>
         <CardFooter>
-            <Button onClick={handleSendCommand} disabled={isSending || !command.trim()} className="w-full">
+            <Button onClick={handleSendCommand} disabled={isSending || !command.trim() || !schoolId} className="w-full">
             <Send className="mr-2 h-4 w-4" />
             Send Command
             </Button>
