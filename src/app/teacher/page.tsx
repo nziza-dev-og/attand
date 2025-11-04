@@ -12,7 +12,7 @@ import { db } from '@/lib/firebase';
 import type { Teacher, UserProfile } from '@/lib/types'; 
 import { useLanguage } from '@/contexts/LanguageContext'; 
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"; // Added missing import
+import { useToast } from "@/hooks/use-toast";
 
 interface SchoolAdminDetails {
   name?: string;
@@ -88,15 +88,18 @@ export default function TeacherDashboard() {
           } else {
             setError(translate('userNotTeacherError') || "User found but is not registered as a Teacher.");
             setTeacherData(null);
+            setLoadingAdminDetails(false);
           }
         } else {
           setError(translate('teacherProfileError') || "Teacher profile not found.");
           setTeacherData(null);
+          setLoadingAdminDetails(false);
         }
       } catch (err) {
         console.error("Error fetching teacher data:", err);
         setError(translate('loadTeacherError') || "Failed to load teacher information.");
         setTeacherData(null);
+        setLoadingAdminDetails(false);
       } finally {
         setLoadingData(false);
       }
@@ -232,5 +235,3 @@ export default function TeacherDashboard() {
     </div>
   );
 }
-
-

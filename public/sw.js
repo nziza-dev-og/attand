@@ -1,96 +1,103 @@
-const CACHE_NAME = 'attendease-v1'; // Changed cache name to be specific to AttendEase
-const urlsToCache = [
-  '/',
-  // Note: Next.js typically handles its own static asset caching with hashes.
-  // Explicitly caching '/static/js/bundle.js' and '/static/css/main.css' might be
-  // more relevant for Create React App or similar setups.
-  // For Next.js, you might want to cache specific pages or assets if needed,
-  // or rely on Next.js's built-in caching and PWA plugins like next-pwa.
-  // For now, I'm keeping it as per your provided sw.js, but be mindful of this for Next.js.
-  '/manifest.json',
-  '/favicon.ico', // Added favicon as it's a common asset
-  '/icons/icon-192x192.png', // Assuming this is a key icon
-  '/icons/icon-512x512.png'  // Assuming this is a key icon
+// public/sw.js
+
+const CACHE_NAME = 'attendease-cache-v1';
+
+// These are foundational assets that should always be cached.
+const PRECACHE_ASSETS = [
+    '/',
+    '/manifest.json',
+    '/favicon.ico',
+    '/icons/apple-touch-icon.png',
 ];
 
+// Install event: precache core assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache and caching initial assets:', urlsToCache);
-        return cache.addAll(urlsToCache);
+        console.log('[Service Worker] Pre-caching core assets');
+        return cache.addAll(PRECACHE_ASSETS);
       })
-      .catch(err => console.error('Failed to cache initial assets:', err))
+      .catch(error => {
+        console.error('[Service Worker] Pre-caching failed:', error);
+      })
   );
-  self.skipWaiting(); // Ensure the new service worker activates immediately
+  self.skipWaiting();
 });
 
+// Activate event: clean up old caches
 self.addEventListener('activate', (event) => {
-  // Clean up old caches
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            console.log('[Service Worker] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
       );
-    }).then(() => {
-      console.log('Service worker activated and old caches cleaned.');
-      return self.clients.claim(); // Take control of all open clients
     })
   );
+  self.clients.claim();
 });
 
+
+// Fetch event: serve from cache, fall back to network, and cache new requests
 self.addEventListener('fetch', (event) => {
-  // For navigation requests, try network first, then cache (NetworkFallingBackToCache)
-  if (event.request.mode === 'navigate') {
+  const { request } = event;
+
+  // --- IMPORTANT FIX ---
+  // Do not cache requests that are not GET, or are for browser extensions.
+  // This prevents the 'chrome-extension' scheme error.
+  if (request.method !== 'GET' || request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+  
+  // --- IMPORTANT FIX for Next.js ---
+  // Do not cache Next.js development-specific requests, as they change frequently.
+  if (request.url.includes('/_next/static/webpack/')) {
+    return;
+  }
+
+
+  // For navigation requests (HTML pages), use a Network First strategy.
+  // This ensures users always get the latest page, with an offline fallback.
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          // If successful, cache the response for future offline use if it's a GET request
-          if (response && response.status === 200 && event.request.method === 'GET') {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-          }
-          return response;
-        })
+      fetch(request)
         .catch(() => {
-          // If network fails, try to serve from cache
-          return caches.match(event.request)
-            .then(cachedResponse => {
-              return cachedResponse || caches.match('/'); // Fallback to home page if specific page not cached
-            });
+          // If network fails, try to serve the root page from cache as a fallback.
+          return caches.match('/');
         })
     );
     return;
   }
-
-  // For other requests (assets, API calls), use CacheFirst strategy
+  
+  // For all other requests (CSS, JS, images), use a Cache First strategy.
+  // This provides a fast, offline-first experience for static assets.
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(request).then((response) => {
         if (response) {
-          return response; // Serve from cache if found
+          // Found in cache, return it.
+          return response;
         }
-        // If not in cache, fetch from network
-        return fetch(event.request).then(
-          (networkResponse) => {
-            // If successful, cache the response for future offline use if it's a GET request
-            if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
-              const responseToCache = networkResponse.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => {
-                  cache.put(event.request, responseToCache);
-                });
-            }
-            return networkResponse;
+
+        // Not in cache, fetch from network.
+        return fetch(request).then((networkResponse) => {
+          // Check if we received a valid response
+          if (networkResponse && networkResponse.status === 200) {
+            // Clone the response and cache it for future use.
+            cache.put(request, networkResponse.clone());
           }
-        ).catch(err => {
-          console.warn('Fetch failed for:', event.request.url, err);
-          // Optionally, provide a fallback for specific asset types if needed
-          // For example, for images: return caches.match('/placeholder-image.png');
+          return networkResponse;
+        }).catch(error => {
+          console.error('[Service Worker] Fetch failed; returning offline fallback if available.', request.url, error);
+          // You could return a placeholder for failed images/assets here if needed.
         });
-      })
+      });
+    })
   );
 });
