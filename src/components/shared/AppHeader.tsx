@@ -25,10 +25,9 @@ interface AppHeaderProps {
   title: string;
   navLinksComponent?: ReactNode;
   homePath?: string;
-  extraControls?: ReactNode;
 }
 
-export function AppHeader({ title, navLinksComponent, homePath = "/", extraControls }: AppHeaderProps) {
+export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeaderProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { language, setLanguage, translate } = useLanguage();
@@ -98,7 +97,6 @@ export function AppHeader({ title, navLinksComponent, homePath = "/", extraContr
       <h1 className="text-lg font-semibold sm:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">{title}</h1>
       
       <div className="flex items-center gap-2">
-        {extraControls}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" aria-label={translate('selectLanguage')}>
