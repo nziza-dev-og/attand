@@ -39,7 +39,7 @@ export default function NotFoundPage() {
       </div>
       
       <div className="relative z-10 flex flex-col items-center text-center">
-        <AlertTriangle className="w-24 h-24 text-primary mb-8 animate-pulse" />
+        <AlertTriangle className="w-24 h-24 text-primary mb-8" />
         
         <h1 className="text-6xl md:text-8xl font-bold mb-4 tracking-tight">
           {translate('notFoundTitle') || 'Page not found'}
@@ -56,11 +56,11 @@ export default function NotFoundPage() {
         </Button>
       </div>
 
-      {/* Decorative dots (optional) */}
-      <div className="absolute top-10 left-10 w-1 h-1 bg-slate-500 rounded-full animate-ping delay-100"></div>
-      <div className="absolute bottom-10 right-10 w-2 h-2 bg-slate-600 rounded-full animate-ping delay-300"></div>
-      <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse delay-500"></div>
-       <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-slate-700 rounded-full animate-ping delay-700"></div>
+      {/* Decorative dots (optional, static) */}
+      <div className="absolute top-10 left-10 w-1 h-1 bg-slate-500 rounded-full"></div>
+      <div className="absolute bottom-10 right-10 w-2 h-2 bg-slate-600 rounded-full"></div>
+      <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+       <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-slate-700 rounded-full"></div>
     </div>
   );
 }
