@@ -1,4 +1,4 @@
-
+// src/components/shared/AppHeader.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -20,20 +20,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-// Removed useEffect and useState for installPromptEvent as it's handled by InstallPrompt.tsx and AppContext now
 
 interface AppHeaderProps {
   title: string;
   navLinksComponent?: ReactNode;
   homePath?: string;
+  extraControls?: ReactNode;
 }
 
-export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeaderProps) {
+export function AppHeader({ title, navLinksComponent, homePath = "/", extraControls }: AppHeaderProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { language, setLanguage, translate } = useLanguage();
-
-  // Removed install prompt logic from here
 
   const handleLogout = async () => {
     try {
@@ -100,7 +98,7 @@ export function AppHeader({ title, navLinksComponent, homePath = "/" }: AppHeade
       <h1 className="text-lg font-semibold sm:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">{title}</h1>
       
       <div className="flex items-center gap-2">
-        {/* Install button logic removed from here, handled by InstallPrompt.tsx */}
+        {extraControls}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" aria-label={translate('selectLanguage')}>
