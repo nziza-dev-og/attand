@@ -1,3 +1,4 @@
+
 // src/app/admin/settings/page.tsx
 "use client";
 
@@ -17,7 +18,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle, Bot } from "lucide-react";
+import { Loader2, PlusCircle, CalendarIcon, Settings, CheckCircle, Circle, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import type { AcademicYear, Term } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -281,7 +282,7 @@ export default function AdminSettingsPage() {
     <div className="grid gap-6 auto-rows-max">
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6"/>AI Assistant Settings</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Sparkles className="h-6 w-6"/>AI Assistant Settings</CardTitle>
                 <CardDescription>Control the AI assistant's capabilities for your school.</CardDescription>
             </CardHeader>
             <CardContent>
