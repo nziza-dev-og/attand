@@ -172,7 +172,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-40 bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center p-0 overflow-hidden"
           aria-label="Open AI Command Center"
         >
-          <AiBotIcon className="h-16 w-16" />
+          <AiBotIcon className="h-40 w-40" />
         </Button>
        
        {/* AI Command Center Sheet */}
